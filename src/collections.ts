@@ -85,6 +85,7 @@ export function getCollectionResultsByName<T>(
 type CollectionResponseAction = FluxStandardAction<
   {count: number, next: string, results: ReadonlyArray<{}>, page: number}, ICollectionParams & {collectionName: string}
 >;
+
 export function setCollectionFromResponseAction<T> (
   state: TCollectionStore<T>,
   action: Action,
@@ -137,17 +138,41 @@ function updateCollectionItemsFromResponse<T>(
   };
 }
 
+export function addCollectionItem<T>(
+  state: TCollectionStore<T>,
+  action: Action,
+  typeToRecordMapping: TTypeToRecordMapping<T>
+): TCollectionStore<T> {
+  if (isFSA(action)) {
+    const meta = (action.meta as Dict<string>);
+    const collectionType = meta.tag;
+    const collectionName = meta.collectionName;
+
+    if (collectionType in typeToRecordMapping) {
+      const recordBuilder = typeToRecordMapping[collectionType];
+      const existingCollection = getCollectionByName(state, collectionType as keyof T, collectionName);
+      const updatedCollection = {
+        ...existingCollection,
+        count: existingCollection.count + 1,
+        results: existingCollection.results.concat([recordBuilder(action.payload)]),
+      };
+      return _.extend(
+        {},
+        state, {
+          [collectionType]: updatedCollection,
+        }
+      );
+    }
+  }
+  return state;
+}
+
 export function collectionsFunctor<T> (
   typeToRecordMapping: TTypeToRecordMapping<T>,
 ) {
 
-  function addItemAction (type: keyof T, data: any, collectionName?: string) {
-    const url = `/api/${type}/`;
-    return dispatchGenericRequest(ADD_TO_COLLECTION, url, 'POST', data, type, { collectionName });
-  }
-
-  function addToCollectionAction (type: keyof T, url: string, data: any, collectionName?: string) {
-    return dispatchGenericRequest(ADD_TO_COLLECTION, url, 'POST', data, type, { collectionName });
+  function addItemAction (type: keyof T, data: any, collectionName?: string, url?: string) {
+    return dispatchGenericRequest(ADD_TO_COLLECTION, url || `/api/${type}/`, 'POST', data, type, { collectionName });
   }
 
   function clearCollectionAction (type: keyof T, collectionName?: string) {
@@ -203,13 +228,12 @@ export function collectionsFunctor<T> (
     state: TCollectionStore<T> = buildCollectionsStore(typeToRecordMapping),
     action: Action
   ) {
-    // The types in here are a bit janky as there doesn't seem to be a way
-    // of passing a closed generic with certain types for properties
     switch (action.type) {
       case GET_COLLECTION.SUCCESS:
         return setCollectionFromResponseAction(state, action, typeToRecordMapping);
-        /*case ADD_TO_COLLECTION.SUCCESS:
-        return addCollectionItem(state as any, action, typeToRecordMapping as any);
+      case ADD_TO_COLLECTION.SUCCESS:
+        return addCollectionItem(state, action, typeToRecordMapping);
+      /*
       case DELETE_FROM_COLLECTION.SUCCESS:
         return deleteCollectionItem(state as any, action, typeToRecordMapping as any);
       case CLEAR_COLLECTION:
@@ -222,7 +246,6 @@ export function collectionsFunctor<T> (
   return {
     actions: {
       addItem: addItemAction,
-      addToCollection: addToCollectionAction,
       clearCollection: clearCollectionAction,
       deleteItem: deleteItemAction,
       getAllCollection: getAllCollectionAction,
