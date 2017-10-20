@@ -89,4 +89,25 @@ describe('Collections', () => {
     expect(results.length).toBe(subCollection.count);
     expect(results[0].furLength).toBe(5);
   });
+
+  it('should correctly append on GET_COLLECTION responses', () => {
+    const data = collections.reducers.collectionsReducer(undefined, getCollectionSuccess('llamas', '', [{
+      furLength: 5,
+      id: '1',
+      name: 'Drama',
+    }], false));
+    const data2 = collections.reducers.collectionsReducer(data, getCollectionSuccess('llamas', '', [{
+      furLength: 10,
+      id: '2',
+      name: 'Pajama',
+    }], true));
+    const subCollection = getCollectionByName(data2, 'llamas');
+    expect(subCollection.page).toBe(1);
+    expect(subCollection.count).toBe(2);
+    const results = getCollectionResultsByName(data2, 'llamas');
+    expect(results).toBe(subCollection.results);
+    expect(results.length).toBe(subCollection.count);
+    expect(results[0].furLength).toBe(5);
+    expect(results[1].furLength).toBe(10);
+  });
 });

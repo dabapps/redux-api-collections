@@ -122,7 +122,7 @@ function updateCollectionItemsFromResponse<T>(
     oldCollectionItems.concat(newCollectionItems) :
     newCollectionItems;
   const newCollection = {
-    count,
+    count: shouldAppend ? newCollectionResults.length : count,
     filters,
     next,
     ordering,
