@@ -1,5 +1,7 @@
 import { Collections } from '../src';
 import {
+  ADD_TO_COLLECTION,
+  DELETE_FROM_COLLECTION,
   GET_COLLECTION,
   getCollectionByName,
   getCollectionResultsByName,
@@ -38,6 +40,7 @@ const collections = Collections(typeToRecordMapping);
 
 describe('Collections', () => {
 
+  // Helpers for creating event callbacks
   function getCollectionSuccess(
     tag: keyof ICollections,
     collectionName: string,
@@ -46,7 +49,7 @@ describe('Collections', () => {
     next?: string
   ) {
     return {
-      meta: { tag: 'llamas', shouldAppend, collectionName },
+      meta: { tag, shouldAppend, collectionName },
       payload: {
         count: results.length,
         page: 1,
@@ -54,6 +57,30 @@ describe('Collections', () => {
         results,
       },
       type: GET_COLLECTION.SUCCESS,
+    };
+  }
+
+  function addItemSuccess(
+    tag: keyof ICollections,
+    collectionName: string,
+    result: any,
+  ) {
+    return {
+      meta: { tag, collectionName },
+      payload: result,
+      type: ADD_TO_COLLECTION.SUCCESS,
+    };
+  }
+
+  function deleteItemSuccess(
+    tag: keyof ICollections,
+    collectionName: string,
+    itemId: string,
+  ) {
+    return {
+      meta: { tag, collectionName, itemId },
+      payload: '',
+      type: DELETE_FROM_COLLECTION.SUCCESS,
     };
   }
 
@@ -109,5 +136,67 @@ describe('Collections', () => {
     expect(results.length).toBe(subCollection.count);
     expect(results[0].furLength).toBe(5);
     expect(results[1].furLength).toBe(10);
+  });
+
+  it('should add an item on ADD_TO_COLLECTION responses', () => {
+    const data = collections.reducers.collectionsReducer(undefined, getCollectionSuccess('llamas', '', [{
+      furLength: 5,
+      id: '1',
+      name: 'Drama',
+    }], false));
+    const data2 = collections.reducers.collectionsReducer(data, addItemSuccess('llamas', '', {
+      furLength: 10,
+      id: '2',
+      name: 'Pajama',
+    }));
+    const subCollection = getCollectionByName(data2, 'llamas');
+    expect(subCollection.page).toBe(1);
+    expect(subCollection.count).toBe(2);
+    const results = getCollectionResultsByName(data2, 'llamas');
+    expect(results).toBe(subCollection.results);
+    expect(results.length).toBe(subCollection.count);
+    expect(results[0].furLength).toBe(5);
+    expect(results[1].furLength).toBe(10);
+  });
+
+  it('should delete an item on DELETE_FROM_COLLECTION responses', () => {
+    const data = collections.reducers.collectionsReducer(undefined, getCollectionSuccess('llamas', '', [{
+      furLength: 5,
+      id: '1',
+      name: 'Drama',
+    }, {
+      furLength: 10,
+      id: '2',
+      name: 'Pajama',
+    }], false));
+
+    const data2 = collections.reducers.collectionsReducer(data, deleteItemSuccess('llamas', '', '1'));
+    const subCollection = getCollectionByName(data2, 'llamas');
+    expect(subCollection.page).toBe(1);
+    expect(subCollection.count).toBe(1);
+    const results = getCollectionResultsByName(data2, 'llamas');
+    expect(results).toBe(subCollection.results);
+    expect(results.length).toBe(subCollection.count);
+    expect(results[0].furLength).toBe(10);
+  });
+
+  it('should clear a collection on CLEAR_COLLECTION responses', () => {
+    const data = collections.reducers.collectionsReducer(undefined, getCollectionSuccess('llamas', '', [{
+      furLength: 5,
+      id: '1',
+      name: 'Drama',
+    }, {
+      furLength: 10,
+      id: '2',
+      name: 'Pajama',
+    }], false));
+
+    const data2 = collections.reducers.collectionsReducer(data, collections.actions.clearCollection('llamas', ''));
+    const subCollection = getCollectionByName(data2, 'llamas');
+    expect(subCollection.page).toBe(1);
+    expect(subCollection.count).toBe(0);
+    const results = getCollectionResultsByName(data2, 'llamas');
+    expect(results).toBe(subCollection.results);
+    expect(results.length).toBe(subCollection.count);
   });
 });

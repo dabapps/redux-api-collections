@@ -91,7 +91,7 @@ export function setCollectionFromResponseAction<T> (
   action: Action,
   typeToRecordMapping: TTypeToRecordMapping<T>
 ): TCollectionStore<T> {
-  if (isFSA(action)) {
+  if (isFSA(action) && action.meta) {
     const collectionType = (action.meta as Dict<string>).tag;
     if (collectionType in typeToRecordMapping) {
       const recordBuilder = typeToRecordMapping[collectionType];
@@ -143,10 +143,10 @@ export function addCollectionItem<T>(
   action: Action,
   typeToRecordMapping: TTypeToRecordMapping<T>
 ): TCollectionStore<T> {
-  if (isFSA(action)) {
+  if (isFSA(action) && action.meta) {
     const meta = (action.meta as Dict<string>);
     const collectionType = meta.tag;
-    const collectionName = meta.collectionName;
+    const collectionName = meta.collectionName || '';
 
     if (collectionType in typeToRecordMapping) {
       const recordBuilder = typeToRecordMapping[collectionType];
@@ -159,7 +159,80 @@ export function addCollectionItem<T>(
       return _.extend(
         {},
         state, {
-          [collectionType]: updatedCollection,
+          [collectionType]: _.extend(
+            {},
+            state[collectionType], {
+              [collectionName]: updatedCollection
+            }
+          ),
+        }
+      );
+    }
+  }
+  return state;
+}
+
+export function deleteCollectionItem<T>(
+  state: TCollectionStore<T>,
+  action: Action,
+  typeToRecordMapping: TTypeToRecordMapping<T>
+): TCollectionStore<T> {
+  if (isFSA(action) && action.meta) {
+    const meta = (action.meta as Dict<string>);
+    const collectionType = meta.tag;
+    const collectionName = meta.collectionName;
+    const itemId = meta.itemId;
+
+    if (collectionType in typeToRecordMapping) {
+      const existingCollection = getCollectionByName(state, collectionType as keyof T, collectionName);
+      // FIXME: Type this correctly
+      const results = existingCollection.results.filter((item: any) => item.id !== itemId);
+      const updatedCollection = {
+        ...existingCollection,
+        count: results.length,
+        results,
+      };
+      return _.extend(
+        {},
+        state, {
+          [collectionType]: _.extend(
+            {},
+            state[collectionType], {
+              [collectionName]: updatedCollection
+            }
+          ),
+        }
+      );
+    }
+  }
+  return state;
+}
+
+export function clearCollection<T>(
+  state: TCollectionStore<T>,
+  action: Action,
+  typeToRecordMapping: TTypeToRecordMapping<T>
+): TCollectionStore<T> {
+  if (isFSA(action) && action.payload) {
+    const payload = (action.payload as Dict<string>);
+    const collectionType = payload.type;
+    const collectionName = payload.collectionName;
+
+    if (collectionType in typeToRecordMapping) {
+      const updatedCollection = {
+        page: 1,
+        count: 0,
+        results: []
+      };
+      return _.extend(
+        {},
+        state, {
+          [collectionType]: _.extend(
+            {},
+            state[collectionType], {
+              [collectionName]: updatedCollection
+            }
+          ),
         }
       );
     }
@@ -233,11 +306,10 @@ export function collectionsFunctor<T> (
         return setCollectionFromResponseAction(state, action, typeToRecordMapping);
       case ADD_TO_COLLECTION.SUCCESS:
         return addCollectionItem(state, action, typeToRecordMapping);
-      /*
       case DELETE_FROM_COLLECTION.SUCCESS:
-        return deleteCollectionItem(state as any, action, typeToRecordMapping as any);
+        return deleteCollectionItem(state, action, typeToRecordMapping);
       case CLEAR_COLLECTION:
-        return clearCollection(state as any, action, typeToRecordMapping as any);*/
+        return clearCollection(state, action, typeToRecordMapping);
       default:
         return state;
     }
