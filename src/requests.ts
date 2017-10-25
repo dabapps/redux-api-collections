@@ -75,11 +75,14 @@ export function resetRequestState(actionSet: IAsyncActionSet, tag?: string) {
 export function apiRequest (
   url: string, method: string, data = {}, headers = {}, onUploadProgress?: (event: ProgressEvent) => void
 ): AxiosPromise {
-  axios.defaults.headers.common.Accept = 'application/json';
-  axios.defaults.headers.common['Content-Type'] = 'application/json';
-  axios.defaults.headers.common['Cache-Control'] = 'no-cache';
-  axios.defaults.headers.common['X-CSRFToken'] = Cookies.get('csrftoken');
-  return axios({ method, url, data, headers, onUploadProgress });
+  const combinedHeaders = {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+    'Cache-Control': 'no-cache',
+    'X-CSRFToken': Cookies.get('csrftoken'),
+    ...headers
+  };
+  return axios({ method, url, data, headers: combinedHeaders, onUploadProgress });
 }
 
 function isResponse (response?: any): response is AxiosResponse {
