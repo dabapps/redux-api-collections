@@ -6,10 +6,11 @@ import {
   GET_COLLECTION,
   getCollectionByName,
   getCollectionResultsByName,
+  TCollectionStore,
 } from '../src/collections';
 import * as requests from '../src/requests';
 
-// import { applyMiddleware, combineReducers, createStore } from 'redux';
+import { applyMiddleware, combineReducers, createStore } from 'redux';
 
 type ILlama = Readonly<{
   furLength: number;
@@ -34,9 +35,9 @@ const typeToRecordMapping = {
   llamas: LlamaRecord,
 };
 
-/*interface IStore {
+interface IStore {
   collections: TCollectionStore<ICollections>
-}*/
+}
 
 const collections = Collections(typeToRecordMapping);
 
@@ -314,6 +315,44 @@ describe('Collections', () => {
       const results = getCollectionResultsByName(data2, 'llamas');
       expect(results).toBe(subCollection.results);
       expect(results.length).toBe(subCollection.count);
+    });
+
+    it('should nicely handle actions that do not concern it', () => {
+      const actionTypes = [
+        CLEAR_COLLECTION,
+        DELETE_FROM_COLLECTION.SUCCESS,
+        ADD_TO_COLLECTION.SUCCESS,
+        GET_COLLECTION.SUCCESS,
+      ];
+      const data = collections.reducers.collectionsReducer(undefined, {type: 'blah'});
+
+      actionTypes.forEach((type) => {
+        const newState = collections.reducers.collectionsReducer(data, {
+          meta: {
+            tag: 'not-llamas'
+          },
+          payload: {
+            type: 'not-llamas'
+          },
+          type
+        });
+
+        expect(newState).toBe(data);
+      });
+    });
+  });
+
+  describe('store', () => {
+    it('should construct a store', () => {
+      const rootReducer = combineReducers({
+        collections: collections.reducers.collectionsReducer
+      });
+      const createStoreWithMiddleware = applyMiddleware()(createStore);
+      const store = createStoreWithMiddleware(rootReducer, {});
+
+      const state: IStore = store.getState();
+      const collection = getCollectionByName(state.collections, 'llamas');
+      expect(collection.count).toBe(0);
     });
   });
 });

@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
 import { FluxStandardAction, isFSA } from 'flux-standard-action';
-import { Action, Dispatch } from 'redux';
+import { AnyAction, Dispatch } from 'redux';
 import * as _ from 'underscore';
 import { dispatchGenericRequest, formatQueryParams, makeAsyncActionSet } from './requests';
 import { Dict, TTypeToRecordMapping } from './utils';
@@ -88,7 +88,7 @@ type CollectionResponseAction = FluxStandardAction<
 
 export function setCollectionFromResponseAction<T> (
   state: TCollectionStore<T>,
-  action: Action,
+  action: AnyAction,
   typeToRecordMapping: TTypeToRecordMapping<T>
 ): TCollectionStore<T> {
   if (isFSA(action) && action.meta) {
@@ -140,7 +140,7 @@ function updateCollectionItemsFromResponse<T>(
 
 export function addCollectionItem<T>(
   state: TCollectionStore<T>,
-  action: Action,
+  action: AnyAction,
   typeToRecordMapping: TTypeToRecordMapping<T>
 ): TCollectionStore<T> {
   if (isFSA(action) && action.meta) {
@@ -174,7 +174,7 @@ export function addCollectionItem<T>(
 
 export function deleteCollectionItem<T>(
   state: TCollectionStore<T>,
-  action: Action,
+  action: AnyAction,
   typeToRecordMapping: TTypeToRecordMapping<T>
 ): TCollectionStore<T> {
   if (isFSA(action) && action.meta) {
@@ -210,7 +210,7 @@ export function deleteCollectionItem<T>(
 
 export function clearCollection<T>(
   state: TCollectionStore<T>,
-  action: Action,
+  action: AnyAction,
   typeToRecordMapping: TTypeToRecordMapping<T>
 ): TCollectionStore<T> {
   if (isFSA(action) && action.payload) {
@@ -299,7 +299,7 @@ export function collectionsFunctor<T> (
 
   function collectionsReducer (
     state: TCollectionStore<T> = buildCollectionsStore(typeToRecordMapping),
-    action: Action
+    action: AnyAction
   ) {
     switch (action.type) {
       case GET_COLLECTION.SUCCESS:
