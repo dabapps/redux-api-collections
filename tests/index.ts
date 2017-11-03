@@ -1,11 +1,13 @@
 import { Collections } from '../src';
 import {
   ADD_TO_COLLECTION,
+  CLEAR_COLLECTION,
   DELETE_FROM_COLLECTION,
   GET_COLLECTION,
   getCollectionByName,
   getCollectionResultsByName,
 } from '../src/collections';
+import * as requests from '../src/requests';
 
 // import { applyMiddleware, combineReducers, createStore } from 'redux';
 
@@ -41,37 +43,116 @@ const collections = Collections(typeToRecordMapping);
 describe('Collections', () => {
 
   describe('actions', () => {
+
+    const dispatchGenericRequestSpy =
+      jest.spyOn(requests, 'dispatchGenericRequest').mockImplementation(() => null);
+
+    beforeEach(() => {
+      dispatchGenericRequestSpy.mockReset();
+    });
+
     it('should properly construct an addItem action', () => {
-      expect(collections.actions.addItem('llamas', {
+      collections.actions.addItem('llamas', {
         furLength: 5,
         id: '1',
         name: 'Drama',
-      }, '')).toEqual({
-        meta: { tag: 'llamas', collectionName: '' },
-        payload: {
+      }, 'drama');
+
+      expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+        ADD_TO_COLLECTION,
+        '/api/llamas/',
+        'POST',
+        {
           furLength: 5,
           id: '1',
           name: 'Drama',
         },
-        type: ADD_TO_COLLECTION.SUCCESS,
-      });
+        'llamas',
+        {collectionName: 'drama'}
+      );
     });
 
-    /*it('should properly construct a clearCollection action', () => {
-      expect(collections.actions.clearCollection()).toEqual({});
+    it('should properly construct a clearCollection action', () => {
+      const action = collections.actions.clearCollection('llamas');
+      expect(action.type).toBe(CLEAR_COLLECTION);
+      expect(action.payload.type).toBe('llamas');
     });
 
     it('should properly construct a deleteItem action', () => {
-      expect(collections.actions.deleteItem()).toEqual({});
+      collections.actions.deleteItem('llamas', 'first', 'llamadrama');
+
+      expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+        DELETE_FROM_COLLECTION,
+        '/api/llamas/first/',
+        'DELETE',
+        null,
+        'llamas',
+        {
+          collectionName: 'llamadrama',
+          itemId: 'first'
+        }
+      );
     });
 
     it('should properly construct a getAllCollection action', () => {
-      expect(collections.actions.getAllCollection()).toEqual({});
+      collections.actions.getAllCollection('llamas', {}, 'llamadrama');
+
+      expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+        GET_COLLECTION,
+        '/api/llamas/?page=1&page_size=10000',
+        'GET',
+        null,
+        'llamas',
+        {
+          collectionName: 'llamadrama',
+          filters: undefined,
+          ordering: undefined,
+          page: undefined,
+          reverseOrdering: undefined,
+          shouldAppend: undefined
+        }
+      );
     });
 
-    it('should properly construct a getCollection action', () => {
-      expect(collections.actions.getCollection()).toEqual({});
-    });*/
+    it('should properly construct a getCollection action with defaults', () => {
+      collections.actions.getCollection('llamas');
+
+      expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+        GET_COLLECTION,
+        '/api/llamas/?page=1&page_size=12',
+        'GET',
+        null,
+        'llamas',
+        {
+          collectionName: undefined,
+          filters: undefined,
+          ordering: undefined,
+          page: undefined,
+          reverseOrdering: undefined,
+          shouldAppend: undefined
+        }
+      );
+    });
+
+    it('should properly construct a getCollection action with params', () => {
+      collections.actions.getCollection('llamas', {}, 'llamadrama');
+
+      expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+        GET_COLLECTION,
+        '/api/llamas/?page=1&page_size=12',
+        'GET',
+        null,
+        'llamas',
+        {
+          collectionName: 'llamadrama',
+          filters: undefined,
+          ordering: undefined,
+          page: undefined,
+          reverseOrdering: undefined,
+          shouldAppend: undefined
+        }
+      );
+    });
   });
 
   describe('reducers', () => {
