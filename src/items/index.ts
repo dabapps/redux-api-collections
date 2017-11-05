@@ -5,7 +5,7 @@ export * from './utils';
 
 import { AxiosResponse } from 'axios'; // Required for dist
 import { AnyAction } from 'redux';
-import { dispatchGenericRequest } from '../requests/actions';
+import { dispatchGenericRequest } from '../requests';
 import {
   UrlMethod,
 } from '../requests/types';
@@ -46,7 +46,7 @@ export function itemsFunctor<T> (
   }
 
   function actionItemAction (type: keyof T, id: string, action: string, data: any, subgroup?: string) {
-    return _updateItem(type, `/api/${type}/${id}/${action}/`, 'POST', id, data);
+    return _updateItem(type, `/api/${type}/${id}/${action}/`, 'POST', id, data, subgroup);
   }
 
   function clearItemAction (itemType: keyof T, subgroup?: string) {
