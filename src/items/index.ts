@@ -52,8 +52,8 @@ export function itemsFunctor<T> (
   function clearItemAction (itemType: keyof T, subgroup?: string) {
     return {
       payload: {
-        itemType,
         subgroup,
+        type: itemType,
       },
       type: CLEAR_ITEM,
     };
@@ -80,14 +80,14 @@ export function itemsFunctor<T> (
       case CLEAR_ITEM:
         return clearItem(state, action, typeToRecordMapping);
       case GET_ITEM.SUCCESS:
-        return setItemFromResponseAction(state, action.payload, typeToRecordMapping);
+        return setItemFromResponseAction(state, action, typeToRecordMapping);
       case UPDATE_ITEM.SUCCESS:
         const itemType = (action.meta as Dict<string>).tag;
         const subgroup = (action.meta as Dict<string>).subgroup || '';
         if (itemType in typeToRecordMapping) {
           const item = getItemByName(state, itemType as keyof T, subgroup);
           if (!item || (item as any).id === action.payload.id) {  // FIXME: we should be requiring ID on our objects
-            return setItemFromResponseAction(state, action.payload, typeToRecordMapping);
+            return setItemFromResponseAction(state, action, typeToRecordMapping);
           }
         }
         return state;

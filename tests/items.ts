@@ -1,6 +1,7 @@
 import {
   CLEAR_ITEM,
   GET_ITEM,
+  getItemByName,
   UPDATE_ITEM,
 } from '../src/items';
 import * as requests from '../src/requests';
@@ -110,182 +111,70 @@ describe('Items', () => {
     it('should be possible to construct clearItem', () => {
       const action = collections.actions.clearItem('llamas');
       expect(action.type).toBe(CLEAR_ITEM);
-      expect(action.payload.itemType).toBe('llamas');
+      expect(action.payload.type).toBe('llamas');
     });
   });
 
-  /*describe('reducers', () => {
-    // Helpers for creating event callbacks
-    function getCollectionSuccess(
-      tag: keyof ICollections,
-      subgroup: string,
-      results: ReadonlyArray<any>,
-      shouldAppend: boolean,
-      next?: string
-    ) {
-      return {
-        meta: { tag, shouldAppend, subgroup },
-        payload: {
-          count: results.length,
-          page: 1,
-          next,
-          results,
+  describe('reducers', () => {
+    function loadItem(item: any) {
+      const action = {
+        meta: { itemId: 'first', tag: 'llamas', },
+        payload: item,
+        type: GET_ITEM.SUCCESS,
+      };
+
+      return collections.reducers.itemsReducer(undefined, action)
+    }
+
+    it('clears the item on clear item', () => {
+      const action = { type: CLEAR_ITEM, payload: { type: 'llamas' } };
+      const state = collections.reducers.itemsReducer({
+        llamas: {
+          '': LlamaRecord({})
         },
-        type: GET_COLLECTION.SUCCESS,
+      }, action);
+      expect(getItemByName(state, 'llamas')).toBe(undefined);
+    });
+
+    it('sets the item on successful load', () => {
+      const newItem = { id: 'first', name: 'Llama drama', };
+
+      const state = loadItem(newItem);
+      const item = getItemByName(state, 'llamas');
+      expect(item).toBeTruthy();
+      expect(item && item.id).toEqual(newItem.id);
+      expect(item && item.name).toEqual(newItem.name);
+    });
+
+    it('updates the item on successful update', () => {
+      const oldItem = { id: 'first', name: 'Cats entry', };
+      const newItem = { id: 'first', name: 'Cats updated entry', };
+      const oldState = loadItem(oldItem);
+      const action = {
+        meta: { itemId: 'first', tag: 'llamas', },
+        payload: newItem,
+        type: UPDATE_ITEM.SUCCESS,
       };
-    }
 
-    function addItemSuccess(
-      tag: keyof ICollections,
-      subgroup: string,
-      result: any,
-    ) {
-      return {
-        meta: { tag, subgroup },
-        payload: result,
-        type: ADD_TO_COLLECTION.SUCCESS,
-      };
-    }
-
-    function deleteItemSuccess(
-      tag: keyof ICollections,
-      subgroup: string,
-      itemId: string,
-    ) {
-      return {
-        meta: { tag, subgroup, itemId },
-        payload: '',
-        type: DELETE_FROM_COLLECTION.SUCCESS,
-      };
-    }
-
-    it('should construct us our helper functions', () => {
-      expect(typeof collections.reducers).toBe('object');
-      expect(typeof collections.actions).toBe('object');
-      expect(Object.keys(collections.reducers).length).toBeGreaterThan(0);
-      expect(Object.keys(collections.actions).length).toBeGreaterThan(0);
-    });
-
-    it('should provide us with a reducer that has stores for each of our types', () => {
-      const data = collections.reducers.collectionsReducer(undefined, {type: 'blah'});
-      expect(data.llamas).toEqual({});
-      const results = getCollectionResultsByName(data, 'llamas');
-      expect(results).toEqual([]);
-      const subCollection = getCollectionByName(data, 'llamas');
-      expect(subCollection.page).toBe(1);
-      expect(subCollection.count).toBe(0);
-      expect(subCollection.results).toEqual(results);
-    });
-
-    it('should correctly parse GET_COLLECTION responses', () => {
-      const data = collections.reducers.collectionsReducer(undefined, getCollectionSuccess('llamas', '', [{
-        furLength: 5,
-        id: '1',
-        name: 'Drama',
-      }], false));
-      const subCollection = getCollectionByName(data, 'llamas');
-      expect(subCollection.page).toBe(1);
-      expect(subCollection.count).toBe(1);
-      const results = getCollectionResultsByName(data, 'llamas');
-      expect(results).toBe(subCollection.results);
-      expect(results.length).toBe(subCollection.count);
-      expect(results[0].furLength).toBe(5);
-    });
-
-    it('should correctly append on GET_COLLECTION responses', () => {
-      const data = collections.reducers.collectionsReducer(undefined, getCollectionSuccess('llamas', '', [{
-        furLength: 5,
-        id: '1',
-        name: 'Drama',
-      }], false));
-      const data2 = collections.reducers.collectionsReducer(data, getCollectionSuccess('llamas', '', [{
-        furLength: 10,
-        id: '2',
-        name: 'Pajama',
-      }], true));
-      const subCollection = getCollectionByName(data2, 'llamas');
-      expect(subCollection.page).toBe(1);
-      expect(subCollection.count).toBe(2);
-      const results = getCollectionResultsByName(data2, 'llamas');
-      expect(results).toBe(subCollection.results);
-      expect(results.length).toBe(subCollection.count);
-      expect(results[0].furLength).toBe(5);
-      expect(results[1].furLength).toBe(10);
-    });
-
-    it('should add an item on ADD_TO_COLLECTION responses', () => {
-      const data = collections.reducers.collectionsReducer(undefined, getCollectionSuccess('llamas', '', [{
-        furLength: 5,
-        id: '1',
-        name: 'Drama',
-      }], false));
-      const data2 = collections.reducers.collectionsReducer(data, addItemSuccess('llamas', '', {
-        furLength: 10,
-        id: '2',
-        name: 'Pajama',
-      }));
-      const subCollection = getCollectionByName(data2, 'llamas');
-      expect(subCollection.page).toBe(1);
-      expect(subCollection.count).toBe(2);
-      const results = getCollectionResultsByName(data2, 'llamas');
-      expect(results).toBe(subCollection.results);
-      expect(results.length).toBe(subCollection.count);
-      expect(results[0].furLength).toBe(5);
-      expect(results[1].furLength).toBe(10);
-    });
-
-    it('should delete an item on DELETE_FROM_COLLECTION responses', () => {
-      const data = collections.reducers.collectionsReducer(undefined, getCollectionSuccess('llamas', '', [{
-        furLength: 5,
-        id: '1',
-        name: 'Drama',
-      }, {
-        furLength: 10,
-        id: '2',
-        name: 'Pajama',
-      }], false));
-
-      const data2 = collections.reducers.collectionsReducer(data, deleteItemSuccess('llamas', '', '1'));
-      const subCollection = getCollectionByName(data2, 'llamas');
-      expect(subCollection.page).toBe(1);
-      expect(subCollection.count).toBe(1);
-      const results = getCollectionResultsByName(data2, 'llamas');
-      expect(results).toBe(subCollection.results);
-      expect(results.length).toBe(subCollection.count);
-      expect(results[0].furLength).toBe(10);
-    });
-
-    it('should clear a collection on CLEAR_COLLECTION responses', () => {
-      const data = collections.reducers.collectionsReducer(undefined, getCollectionSuccess('llamas', '', [{
-        furLength: 5,
-        id: '1',
-        name: 'Drama',
-      }, {
-        furLength: 10,
-        id: '2',
-        name: 'Pajama',
-      }], false));
-
-      const data2 = collections.reducers.collectionsReducer(data, collections.actions.clearCollection('llamas', ''));
-      const subCollection = getCollectionByName(data2, 'llamas');
-      expect(subCollection.page).toBe(1);
-      expect(subCollection.count).toBe(0);
-      const results = getCollectionResultsByName(data2, 'llamas');
-      expect(results).toBe(subCollection.results);
-      expect(results.length).toBe(subCollection.count);
+      const newState = collections.reducers.itemsReducer(oldState, action);
+      const item = getItemByName(newState, 'llamas');
+      expect(item).toBeTruthy();
+      expect(item && item.id).toEqual(newItem.id);
+      expect(item && item.name).toEqual(newItem.name);
     });
 
     it('should nicely handle actions that do not concern it', () => {
       const actionTypes = [
-        CLEAR_COLLECTION,
-        DELETE_FROM_COLLECTION.SUCCESS,
-        ADD_TO_COLLECTION.SUCCESS,
-        GET_COLLECTION.SUCCESS,
+        CLEAR_ITEM,
+        GET_ITEM.REQUEST,
+        GET_ITEM.SUCCESS,
+        UPDATE_ITEM.SUCCESS,
       ];
-      const data = collections.reducers.collectionsReducer(undefined, {type: 'blah'});
+
+      const initialState = loadItem({ id: 'first', name: 'Cats entry', });
 
       actionTypes.forEach((type) => {
-        const newState = collections.reducers.collectionsReducer(data, {
+        const newState = collections.reducers.itemsReducer(initialState, {
           meta: {
             tag: 'not-llamas'
           },
@@ -295,8 +184,8 @@ describe('Items', () => {
           type
         });
 
-        expect(newState).toBe(data);
+        expect(newState).toBe(initialState);
       });
     });
-  });*/
+  });
 });
