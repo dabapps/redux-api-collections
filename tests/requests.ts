@@ -40,12 +40,13 @@ jest.mock('axios', () => {
 import { AxiosResponse } from 'axios';
 import {
   dispatchGenericRequest,
+  IRequestMetaData,
   metaWithResponse,
   REQUEST_STATE,
   RESET_REQUEST_STATE,
   resetRequestState,
+  responsesReducer,
   setRequestState,
-  IRequestMetaData,
 } from '../src/requests';
 
 describe('Requests', () => {
@@ -65,7 +66,7 @@ describe('Requests', () => {
           payload: {
             actionSet: ACTION_SET,
             data: 'hello',
-            state: STATE,
+            requestState: STATE,
             tag: 'tag'
           },
           type: REQUEST_STATE,
@@ -75,7 +76,7 @@ describe('Requests', () => {
           payload: {
             actionSet: ACTION_SET,
             data: null,
-            state: STATE,
+            requestState: STATE,
             tag: undefined
           },
           type: REQUEST_STATE,
@@ -208,58 +209,47 @@ describe('Requests', () => {
 
   });
 
-  /*describe('reducers', () => {
-    let responsesState: ResponsesReducerState;
-
-    beforeEach(() => {
-      if (Map.isMap(responsesState)) {
-        responsesState.clear();
-      }
-    });
-
+  describe('reducers', () => {
     describe('responsesReducer', () => {
       it('should return a default state', () => {
-        responsesState = responsesReducer(undefined, {type: 'action'});
-
-        expect(Map.isMap(responsesState)).toBe(true);
+        const responsesState = responsesReducer(undefined, {type: 'action'});
+        expect(responsesState).toEqual({});
       });
 
       it('should return the existing state if not modified', () => {
-        const currentResponsesState = responsesState;
-        responsesState = responsesReducer(currentResponsesState, {type: 'action'});
-
+        const currentResponsesState = responsesReducer(undefined, {type: 'action'});
+        const responsesState = responsesReducer(currentResponsesState, {type: 'action'});
         expect(responsesState).toBe(currentResponsesState);
       });
 
       it('should set a response state', () => {
-        responsesState = responsesReducer(undefined, {
+        const responsesState = responsesReducer(undefined, {
           payload: {
             actionSet: ACTION_SET,
             data: {},
-            state: 'REQUEST',
+            requestState: 'REQUEST',
             tag: 'tag',
           },
           type: REQUEST_STATE,
         });
-
-        expect(responsesState.getIn([ACTION_SET, 'tag'])).toEqual(ResponseStateRecord({
-          data: Map<string, string>(),
+        expect(responsesState[ACTION_SET.REQUEST].tag).toEqual({
+          data: {},
           requestState: 'REQUEST',
-        }));
+        });
       });
 
       it('should reset a response state', () => {
-        responsesState = responsesReducer(undefined, {
+        const initial = responsesReducer(undefined, {
           payload: {
             actionSet: ACTION_SET,
             data: {},
-            state: 'REQUEST',
+            requestState: 'REQUEST',
             tag: 'tag',
           },
           type: REQUEST_STATE,
         });
 
-        responsesState = responsesReducer(undefined, {
+        const responsesState = responsesReducer(undefined, {
           payload: {
             actionSet: ACTION_SET,
             tag: 'tag',
@@ -267,9 +257,11 @@ describe('Requests', () => {
           type: RESET_REQUEST_STATE,
         });
 
-        expect(responsesState.getIn([ACTION_SET, 'tag'])).toBe(undefined);
+        expect(responsesState[ACTION_SET.REQUEST].tag).toEqual({
+          data: null,
+          requestState: null,
+        });
       });
     });
-
-  });*/
+  });
 });
