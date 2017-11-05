@@ -39,13 +39,19 @@ jest.mock('axios', () => {
 
 import { AxiosResponse } from 'axios';
 import {
+  anyPending,
   dispatchGenericRequest,
+  getErrorData,
+  hasFailed,
+  hasSucceded,
   IRequestMetaData,
+  isPending,
   metaWithResponse,
   REQUEST_STATE,
   RESET_REQUEST_STATE,
   resetRequestState,
   responsesReducer,
+  ResponsesReducerState,
   setRequestState,
 } from '../src/requests';
 
@@ -54,6 +60,11 @@ describe('Requests', () => {
     FAILURE: 'FAILURE',
     REQUEST: 'REQUEST',
     SUCCESS: 'SUCCESS',
+  };
+  const OTHER_ACTION_SET = {
+    FAILURE: 'FAILURE2',
+    REQUEST: 'REQUEST2',
+    SUCCESS: 'SUCCESS2',
   };
 
   describe('actions', () => {
@@ -261,6 +272,124 @@ describe('Requests', () => {
           data: null,
           requestState: null,
         });
+      });
+    });
+  });
+
+  describe('utils', () => {
+    describe('isPending', () => {
+      it('should return true if a request is pending', () => {
+        const responsesState: ResponsesReducerState = {
+          [ACTION_SET.REQUEST]: {
+            tag: {
+              requestState: 'REQUEST',
+              data: null
+            }
+          }
+        };
+        expect(isPending(responsesState, ACTION_SET, 'not-tag')).toBe(false);
+        expect(isPending(responsesState, ACTION_SET, 'tag')).toBe(true);
+      });
+    });
+
+    describe('hasFailed', () => {
+      it('should return true if a request has failed', () => {
+        const responsesState: ResponsesReducerState = {
+          [ACTION_SET.REQUEST]: {
+            tag: {
+              requestState: 'FAILURE',
+              data: null
+            }
+          }
+        };
+
+        expect(hasFailed(responsesState, ACTION_SET, 'not-tag')).toBe(false);
+        expect(hasFailed(responsesState, ACTION_SET, 'tag')).toBe(true);
+      });
+    });
+
+    describe('hasSucceded', () => {
+      it('should return true if a request has succeeded', () => {
+        const responsesState: ResponsesReducerState = {
+          [ACTION_SET.REQUEST]: {
+            tag: {
+              requestState: 'SUCCESS',
+              data: null
+            }
+          }
+        };
+
+        expect(hasSucceded(responsesState, ACTION_SET, 'not-tag')).toBe(false);
+        expect(hasSucceded(responsesState, ACTION_SET, 'tag')).toBe(true);
+      });
+    });
+
+    describe('anyPending', () => {
+      it('should return true if any requests are pending', () => {
+        const responsesState: ResponsesReducerState = {
+          [ACTION_SET.REQUEST]: {
+            tag: {
+              requestState: 'REQUEST',
+              data: null
+            }
+          }
+        };
+        expect(anyPending(responsesState, [[ACTION_SET, 'tag'], [OTHER_ACTION_SET, 'tag']])).toBe(true);
+
+        const responsesState2: ResponsesReducerState = {
+          [ACTION_SET.REQUEST]: {
+            tag: {
+              requestState: 'SUCCESS',
+              data: null
+            }
+          }
+        };
+        expect(anyPending(responsesState2, [[ACTION_SET, 'tag'], [OTHER_ACTION_SET, 'tag']])).toBe(false);
+
+        const responsesState3: ResponsesReducerState = {
+          [ACTION_SET.REQUEST]: {
+            tag: {
+              requestState: 'SUCCESS',
+              data: null
+            }
+          },
+          [OTHER_ACTION_SET.REQUEST]: {
+            tag: {
+              requestState: 'REQUEST',
+              data: null
+            }
+          }
+        };
+        expect(anyPending(responsesState3, [[ACTION_SET, 'tag'], [OTHER_ACTION_SET, 'tag']])).toBe(true);
+        expect(anyPending(responsesState3, [[ACTION_SET, 'tag'], OTHER_ACTION_SET])).toBe(false);
+      });
+    });
+
+    describe('getErrorData', () => {
+      it('should return error data for a failed request', () => {
+        const responsesState: ResponsesReducerState = {
+          [ACTION_SET.REQUEST]: {
+            tag: {
+              requestState: 'REQUEST',
+              data: {
+                error: 'Error data!'
+              }
+            }
+          }
+        };
+        expect(getErrorData(responsesState, ACTION_SET, 'tag')).toBe(undefined);
+
+        const responsesState2: ResponsesReducerState = {
+          [ACTION_SET.REQUEST]: {
+            tag: {
+              requestState: 'FAILURE',
+              data: {
+                error: 'Error data!'
+              }
+            }
+          }
+        };
+        expect(getErrorData(responsesState2, ACTION_SET, 'tag')).toEqual({error: 'Error data!'});
       });
     });
   });
