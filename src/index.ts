@@ -6,15 +6,26 @@ import {
   collectionsFunctor,
 } from './collections';
 import {
+  itemsFunctor,
+} from './items';
+import {
   TTypeToRecordMapping,
 } from './utils';
 
-export function Collections<T> (
-  typeToRecordMapping: TTypeToRecordMapping<T>,
+export function Collections<T, U> (
+  collectionToRecordMapping: TTypeToRecordMapping<T>,
+  itemToRecordMapping: TTypeToRecordMapping<U>,
 ) {
-  const collections = collectionsFunctor(typeToRecordMapping);
+  const collections = collectionsFunctor(collectionToRecordMapping);
+  const items = itemsFunctor(itemToRecordMapping);
   return {
-    actions: collections.actions,
-    reducers: collections.reducers,
+    actions: {
+      ...collections.actions,
+      ...items.actions,
+    },
+    reducers: {
+      ...collections.reducers,
+      ...items.reducers,
+    }
   };
 }

@@ -1,4 +1,5 @@
 export * from './actions';
+export * from './reducers';
 export * from './types';
 export * from './utils';
 
@@ -9,25 +10,38 @@ import {
   UrlMethod,
 } from '../requests/types';
 import {
+  Dict,
   TTypeToRecordMapping,
 } from '../utils';
 import {
   CLEAR_ITEM,
-  LOAD_ITEM,
+  GET_ITEM,
   UPDATE_ITEM,
 } from './actions';
+import {
+  clearItem,
+  setItemFromResponseAction,
+} from './reducers';
 import {
   TItemStore,
 } from './types';
 import {
   buildItemStore,
+  getItemByName,
 } from './utils';
 
 export function itemsFunctor<T> (
   typeToRecordMapping: TTypeToRecordMapping<T>,
 ) {
 
-  function _updateItem(itemType: keyof T, url: string, method: UrlMethod, itemId: string, data: any, subgroup?: string) {
+  function _updateItem(
+    itemType: keyof T,
+    url: string,
+    method: UrlMethod,
+    itemId: string,
+    data: any,
+    subgroup?: string
+  ) {
     return dispatchGenericRequest(UPDATE_ITEM, url, method, data, itemType, { itemId, subgroup });
   }
 
@@ -45,9 +59,9 @@ export function itemsFunctor<T> (
     };
   }
 
-  function loadItemAction (itemType: keyof T, itemId: string, subgroup?: string, preserveOriginal?: boolean) {
+  function getItemAction (itemType: keyof T, itemId: string, subgroup?: string) {
     const url = `/api/${itemType}/${itemId}/`;
-    return dispatchGenericRequest(LOAD_ITEM, url, 'GET', null, itemType, { itemId, subgroup }, preserveOriginal);
+    return dispatchGenericRequest(GET_ITEM, url, 'GET', null, itemType, { itemId, subgroup });
   }
 
   function patchItemAction (type: keyof T, id: string, data: any, subgroup?: string) {
@@ -64,20 +78,19 @@ export function itemsFunctor<T> (
   ) {
     switch (action.type) {
       case CLEAR_ITEM:
-        const itemType = action.payload.itemType;
+        return clearItem(state, action, typeToRecordMapping);
+      case GET_ITEM.SUCCESS:
+        return setItemFromResponseAction(state, action.payload, typeToRecordMapping);
+      case UPDATE_ITEM.SUCCESS:
+        const itemType = (action.meta as Dict<string>).tag;
+        const subgroup = (action.meta as Dict<string>).subgroup || '';
         if (itemType in typeToRecordMapping) {
-          return state.set(action.payload.itemType, null as any);
+          const item = getItemByName(state, itemType as keyof T, subgroup);
+          if (!item || (item as any).id === action.payload.id) {  // FIXME: we should be requiring ID on our objects
+            return setItemFromResponseAction(state, action.payload, typeToRecordMapping);
+          }
         }
         return state;
-      case LOAD_ITEM.REQUEST:
-        if (action.payload && action.payload.preserveOriginal) {
-          return state;
-        }
-        return state.set(action.meta.tag, null as any);
-      case LOAD_ITEM.SUCCESS:
-        return setItemState(state, action, action.payload, typeToRecordMapping);
-      case UPDATE_ITEM.SUCCESS:
-        return setItemStateIfMatchingItem(state, action, action.payload, typeToRecordMapping);
       default:
         return state;
     }
@@ -87,12 +100,12 @@ export function itemsFunctor<T> (
     actions: {
       actionItem: actionItemAction,
       clearItem: clearItemAction,
-      loadItem: loadItemAction,
+      getItem: getItemAction,
       patchItem: patchItemAction,
       updateItem: updateItemAction,
     },
     reducers: {
-      items: itemsReducer,
+      itemsReducer,
     }
   };
 }

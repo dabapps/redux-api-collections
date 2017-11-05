@@ -32,7 +32,7 @@ const collectionToRecordMapping = {
   llamas: LlamaRecord,
 };
 
-const collections = Collections(collectionToRecordMapping);
+const collections = Collections(collectionToRecordMapping, {});
 
 describe('Collections', () => {
 

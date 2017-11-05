@@ -13,3 +13,11 @@ export function buildItemStore<T>(mapping: TTypeToRecordMapping<T>): TItemStore<
   }
   return store;
 }
+
+export function getItemByName<T>(
+  itemStore: TItemStore<T>,
+  key: keyof T,
+  subgroup: string = ''
+) {
+  return itemStore[key][subgroup];
+}

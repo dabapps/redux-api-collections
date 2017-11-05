@@ -4,6 +4,10 @@ import {
   getCollectionByName,
   TCollectionStore,
 } from '../src/collections';
+import {
+  getItemByName,
+  TItemStore,
+} from '../src/items';
 import * as requests from '../src/requests';
 
 type ILlama = Readonly<{
@@ -29,17 +33,27 @@ const collectionToRecordMapping = {
   llamas: LlamaRecord,
 };
 
-interface IStore {
-  collections: TCollectionStore<ICollections>
+interface IItems {
+  llamas: ILlama;
 }
 
-const collections = Collections(collectionToRecordMapping);
+const itemToRecordMapping = {
+  llamas: LlamaRecord,
+};
+
+interface IStore {
+  collections: TCollectionStore<ICollections>,
+  items: TItemStore<IItems>
+}
+
+const collections = Collections(collectionToRecordMapping, itemToRecordMapping);
 
 describe('Collections', () => {
   describe('store', () => {
     it('should construct a store', () => {
       const rootReducer = combineReducers({
-        collections: collections.reducers.collectionsReducer
+        collections: collections.reducers.collectionsReducer,
+        items: collections.reducers.itemsReducer,
       });
       const createStoreWithMiddleware = applyMiddleware()(createStore);
       const store = createStoreWithMiddleware(rootReducer, {});
@@ -47,6 +61,8 @@ describe('Collections', () => {
       const state: IStore = store.getState();
       const collection = getCollectionByName(state.collections, 'llamas');
       expect(collection.count).toBe(0);
+      const item = getItemByName(state.items, 'llamas');
+      expect(item).toBe(undefined);
     });
   });
 });
