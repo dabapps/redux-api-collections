@@ -33,5 +33,5 @@ export type CollectionResponseAction = FluxStandardAction<{
   next: string,
   results: ReadonlyArray<{}>,
   page: number
-}, ICollectionParams & {collectionName: string}>;
+}, ICollectionParams & {subgroup: string}>;
 

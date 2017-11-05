@@ -19,10 +19,10 @@ function updateCollectionItemsFromResponse<T>(
   action: CollectionResponseAction,
   itemConstructor: (data: {}) => T,
 ): TCollectionGroup<T> {
-  const { collectionName, filters, shouldAppend, ordering, reverseOrdering } = action.meta;
+  const { subgroup, filters, shouldAppend, ordering, reverseOrdering } = action.meta;
   const { count, next, results, page } = action.payload;
 
-  const oldCollectionItems = (collectionData[collectionName || ''] || {results: []}).results;
+  const oldCollectionItems = (collectionData[subgroup || ''] || {results: []}).results;
   const newCollectionItems = results.map(itemConstructor);
   const newCollectionResults = (shouldAppend && oldCollectionItems) ?
     oldCollectionItems.concat(newCollectionItems) :
@@ -39,7 +39,7 @@ function updateCollectionItemsFromResponse<T>(
 
   return {
     ...collectionData,
-    [collectionName]: newCollection,
+    [subgroup]: newCollection,
   };
 }
 
@@ -74,11 +74,11 @@ export function addCollectionItem<T>(
   if (isFSA(action) && action.meta) {
     const meta = (action.meta as Dict<string>);
     const collectionType = meta.tag;
-    const collectionName = meta.collectionName || '';
+    const subgroup = meta.subgroup || '';
 
     if (collectionType in typeToRecordMapping) {
       const recordBuilder = typeToRecordMapping[collectionType];
-      const existingCollection = getCollectionByName(state, collectionType as keyof T, collectionName);
+      const existingCollection = getCollectionByName(state, collectionType as keyof T, subgroup);
       const updatedCollection = {
         ...existingCollection,
         count: existingCollection.count + 1,
@@ -90,7 +90,7 @@ export function addCollectionItem<T>(
           [collectionType]: _.extend(
             {},
             state[collectionType], {
-              [collectionName]: updatedCollection
+              [subgroup]: updatedCollection
             }
           ),
         }
@@ -108,11 +108,11 @@ export function deleteCollectionItem<T>(
   if (isFSA(action) && action.meta) {
     const meta = (action.meta as Dict<string>);
     const collectionType = meta.tag;
-    const collectionName = meta.collectionName;
+    const subgroup = meta.subgroup;
     const itemId = meta.itemId;
 
     if (collectionType in typeToRecordMapping) {
-      const existingCollection = getCollectionByName(state, collectionType as keyof T, collectionName);
+      const existingCollection = getCollectionByName(state, collectionType as keyof T, subgroup);
       // FIXME: Type this correctly
       const results = existingCollection.results.filter((item: any) => item.id !== itemId);
       const updatedCollection = {
@@ -126,7 +126,7 @@ export function deleteCollectionItem<T>(
           [collectionType]: _.extend(
             {},
             state[collectionType], {
-              [collectionName]: updatedCollection
+              [subgroup]: updatedCollection
             }
           ),
         }
@@ -144,7 +144,7 @@ export function clearCollection<T>(
   if (isFSA(action) && action.payload) {
     const payload = (action.payload as Dict<string>);
     const collectionType = payload.type;
-    const collectionName = payload.collectionName;
+    const subgroup = payload.subgroup;
 
     if (collectionType in typeToRecordMapping) {
       const updatedCollection = {
@@ -158,7 +158,7 @@ export function clearCollection<T>(
           [collectionType]: _.extend(
             {},
             state[collectionType], {
-              [collectionName]: updatedCollection
+              [subgroup]: updatedCollection
             }
           ),
         }

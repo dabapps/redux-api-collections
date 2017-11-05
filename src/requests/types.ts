@@ -7,7 +7,7 @@ export type UrlMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH';
 export interface IRequestMetaData {
   tag?: string;
   itemId?: string;
-  collectionName?: string;
+  subgroup?: string;
   shouldAppend?: boolean;
   ordering?: string;
   response?: AxiosResponse;

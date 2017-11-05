@@ -39,21 +39,21 @@ export function collectionsFunctor<T> (
   typeToRecordMapping: TTypeToRecordMapping<T>,
 ) {
 
-  function addItemAction (type: keyof T, data: any, collectionName?: string, url?: string) {
-    return dispatchGenericRequest(ADD_TO_COLLECTION, url || `/api/${type}/`, 'POST', data, type, { collectionName });
+  function addItemAction (type: keyof T, data: any, subgroup?: string, url?: string) {
+    return dispatchGenericRequest(ADD_TO_COLLECTION, url || `/api/${type}/`, 'POST', data, type, { subgroup });
   }
 
-  function clearCollectionAction (type: keyof T, collectionName?: string) {
+  function clearCollectionAction (type: keyof T, subgroup?: string) {
     return {
       payload: {
-        collectionName,
+        subgroup,
         type,
       },
       type: CLEAR_COLLECTION,
     };
   }
 
-  function deleteItemAction (type: keyof T, id: string, collectionName?: string) {
+  function deleteItemAction (type: keyof T, id: string, subgroup?: string) {
     const url = `/api/${type}/${id}/`;
     return dispatchGenericRequest(
       DELETE_FROM_COLLECTION,
@@ -61,25 +61,25 @@ export function collectionsFunctor<T> (
       'DELETE',
       null,
       type,
-      { collectionName, itemId: id }
+      { subgroup, itemId: id }
     );
   }
 
-  function getAllCollectionAction (type: keyof T, opts?: ICollectionOptions, collectionName?: string) {
+  function getAllCollectionAction (type: keyof T, opts?: ICollectionOptions, subgroup?: string) {
     return getCollectionAction(
       type,
       {
         ...opts,
         pageSize: WHOLE_COLLECTION_PAGE_SIZE
       },
-      collectionName
+      subgroup
     );
   }
 
-  function getCollectionAction (type: keyof T, options: ICollectionOptions = {}, collectionName?: string) {
+  function getCollectionAction (type: keyof T, options: ICollectionOptions = {}, subgroup?: string) {
     const url = `/api/${type}/`;
     const meta = {
-      collectionName,
+      subgroup,
       filters: options.filters,
       ordering: options.ordering,
       page: options.page,

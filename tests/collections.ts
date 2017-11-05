@@ -62,7 +62,7 @@ describe('Collections', () => {
           name: 'Drama',
         },
         'llamas',
-        {collectionName: 'drama'}
+        {subgroup: 'drama'}
       );
     });
 
@@ -82,7 +82,7 @@ describe('Collections', () => {
         null,
         'llamas',
         {
-          collectionName: 'llamadrama',
+          subgroup: 'llamadrama',
           itemId: 'first'
         }
       );
@@ -98,7 +98,7 @@ describe('Collections', () => {
         null,
         'llamas',
         {
-          collectionName: 'llamadrama',
+          subgroup: 'llamadrama',
           filters: undefined,
           ordering: undefined,
           page: undefined,
@@ -118,7 +118,7 @@ describe('Collections', () => {
         null,
         'llamas',
         {
-          collectionName: undefined,
+          subgroup: undefined,
           filters: undefined,
           ordering: undefined,
           page: undefined,
@@ -138,7 +138,7 @@ describe('Collections', () => {
         null,
         'llamas',
         {
-          collectionName: 'llamadrama',
+          subgroup: 'llamadrama',
           filters: undefined,
           ordering: undefined,
           page: undefined,
@@ -153,13 +153,13 @@ describe('Collections', () => {
     // Helpers for creating event callbacks
     function getCollectionSuccess(
       tag: keyof ICollections,
-      collectionName: string,
+      subgroup: string,
       results: ReadonlyArray<any>,
       shouldAppend: boolean,
       next?: string
     ) {
       return {
-        meta: { tag, shouldAppend, collectionName },
+        meta: { tag, shouldAppend, subgroup },
         payload: {
           count: results.length,
           page: 1,
@@ -172,11 +172,11 @@ describe('Collections', () => {
 
     function addItemSuccess(
       tag: keyof ICollections,
-      collectionName: string,
+      subgroup: string,
       result: any,
     ) {
       return {
-        meta: { tag, collectionName },
+        meta: { tag, subgroup },
         payload: result,
         type: ADD_TO_COLLECTION.SUCCESS,
       };
@@ -184,11 +184,11 @@ describe('Collections', () => {
 
     function deleteItemSuccess(
       tag: keyof ICollections,
-      collectionName: string,
+      subgroup: string,
       itemId: string,
     ) {
       return {
-        meta: { tag, collectionName, itemId },
+        meta: { tag, subgroup, itemId },
         payload: '',
         type: DELETE_FROM_COLLECTION.SUCCESS,
       };

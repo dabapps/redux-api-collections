@@ -27,35 +27,35 @@ export function itemsFunctor<T> (
   typeToRecordMapping: TTypeToRecordMapping<T>,
 ) {
 
-  function _updateItem(itemType: keyof T, url: string, method: UrlMethod, itemId: string, data: any, collectionName?: string) {
-    return dispatchGenericRequest(UPDATE_ITEM, url, method, data, itemType, { itemId, collectionName });
+  function _updateItem(itemType: keyof T, url: string, method: UrlMethod, itemId: string, data: any, subgroup?: string) {
+    return dispatchGenericRequest(UPDATE_ITEM, url, method, data, itemType, { itemId, subgroup });
   }
 
-  function actionItemAction (type: keyof T, id: string, action: string, data: any, collectionName?: string) {
+  function actionItemAction (type: keyof T, id: string, action: string, data: any, subgroup?: string) {
     return _updateItem(type, `/api/${type}/${id}/${action}/`, 'POST', id, data);
   }
 
-  function clearItemAction (itemType: keyof T, collectionName?: string) {
+  function clearItemAction (itemType: keyof T, subgroup?: string) {
     return {
       payload: {
         itemType,
-        collectionName,
+        subgroup,
       },
       type: CLEAR_ITEM,
     };
   }
 
-  function loadItemAction (itemType: keyof T, itemId: string, collectionName?: string, preserveOriginal?: boolean) {
+  function loadItemAction (itemType: keyof T, itemId: string, subgroup?: string, preserveOriginal?: boolean) {
     const url = `/api/${itemType}/${itemId}/`;
-    return dispatchGenericRequest(LOAD_ITEM, url, 'GET', null, itemType, { itemId, collectionName }, preserveOriginal);
+    return dispatchGenericRequest(LOAD_ITEM, url, 'GET', null, itemType, { itemId, subgroup }, preserveOriginal);
   }
 
-  function patchItemAction (type: keyof T, id: string, data: any, collectionName?: string) {
-    return _updateItem(type, `/api/${type}/${id}/`, 'PATCH' , id, data, collectionName);
+  function patchItemAction (type: keyof T, id: string, data: any, subgroup?: string) {
+    return _updateItem(type, `/api/${type}/${id}/`, 'PATCH' , id, data, subgroup);
   }
 
-  function updateItemAction (type: keyof T, id: string, data: any, collectionName?: string) {
-    return _updateItem(type, `/api/${type}/${id}/`, 'PUT', id, data, collectionName);
+  function updateItemAction (type: keyof T, id: string, data: any, subgroup?: string) {
+    return _updateItem(type, `/api/${type}/${id}/`, 'PUT', id, data, subgroup);
   }
 
   function itemsReducer (
