@@ -339,9 +339,119 @@ describe('Collections', () => {
   });
 
   describe('Subpath', () => {
-    it('should be possible to create a namespaced set', () => {
-      const ownerId = 'abc1234';
-      const helpers = collections.collectionAtSubpath('owners/<owner_id>/llamas', ownerId);
+    const ownerId = 'abc1234';
+    const subpath = collections.collectionAtSubpath('owners/<owner_id>/llamas', ownerId);
+
+    describe('actions', () => {
+      const dispatchGenericRequestSpy =
+        jest.spyOn(requests, 'dispatchGenericRequest').mockImplementation(() => null);
+
+      beforeEach(() => {
+        dispatchGenericRequestSpy.mockReset();
+      });
+
+      it('should properly construct an addItem action', () => {
+        subpath.actions.addItem({
+          furLength: 5,
+          id: '1',
+          name: 'Drama',
+        }, 'drama');
+
+        expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+          ADD_TO_COLLECTION,
+          `/api/owners/${ownerId}/llamas/`,
+          'POST',
+          {
+            furLength: 5,
+            id: '1',
+            name: 'Drama',
+          },
+          'owners/<owner_id>/llamas',
+          {subgroup: `/api/owners/${ownerId}/llamas/:drama`}
+        );
+      });
+
+      it('should properly construct a clearCollection action', () => {
+        const action = subpath.actions.clearCollection();
+        expect(action.type).toBe(CLEAR_COLLECTION);
+        expect(action.payload.type).toBe('owners/<owner_id>/llamas');
+      });
+
+      it('should properly construct a deleteItem action', () => {
+        subpath.actions.deleteItem('first', 'llamadrama');
+
+        expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+          DELETE_FROM_COLLECTION,
+          `/api/owners/${ownerId}/llamas/first/`,
+          'DELETE',
+          null,
+          'owners/<owner_id>/llamas',
+          {
+            subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
+            itemId: 'first'
+          }
+        );
+      });
+
+      it('should properly construct a getAllCollection action', () => {
+        subpath.actions.getAllCollection({}, 'llamadrama');
+
+        expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+          GET_COLLECTION,
+          `/api/owners/${ownerId}/llamas/?page=1&page_size=10000`,
+          'GET',
+          null,
+          'owners/<owner_id>/llamas',
+          {
+            subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
+            filters: undefined,
+            ordering: undefined,
+            page: undefined,
+            reverseOrdering: undefined,
+            shouldAppend: undefined
+          }
+        );
+      });
+
+      it('should properly construct a getCollection action with defaults', () => {
+        subpath.actions.getCollection();
+
+        expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+          GET_COLLECTION,
+          `/api/owners/${ownerId}/llamas/?page=1&page_size=12`,
+          'GET',
+          null,
+          'owners/<owner_id>/llamas',
+          {
+            subgroup: `/api/owners/${ownerId}/llamas/:`,
+            filters: undefined,
+            ordering: undefined,
+            page: undefined,
+            reverseOrdering: undefined,
+            shouldAppend: undefined
+          }
+        );
+      });
+
+      it('should properly construct a getCollection action with params', () => {
+        subpath.actions.getCollection({}, 'llamadrama');
+
+        expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+          GET_COLLECTION,
+          `/api/owners/${ownerId}/llamas/?page=1&page_size=12`,
+          'GET',
+          null,
+          'owners/<owner_id>/llamas',
+          {
+            subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
+            filters: undefined,
+            ordering: undefined,
+            page: undefined,
+            reverseOrdering: undefined,
+            shouldAppend: undefined
+          }
+        );
+      });
     });
   });
 });

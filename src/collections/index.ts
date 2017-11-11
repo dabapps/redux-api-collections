@@ -32,6 +32,8 @@ import {
   WHOLE_COLLECTION_PAGE_SIZE,
 } from './utils';
 
+const pathMatcher = /<.*?>/;
+
 function buildSubgroup(prefix: string | undefined, subgroup: string | undefined): string | undefined {
   if (prefix) {
     return `${prefix}:${subgroup || ''}`;
@@ -44,7 +46,7 @@ export function collectionsFunctor<T> (
   baseUrl: string = '/api/'
 ) {
 
-  function buildActionSet(overrideUrl?: string, prefix?: string) {
+  function buildActionSet(overrideUrl?: string) {
     function addItemAction (type: keyof T, data: any, subgroup?: string, url?: string) {
       return dispatchGenericRequest(
         ADD_TO_COLLECTION,
@@ -52,14 +54,14 @@ export function collectionsFunctor<T> (
         'POST',
         data,
         type,
-        { subgroup: buildSubgroup(prefix, subgroup) }
+        { subgroup: buildSubgroup(overrideUrl, subgroup) }
       );
     }
 
     function clearCollectionAction (type: keyof T, subgroup?: string) {
       return {
         payload: {
-          subgroup: buildSubgroup(prefix, subgroup),
+          subgroup: buildSubgroup(overrideUrl, subgroup),
           type,
         },
         type: CLEAR_COLLECTION,
@@ -74,7 +76,7 @@ export function collectionsFunctor<T> (
         'DELETE',
         null,
         type,
-        { subgroup: buildSubgroup(prefix, subgroup), itemId: id }
+        { subgroup: buildSubgroup(overrideUrl, subgroup), itemId: id }
       );
     }
 
@@ -85,14 +87,14 @@ export function collectionsFunctor<T> (
           ...opts,
           pageSize: WHOLE_COLLECTION_PAGE_SIZE
         },
-        buildSubgroup(prefix, subgroup)
+        subgroup
       );
     }
 
     function getCollectionAction (type: keyof T, options: ICollectionOptions = {}, subgroup?: string) {
       const url = overrideUrl || `${baseUrl}${type}/`;
       const meta = {
-        subgroup: buildSubgroup(prefix, subgroup),
+        subgroup: buildSubgroup(overrideUrl, subgroup),
         filters: options.filters,
         ordering: options.ordering,
         page: options.page,
@@ -136,10 +138,23 @@ export function collectionsFunctor<T> (
     type: keyof T,
     ...pathIds: string[]
   ) {
-    // TODO: Regex to turn type into a subpath
-    const rootUrl = `${baseUrl}/`;
+    const replaced = pathIds.reduce((memo, nextId) => memo.replace(pathMatcher, nextId), type);
+    const overrideUrl = `${baseUrl}${replaced}/`;
+    const {
+      addItem,
+      clearCollection,
+      deleteItem,
+      getAllCollection,
+      getCollection,
+    } = buildActionSet(overrideUrl);
     return {
-      actions: buildActionSet()
+      actions: {
+        addItem: addItem.bind(null, type),
+        clearCollection: clearCollection.bind(null, type),
+        deleteItem: deleteItem.bind(null, type),
+        getAllCollection: getAllCollection.bind(null, type),
+        getCollection: getCollection.bind(null, type),
+      }
     };
   }
 
