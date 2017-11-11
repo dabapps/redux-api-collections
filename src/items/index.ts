@@ -3,7 +3,6 @@ export * from './reducers';
 export * from './types';
 export * from './utils';
 
-import { AxiosResponse } from 'axios'; // Required for dist
 import { AnyAction } from 'redux';
 import { dispatchGenericRequest } from '../requests';
 import {

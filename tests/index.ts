@@ -8,7 +8,6 @@ import {
   getItemByName,
   TItemStore,
 } from '../src/items';
-import * as requests from '../src/requests';
 
 type ILlama = Readonly<{
   furLength: number;
@@ -46,7 +45,7 @@ interface IStore {
   items: TItemStore<IItems>
 }
 
-const collections = Collections(collectionToRecordMapping, itemToRecordMapping);
+const collections = Collections<ICollections, IItems>(collectionToRecordMapping, itemToRecordMapping);
 
 describe('Collections', () => {
   describe('store', () => {

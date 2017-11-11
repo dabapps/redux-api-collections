@@ -260,7 +260,7 @@ describe('Requests', () => {
           type: REQUEST_STATE,
         });
 
-        const responsesState = responsesReducer(undefined, {
+        const responsesState = responsesReducer(initial, {
           payload: {
             actionSet: ACTION_SET,
             tag: 'tag',

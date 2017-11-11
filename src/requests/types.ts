@@ -1,4 +1,4 @@
-import { AxiosPromise, AxiosResponse, default as axios } from 'axios';
+import { AxiosResponse } from 'axios';
 import { Dict } from '../utils';
 
 export type RequestStates = 'REQUEST' | 'SUCCESS' | 'FAILURE';

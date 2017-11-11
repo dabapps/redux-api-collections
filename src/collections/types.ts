@@ -1,4 +1,4 @@
-import { FluxStandardAction, isFSA } from 'flux-standard-action';
+import { FluxStandardAction } from 'flux-standard-action';
 import {
   Dict,
 } from '../utils';
@@ -34,4 +34,3 @@ export type CollectionResponseAction = FluxStandardAction<{
   results: ReadonlyArray<{}>,
   page: number
 }, ICollectionParams & {subgroup: string}>;
-

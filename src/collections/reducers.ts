@@ -1,5 +1,5 @@
-import { AnyAction } from 'redux';
 import { isFSA } from 'flux-standard-action';
+import { AnyAction } from 'redux';
 import * as _ from 'underscore';
 import {
   Dict,
@@ -7,8 +7,8 @@ import {
 } from '../utils';
 import {
   CollectionResponseAction,
-  TCollectionStore,
   TCollectionGroup,
+  TCollectionStore,
 } from './types';
 import {
   getCollectionByName,
