@@ -27,10 +27,12 @@ const LlamaRecord = (input: Partial<ILlama>): ILlama => {
 
 interface ICollections {
   llamas: ILlama;
+  'owners/<owner_id>/llamas': ILlama;
 }
 
 const collectionToRecordMapping = {
-  llamas: LlamaRecord,
+  'llamas': LlamaRecord,
+  'owners/<owner_id>/llamas': LlamaRecord,
 };
 
 const collections = Collections(collectionToRecordMapping, {});
@@ -333,6 +335,13 @@ describe('Collections', () => {
 
         expect(newState).toBe(data);
       });
+    });
+  });
+
+  describe('Subpath', () => {
+    it('should be possible to create a namespaced set', () => {
+      const ownerId = 'abc1234';
+      const helpers = collections.collectionAtSubpath('owners/<owner_id>/llamas', ownerId);
     });
   });
 });

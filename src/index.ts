@@ -26,6 +26,7 @@ export function Collections<T, U> (
     reducers: {
       ...collections.reducers,
       ...items.reducers,
-    }
+    },
+    collectionAtSubpath: collections.collectionAtSubpath,
   };
 }
