@@ -1,7 +1,7 @@
 // tslint:disable-next-line:no-unused-variable
 import { AxiosResponse } from 'axios';
 // tslint:disable-next-line:no-unused-variable
-import { Action, Dispatch } from 'redux';
+import { AnyAction, Dispatch } from 'redux';
 import {
   collectionsFunctor,
 } from './collections';

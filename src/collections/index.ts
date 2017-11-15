@@ -3,7 +3,10 @@ export * from './reducers';
 export * from './types';
 export * from './utils';
 
-import { AnyAction } from 'redux';
+// tslint:disable-next-line:no-unused-variable
+import { AxiosResponse } from 'axios';
+// tslint:disable-next-line:no-unused-variable
+import { AnyAction, Dispatch } from 'redux';
 import {
   dispatchGenericRequest,
 } from '../requests';

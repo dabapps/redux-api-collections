@@ -1,3 +1,4 @@
+import { AxiosResponse } from 'axios';
 import { Dispatch } from 'redux';
 import {
   IAsyncActionSet,
