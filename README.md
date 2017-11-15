@@ -1,4 +1,6 @@
 # Redux API Collections
+[![Build Status](https://travis-ci.com/dabapps/redux-api-collections.svg?token=Vjwq9pDHXxGNhnyuktQ5&branch=master)](https://travis-ci.com/dabapps/redux-api-collections)
+
 Standardised, type-safe ways of interacting with DRF-style APIs.
 
 Redux API Collections aims to simplify and standardise the way in which we access Django Rest Framework endpoints when writing Redux applications in Typescript. It offers reducers for both collection endpoints and individual item endpoints, as well as the necessary tools to shunt data into them.
