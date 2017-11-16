@@ -14,16 +14,11 @@
   "dependencies": {
     "@types/js-cookie": "2.0.28",
     "@types/node": "7.0.18",
-    "@types/react": "15.0.22",
-    "@types/react-dom": "0.14.23",
-    "@types/react-redux": "4.4.38",
     "@types/underscore": "1.8.0",
     "axios": "0.16.2",
     "flux-standard-action": "1.2.0",
     "js-cookie": "2.1.4",
-    "react": "15.5.4",
-    "react-dom": "15.5.4",
-    "react-redux": "4.4.8",
+    "redux": "3.7.2",
     "typescript": "2.3.3",
     "underscore": "1.8.3"
   },
@@ -33,16 +28,15 @@
     "concurrently": "3.5.0",
     "http-server": "0.10.0",
     "jest": "20.0.4",
-    "react-test-renderer": "15.5.4",
     "ts-jest": "20.0.7",
     "tsify": "3.0.1",
     "tslint": "5.4.3",
-    "tslint-config-dabapps": "dabapps/tslint-config-dabapps#v0.3.0",
+    "tslint-config-dabapps": "dabapps/tslint-config-dabapps#v0.3.1",
     "uglify-js": "3.0.25",
-    "watch-less-do-more": "0.2.0",
     "watchify": "3.9.0"
   },
   "peerDependencies": {
+    "axios": ">= 0.16.2 < 0.17",
     "typescript": ">= 2.3.3 < 3"
   },
   "repository": {
