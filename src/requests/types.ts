@@ -4,7 +4,7 @@ import { Dict } from '../utils';
 export type RequestStates = 'REQUEST' | 'SUCCESS' | 'FAILURE';
 export type UrlMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH';
 
-export interface IRequestMetaData {
+export interface RequestMetaData {
   tag?: string;
   itemId?: string;
   subgroup?: string;
@@ -13,26 +13,26 @@ export interface IRequestMetaData {
   response?: AxiosResponse;
 }
 
-export type IAsyncActionSet = Readonly<{
+export type AsyncActionSet = Readonly<{
   FAILURE: string;
   REQUEST: string;
   SUCCESS: string;
 }>;
 
-export type IResponseState = Readonly<{
+export type ResponseState = Readonly<{
   requestState: RequestStates | null,
   data: Dict<any> | ReadonlyArray<any> | string | number | null,
 }>;
 
-export type ResponsesReducerState = Dict<Dict<IResponseState>>;
+export type ResponsesReducerState = Dict<Dict<ResponseState>>;
 
-export type ISetRequestStatePayload = Readonly<{
-  actionSet: IAsyncActionSet,
+export type SetRequestStatePayload = Readonly<{
+  actionSet: AsyncActionSet,
   requestState: RequestStates,
   data: any,
   tag?: string,
 }>;
-export type IResetRequestStatePayload = Readonly<{
-  actionSet: IAsyncActionSet,
+export type ResetRequestStatePayload = Readonly<{
+  actionSet: AsyncActionSet,
   tag?: string,
 }>;

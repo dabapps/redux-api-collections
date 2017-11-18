@@ -4,7 +4,7 @@ export * from './types';
 export * from './utils';
 
 // tslint:disable-next-line:no-unused-variable
-import { AxiosResponse} from 'axios';
+import { AxiosResponse } from 'axios';
 // tslint:disable-next-line:no-unused-variable
 import { AnyAction, Dispatch } from 'redux';
 import { dispatchGenericRequest } from '../requests';
@@ -13,7 +13,7 @@ import {
 } from '../requests/types';
 import {
   Dict,
-  TTypeToRecordMapping,
+  TypeToRecordMapping,
 } from '../utils';
 import {
   CLEAR_ITEM,
@@ -25,7 +25,7 @@ import {
   setItemFromResponseAction,
 } from './reducers';
 import {
-  TItemStore,
+  ItemStore,
 } from './types';
 import {
   buildItemStore,
@@ -33,7 +33,7 @@ import {
 } from './utils';
 
 export function itemsFunctor<T> (
-  typeToRecordMapping: TTypeToRecordMapping<T>,
+  typeToRecordMapping: TypeToRecordMapping<T>,
 ) {
 
   function _updateItem(
@@ -75,7 +75,7 @@ export function itemsFunctor<T> (
   }
 
   function itemsReducer (
-    state: TItemStore<T> = buildItemStore(typeToRecordMapping),
+    state: ItemStore<T> = buildItemStore(typeToRecordMapping),
     action: AnyAction
   ) {
     switch (action.type) {

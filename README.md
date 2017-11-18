@@ -16,11 +16,11 @@ type User = Readonly<{
   name: string
 }>;
 
-interface ICollections {
+interface Collections {
   users: User  // This is /api/users/ on the server
 }
 
-interface IItems {
+interface Items {
   users: User  // This is /api/users/[id]/ on the server
 }
 ```
@@ -28,9 +28,9 @@ interface IItems {
 With these two (or one) interfaces defined, you will need to attach them to your store. This is as simple as including the following code:
 
 ```typescript
-interface IStore {
-  collections: TCollectionStore<ICollections>,
-  items: TItemStore<IItems>
+interface Store {
+  collections: CollectionStore<Collections>,
+  items: ItemStore<Items>
 }
 ```
 You can, in theory, mount the stores elsewhere, but this is not recommended.
@@ -39,11 +39,11 @@ The next step is providing a mapping between paths and functions that will produ
 
 ```typescript
 const collectionToRecordMapping = {
-  users: (user: IUser) => user
+  users: (user: User) => user
 }
 
 const itemToRecordMapping = {
-  users: (user: IUser) => user
+  users: (user: User) => user
 }
 ```
 
@@ -53,7 +53,7 @@ Now we have mappings, plus interfaces, we can bring it all together.  You are li
 import { Collections } from 'redux-api-collections';
 import { responsesReducer } from 'redux-api-collections/requests';
 
-const collections = Collections<ICollections, IItems>(collectionToRecordMapping, itemToRecordMapping);
+const collections = Collections<Collections, Items>(collectionToRecordMapping, itemToRecordMapping);
 
 // elsewhere
 combineReducers({

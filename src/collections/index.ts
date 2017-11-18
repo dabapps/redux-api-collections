@@ -11,7 +11,7 @@ import {
   dispatchGenericRequest,
 } from '../requests';
 import {
-  TTypeToRecordMapping,
+  TypeToRecordMapping,
 } from '../utils';
 import {
   ADD_TO_COLLECTION,
@@ -26,8 +26,8 @@ import {
   setCollectionFromResponseAction,
 } from './reducers';
 import {
-  ICollectionOptions,
-  TCollectionStore,
+  CollectionOptions,
+  CollectionStore,
 } from './types';
 import {
   buildCollectionsStore,
@@ -36,7 +36,7 @@ import {
 } from './utils';
 
 export function collectionsFunctor<T> (
-  typeToRecordMapping: TTypeToRecordMapping<T>,
+  typeToRecordMapping: TypeToRecordMapping<T>,
 ) {
 
   function addItemAction (type: keyof T, data: any, subgroup?: string, url?: string) {
@@ -65,7 +65,7 @@ export function collectionsFunctor<T> (
     );
   }
 
-  function getAllCollectionAction (type: keyof T, opts?: ICollectionOptions, subgroup?: string) {
+  function getAllCollectionAction (type: keyof T, opts?: CollectionOptions, subgroup?: string) {
     return getCollectionAction(
       type,
       {
@@ -76,7 +76,7 @@ export function collectionsFunctor<T> (
     );
   }
 
-  function getCollectionAction (type: keyof T, options: ICollectionOptions = {}, subgroup?: string) {
+  function getCollectionAction (type: keyof T, options: CollectionOptions = {}, subgroup?: string) {
     const url = `/api/${type}/`;
     const meta = {
       subgroup,
@@ -93,7 +93,7 @@ export function collectionsFunctor<T> (
   }
 
   function collectionsReducer (
-    state: TCollectionStore<T> = buildCollectionsStore(typeToRecordMapping),
+    state: CollectionStore<T> = buildCollectionsStore(typeToRecordMapping),
     action: AnyAction
   ) {
     switch (action.type) {

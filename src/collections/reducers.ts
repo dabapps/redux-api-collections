@@ -3,22 +3,22 @@ import { AnyAction } from 'redux';
 import * as _ from 'underscore';
 import {
   Dict,
-  TTypeToRecordMapping,
+  TypeToRecordMapping,
 } from '../utils';
 import {
+  CollectionGroup,
   CollectionResponseAction,
-  TCollectionGroup,
-  TCollectionStore,
+  CollectionStore,
 } from './types';
 import {
   getCollectionByName,
 } from './utils';
 
 function updateCollectionItemsFromResponse<T>(
-  collectionData: TCollectionGroup<T>,
+  collectionData: CollectionGroup<T>,
   action: CollectionResponseAction,
   itemConstructor: (data: {}) => T,
-): TCollectionGroup<T> {
+): CollectionGroup<T> {
   const { subgroup, filters, shouldAppend, ordering, reverseOrdering } = action.meta;
   const { count, next, results, page } = action.payload;
 
@@ -44,10 +44,10 @@ function updateCollectionItemsFromResponse<T>(
 }
 
 export function setCollectionFromResponseAction<T> (
-  state: TCollectionStore<T>,
+  state: CollectionStore<T>,
   action: AnyAction,
-  typeToRecordMapping: TTypeToRecordMapping<T>
-): TCollectionStore<T> {
+  typeToRecordMapping: TypeToRecordMapping<T>
+): CollectionStore<T> {
   if (isFSA(action) && action.meta) {
     const collectionType = (action.meta as Dict<string>).tag;
     if (collectionType in typeToRecordMapping) {
@@ -67,10 +67,10 @@ export function setCollectionFromResponseAction<T> (
 }
 
 export function addCollectionItem<T>(
-  state: TCollectionStore<T>,
+  state: CollectionStore<T>,
   action: AnyAction,
-  typeToRecordMapping: TTypeToRecordMapping<T>
-): TCollectionStore<T> {
+  typeToRecordMapping: TypeToRecordMapping<T>
+): CollectionStore<T> {
   if (isFSA(action) && action.meta) {
     const meta = (action.meta as Dict<string>);
     const collectionType = meta.tag;
@@ -101,10 +101,10 @@ export function addCollectionItem<T>(
 }
 
 export function deleteCollectionItem<T>(
-  state: TCollectionStore<T>,
+  state: CollectionStore<T>,
   action: AnyAction,
-  typeToRecordMapping: TTypeToRecordMapping<T>
-): TCollectionStore<T> {
+  typeToRecordMapping: TypeToRecordMapping<T>
+): CollectionStore<T> {
   if (isFSA(action) && action.meta) {
     const meta = (action.meta as Dict<string>);
     const collectionType = meta.tag;
@@ -137,10 +137,10 @@ export function deleteCollectionItem<T>(
 }
 
 export function clearCollection<T>(
-  state: TCollectionStore<T>,
+  state: CollectionStore<T>,
   action: AnyAction,
-  typeToRecordMapping: TTypeToRecordMapping<T>
-): TCollectionStore<T> {
+  typeToRecordMapping: TypeToRecordMapping<T>
+): CollectionStore<T> {
   if (isFSA(action) && action.payload) {
     const payload = (action.payload as Dict<string>);
     const collectionType = payload.type;

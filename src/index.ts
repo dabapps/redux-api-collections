@@ -9,12 +9,12 @@ import {
   itemsFunctor,
 } from './items';
 import {
-  TTypeToRecordMapping,
+  TypeToRecordMapping,
 } from './utils';
 
 export function Collections<T, U> (
-  collectionToRecordMapping: TTypeToRecordMapping<T>,
-  itemToRecordMapping: TTypeToRecordMapping<U>,
+  collectionToRecordMapping: TypeToRecordMapping<T>,
+  itemToRecordMapping: TypeToRecordMapping<U>,
 ) {
   const collections = collectionsFunctor(collectionToRecordMapping);
   const items = itemsFunctor(itemToRecordMapping);

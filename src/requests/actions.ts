@@ -1,8 +1,8 @@
 import { AxiosResponse } from 'axios';
 import { Dispatch } from 'redux';
 import {
-  IAsyncActionSet,
-  IRequestMetaData,
+  AsyncActionSet,
+  RequestMetaData,
   RequestStates,
   UrlMethod,
 } from './types';
@@ -12,7 +12,7 @@ import {
 } from './utils';
 
 export const REQUEST_STATE = 'REQUEST_STATE';
-export function setRequestState(actionSet: IAsyncActionSet, requestState: RequestStates, data: any, tag?: string) {
+export function setRequestState(actionSet: AsyncActionSet, requestState: RequestStates, data: any, tag?: string) {
   return {
     payload: {
       actionSet,
@@ -25,7 +25,7 @@ export function setRequestState(actionSet: IAsyncActionSet, requestState: Reques
 }
 
 export const RESET_REQUEST_STATE = 'RESET_REQUEST_STATE';
-export function resetRequestState(actionSet: IAsyncActionSet, tag?: string) {
+export function resetRequestState(actionSet: AsyncActionSet, tag?: string) {
   return {
     payload: {
       actionSet,
@@ -36,16 +36,16 @@ export function resetRequestState(actionSet: IAsyncActionSet, tag?: string) {
 }
 
 export function dispatchGenericRequest(
-  actionSet: IAsyncActionSet,
+  actionSet: AsyncActionSet,
   url: string,
   method: UrlMethod,
   data?: any,
   tag?: string,
-  metaData: IRequestMetaData = {},
+  metaData: RequestMetaData = {},
   preserveOriginal?: boolean,
 ) {
   return (dispatch: Dispatch<any>, getState: () => any) => {
-    const meta: IRequestMetaData = {...metaData, tag};
+    const meta: RequestMetaData = {...metaData, tag};
 
     dispatch({ type: actionSet.REQUEST, meta, payload: { preserveOriginal } });
     dispatch(setRequestState(actionSet, 'REQUEST', null, tag));

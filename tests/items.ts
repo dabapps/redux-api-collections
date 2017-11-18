@@ -8,13 +8,13 @@ import * as requests from '../src/requests';
 
 import { Collections } from '../src';
 
-type ILlama = Readonly<{
+type Llama = Readonly<{
   furLength: number;
   id: string;
   name: string;
 }>;
 
-const LlamaRecord = (input: Partial<ILlama>): ILlama => {
+const LlamaRecord = (input: Partial<Llama>): Llama => {
   return {
     furLength: 0,
     id: '',
@@ -23,15 +23,15 @@ const LlamaRecord = (input: Partial<ILlama>): ILlama => {
   };
 };
 
-interface IItems {
-  llamas: ILlama;
+interface Items {
+  llamas: Llama;
 }
 
 const itemToRecordMapping = {
   llamas: LlamaRecord,
 };
 
-const collections = Collections<{}, IItems>({}, itemToRecordMapping);
+const collections = Collections<{}, Items>({}, itemToRecordMapping);
 
 describe('Items', () => {
 

@@ -8,10 +8,10 @@ import {
   RESET_REQUEST_STATE,
 } from './actions';
 import {
-  IResetRequestStatePayload,
-  IResponseState,
-  ISetRequestStatePayload,
+  ResetRequestStatePayload,
   ResponsesReducerState,
+  ResponseState,
+  SetRequestStatePayload,
 } from './types';
 
 export function responsesReducer (
@@ -26,7 +26,7 @@ export function responsesReducer (
           requestState,
           tag,
           data,
-        } = (action.payload as ISetRequestStatePayload);
+        } = (action.payload as SetRequestStatePayload);
         const existing = state[actionSet.REQUEST] || {};
         return {
           ...state,
@@ -45,7 +45,7 @@ export function responsesReducer (
         const {
           actionSet,
           tag,
-        } = (action.payload as IResetRequestStatePayload);
+        } = (action.payload as ResetRequestStatePayload);
         const existing = state[actionSet.REQUEST] || {};
         return {
           ...state,

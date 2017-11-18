@@ -3,7 +3,7 @@ import {
   Dict,
 } from '../utils';
 
-export type ICollectionParams = Readonly<{
+export type CollectionParams = Readonly<{
   shouldAppend: boolean;
   search: string;
   page: number;
@@ -12,9 +12,9 @@ export type ICollectionParams = Readonly<{
   ordering: string;
   reverseOrdering: boolean;
 }>;
-export type ICollectionOptions = Partial<ICollectionParams>;
+export type CollectionOptions = Partial<CollectionParams>;
 
-export type TCollection<T> = Readonly<{
+export type Collection<T> = Readonly<{
   page: number;
   ordering?: string;
   reverseOrdering?: boolean;
@@ -24,13 +24,13 @@ export type TCollection<T> = Readonly<{
   results: ReadonlyArray<T>;
 }>;
 
-export type TCollectionGroup<T> = Dict<TCollection<T>>;
-export type TCollectionStoreMutable<T> = {[K in keyof T]: TCollectionGroup<T[K]>};
-export type TCollectionStore<T> = Readonly<TCollectionStoreMutable<T>>;
+export type CollectionGroup<T> = Dict<Collection<T>>;
+export type CollectionStoreMutable<T> = {[K in keyof T]: CollectionGroup<T[K]>};
+export type CollectionStore<T> = Readonly<CollectionStoreMutable<T>>;
 
 export type CollectionResponseAction = FluxStandardAction<{
   count: number,
   next: string,
   results: ReadonlyArray<{}>,
   page: number
-}, ICollectionParams & {subgroup: string}>;
+}, CollectionParams & {subgroup: string}>;

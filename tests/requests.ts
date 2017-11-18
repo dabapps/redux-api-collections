@@ -1,4 +1,4 @@
-interface IAxiosMock {
+interface AxiosMock {
   failure: (error: any) => any;
   success: (response: any) => any;
   catch: (fn: (...args: any[]) => any) => any;
@@ -44,10 +44,10 @@ import {
   getErrorData,
   hasFailed,
   hasSucceded,
-  IRequestMetaData,
   isPending,
   metaWithResponse,
   REQUEST_STATE,
+  RequestMetaData,
   RESET_REQUEST_STATE,
   resetRequestState,
   responsesReducer,
@@ -120,7 +120,7 @@ describe('Requests', () => {
       const dispatch = jest.fn();
       const getState = jest.fn();
       const thunk = dispatchGenericRequest(ACTION_SET, '/api/url/', METHOD);
-      let request: IAxiosMock;
+      let request: AxiosMock;
 
       beforeEach(() => {
         dispatch.mockReset();
@@ -147,7 +147,7 @@ describe('Requests', () => {
       });
 
       it('should dispatch request actions', () => {
-        request = thunk(dispatch, getState) as any as IAxiosMock;  // FIXME: We need type-safe mocking
+        request = thunk(dispatch, getState) as any as AxiosMock;  // FIXME: We need type-safe mocking
 
         expect(dispatch).toHaveBeenCalledWith({
           meta: {
@@ -199,7 +199,7 @@ describe('Requests', () => {
 
     describe('metaWithResponse', () => {
 
-      const META: IRequestMetaData = {};
+      const META: RequestMetaData = {};
 
       it('should return the same meta if the response is not valid', () => {
         expect(metaWithResponse(META, undefined)).toBe(META);

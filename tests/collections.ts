@@ -10,13 +10,13 @@ import * as requests from '../src/requests';
 
 import { Collections } from '../src';
 
-type ILlama = Readonly<{
+type Llama = Readonly<{
   furLength: number;
   id: string;
   name: string;
 }>;
 
-const LlamaRecord = (input: Partial<ILlama>): ILlama => {
+const LlamaRecord = (input: Partial<Llama>): Llama => {
   return {
     furLength: 0,
     id: '',
@@ -25,8 +25,8 @@ const LlamaRecord = (input: Partial<ILlama>): ILlama => {
   };
 };
 
-interface ICollections {
-  llamas: ILlama;
+interface Collections {
+  llamas: Llama;
 }
 
 const collectionToRecordMapping = {
@@ -153,7 +153,7 @@ describe('Collections', () => {
   describe('reducers', () => {
     // Helpers for creating event callbacks
     function getCollectionSuccess(
-      tag: keyof ICollections,
+      tag: keyof Collections,
       subgroup: string,
       results: ReadonlyArray<any>,
       shouldAppend: boolean,
@@ -172,7 +172,7 @@ describe('Collections', () => {
     }
 
     function addItemSuccess(
-      tag: keyof ICollections,
+      tag: keyof Collections,
       subgroup: string,
       result: any,
     ) {
@@ -184,7 +184,7 @@ describe('Collections', () => {
     }
 
     function deleteItemSuccess(
-      tag: keyof ICollections,
+      tag: keyof Collections,
       subgroup: string,
       itemId: string,
     ) {

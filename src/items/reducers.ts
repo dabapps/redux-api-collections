@@ -3,17 +3,17 @@ import { AnyAction } from 'redux';
 import * as _ from 'underscore';
 import {
   Dict,
-  TTypeToRecordMapping,
+  TypeToRecordMapping,
 } from '../utils';
 import {
-  TItemStore,
+  ItemStore,
 } from './types';
 
 export function clearItem<T>(
-  state: TItemStore<T>,
+  state: ItemStore<T>,
   action: AnyAction,
-  typeToRecordMapping: TTypeToRecordMapping<T>
-): TItemStore<T> {
+  typeToRecordMapping: TypeToRecordMapping<T>
+): ItemStore<T> {
   if (isFSA(action) && action.payload) {
     const payload = (action.payload as Dict<string>);
     const itemType = payload.type;
@@ -37,10 +37,10 @@ export function clearItem<T>(
 }
 
 export function setItemFromResponseAction<T> (
-  state: TItemStore<T>,
+  state: ItemStore<T>,
   action: AnyAction,
-  typeToRecordMapping: TTypeToRecordMapping<T>
-): TItemStore<T> {
+  typeToRecordMapping: TypeToRecordMapping<T>
+): ItemStore<T> {
   if (isFSA(action) && action.meta) {
     const itemType = (action.meta as Dict<string>).tag;
     const subgroup = (action.meta as Dict<string>).subgroup || '';

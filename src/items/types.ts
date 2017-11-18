@@ -2,6 +2,6 @@ import {
   Dict,
 } from '../utils';
 
-export type TItemGroup<T> = Dict<T>;
-export type TItemStoreMutable<T> = {[K in keyof T]: TItemGroup<T[K]>};
-export type TItemStore<T> = Readonly<TItemStoreMutable<T>>;
+export type ItemGroup<T> = Dict<T>;
+export type ItemStoreMutable<T> = {[K in keyof T]: ItemGroup<T[K]>};
+export type ItemStore<T> = Readonly<ItemStoreMutable<T>>;
