@@ -3,10 +3,9 @@ export * from './reducers';
 export * from './types';
 export * from './utils';
 
-// tslint:disable-next-line:no-unused-variable
 import { AxiosResponse } from 'axios';
-// tslint:disable-next-line:no-unused-variable
 import { AnyAction, Dispatch } from 'redux';
+import { ThunkAction } from 'redux-thunk';
 import { dispatchGenericRequest } from '../requests';
 import { TypeToRecordMapping } from '../utils';
 import {
@@ -36,7 +35,7 @@ export function collectionsFunctor<T>(
     data: any,
     subgroup?: string,
     url?: string
-  ) {
+  ): ThunkAction<Promise<AxiosResponse>, any, null> {
     return dispatchGenericRequest(
       ADD_TO_COLLECTION,
       url || `/api/${type}/`,
@@ -47,7 +46,7 @@ export function collectionsFunctor<T>(
     );
   }
 
-  function clearCollectionAction(type: keyof T, subgroup?: string) {
+  function clearCollectionAction(type: keyof T, subgroup?: string): AnyAction {
     return {
       payload: {
         subgroup,
@@ -57,7 +56,11 @@ export function collectionsFunctor<T>(
     };
   }
 
-  function deleteItemAction(type: keyof T, id: string, subgroup?: string) {
+  function deleteItemAction(
+    type: keyof T,
+    id: string,
+    subgroup?: string
+  ): ThunkAction<Promise<AxiosResponse>, any, null> {
     const url = `/api/${type}/${id}/`;
     return dispatchGenericRequest(
       DELETE_FROM_COLLECTION,
@@ -73,7 +76,7 @@ export function collectionsFunctor<T>(
     type: keyof T,
     opts?: CollectionOptions,
     subgroup?: string
-  ) {
+  ): ThunkAction<Promise<AxiosResponse>, any, null> {
     return getCollectionAction(
       type,
       {
@@ -88,7 +91,7 @@ export function collectionsFunctor<T>(
     type: keyof T,
     options: CollectionOptions = {},
     subgroup?: string
-  ) {
+  ): ThunkAction<Promise<AxiosResponse>, any, null> {
     const url = `/api/${type}/`;
     const meta = {
       subgroup,
@@ -114,7 +117,7 @@ export function collectionsFunctor<T>(
   function collectionsReducer(
     state: CollectionStore<T> = buildCollectionsStore(typeToRecordMapping),
     action: AnyAction
-  ) {
+  ): CollectionStore<T> {
     switch (action.type) {
       case GET_COLLECTION.SUCCESS:
         return setCollectionFromResponseAction(
