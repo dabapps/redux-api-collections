@@ -1,7 +1,5 @@
 import { FluxStandardAction } from 'flux-standard-action';
-import {
-  Dict,
-} from '../utils';
+import { Dict } from '../utils';
 
 export type CollectionParams = Readonly<{
   shouldAppend: boolean;
@@ -25,12 +23,17 @@ export type Collection<T> = Readonly<{
 }>;
 
 export type CollectionGroup<T> = Dict<Collection<T>>;
-export type CollectionStoreMutable<T> = {[K in keyof T]: CollectionGroup<T[K]>};
+export type CollectionStoreMutable<T> = {
+  [K in keyof T]: CollectionGroup<T[K]>
+};
 export type CollectionStore<T> = Readonly<CollectionStoreMutable<T>>;
 
-export type CollectionResponseAction = FluxStandardAction<{
-  count: number,
-  next: string,
-  results: ReadonlyArray<{}>,
-  page: number
-}, CollectionParams & {subgroup: string}>;
+export type CollectionResponseAction = FluxStandardAction<
+  {
+    count: number;
+    next: string;
+    results: ReadonlyArray<{}>;
+    page: number;
+  },
+  CollectionParams & { subgroup: string }
+>;

@@ -20,19 +20,19 @@ export type AsyncActionSet = Readonly<{
 }>;
 
 export type ResponseState = Readonly<{
-  requestState: RequestStates | null,
-  data: Dict<any> | ReadonlyArray<any> | string | number | null,
+  requestState: RequestStates | null;
+  data: Dict<any> | ReadonlyArray<any> | string | number | null;
 }>;
 
 export type ResponsesReducerState = Dict<Dict<ResponseState>>;
 
 export type SetRequestStatePayload = Readonly<{
-  actionSet: AsyncActionSet,
-  requestState: RequestStates,
-  data: any,
-  tag?: string,
+  actionSet: AsyncActionSet;
+  requestState: RequestStates;
+  data: any;
+  tag?: string;
 }>;
 export type ResetRequestStatePayload = Readonly<{
-  actionSet: AsyncActionSet,
-  tag?: string,
+  actionSet: AsyncActionSet;
+  tag?: string;
 }>;

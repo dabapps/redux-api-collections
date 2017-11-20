@@ -1,9 +1,7 @@
 import { AxiosPromise, AxiosResponse, default as axios } from 'axios';
 import * as Cookies from 'js-cookie';
 import * as _ from 'underscore';
-import {
-  Dict,
-} from '../utils';
+import { Dict } from '../utils';
 import {
   AsyncActionSet,
   RequestMetaData,
@@ -19,7 +17,7 @@ export function makeAsyncActionSet(actionName: string): AsyncActionSet {
   };
 }
 
-export function formatQueryParams (params?: {}): string {
+export function formatQueryParams(params?: {}): string {
   if (!params) {
     return '';
   }
@@ -33,51 +31,80 @@ export function formatQueryParams (params?: {}): string {
     return '';
   }
 
-  return '?' + filteredPairs
-    .map(([key, value]) => `${key}=${value}`)
-    .join('&');
+  return '?' + filteredPairs.map(([key, value]) => `${key}=${value}`).join('&');
 }
 
-export function apiRequest (
-  url: string, method: string, data = {}, headers = {}, onUploadProgress?: (event: ProgressEvent) => void
+export function apiRequest(
+  url: string,
+  method: string,
+  data = {},
+  headers = {},
+  onUploadProgress?: (event: ProgressEvent) => void
 ): AxiosPromise {
   const combinedHeaders = {
-    'Accept': 'application/json',
+    Accept: 'application/json',
     'Content-Type': 'application/json',
     'Cache-Control': 'no-cache',
     'X-CSRFToken': Cookies.get('csrftoken'),
-    ...headers
+    ...headers,
   };
-  return axios({ method, url, data, headers: combinedHeaders, onUploadProgress });
+  return axios({
+    method,
+    url,
+    data,
+    headers: combinedHeaders,
+    onUploadProgress,
+  });
 }
 
-function isResponse (response?: any): response is AxiosResponse {
-  return typeof response === 'object' &&
+function isResponse(response?: any): response is AxiosResponse {
+  return (
+    typeof response === 'object' &&
     response.hasOwnProperty('data') &&
     response.hasOwnProperty('status') &&
-    response.hasOwnProperty('config');
+    response.hasOwnProperty('config')
+  );
 }
 
-export function metaWithResponse (meta: RequestMetaData, response?: AxiosResponse) {
+export function metaWithResponse(
+  meta: RequestMetaData,
+  response?: AxiosResponse
+) {
   if (!isResponse(response)) {
     return meta;
   }
 
-  return {...meta, response};
+  return { ...meta, response };
 }
 
-function getResponse(state: ResponsesReducerState, actionSet: AsyncActionSet, tag?: string): ResponseState {
-  return ((state[actionSet.REQUEST] || {})[tag || '']) || {};
+function getResponse(
+  state: ResponsesReducerState,
+  actionSet: AsyncActionSet,
+  tag?: string
+): ResponseState {
+  return (state[actionSet.REQUEST] || {})[tag || ''] || {};
 }
-export function isPending(state: ResponsesReducerState, actionSet: AsyncActionSet, tag?: string): boolean {
+export function isPending(
+  state: ResponsesReducerState,
+  actionSet: AsyncActionSet,
+  tag?: string
+): boolean {
   return getResponse(state, actionSet, tag).requestState === 'REQUEST';
 }
 
-export function hasFailed(state: ResponsesReducerState, actionSet: AsyncActionSet, tag?: string): boolean {
+export function hasFailed(
+  state: ResponsesReducerState,
+  actionSet: AsyncActionSet,
+  tag?: string
+): boolean {
   return getResponse(state, actionSet, tag).requestState === 'FAILURE';
 }
 
-export function hasSucceded(state: ResponsesReducerState, actionSet: AsyncActionSet, tag?: string): boolean {
+export function hasSucceded(
+  state: ResponsesReducerState,
+  actionSet: AsyncActionSet,
+  tag?: string
+): boolean {
   return getResponse(state, actionSet, tag).requestState === 'SUCCESS';
 }
 
@@ -85,7 +112,7 @@ export function anyPending(
   state: ResponsesReducerState,
   actionSets: ReadonlyArray<AsyncActionSet | [AsyncActionSet, string]>
 ): boolean {
-  return _.any(actionSets, (actionSet) => {
+  return _.any(actionSets, actionSet => {
     if (actionSet instanceof Array) {
       const [actualSet, tag] = actionSet;
       return isPending(state, actualSet, tag);

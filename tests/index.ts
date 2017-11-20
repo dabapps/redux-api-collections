@@ -1,13 +1,7 @@
 import { applyMiddleware, combineReducers, createStore } from 'redux';
 import { Collections } from '../src';
-import {
-  CollectionStore,
-  getCollectionByName,
-} from '../src/collections';
-import {
-  getItemByName,
-  ItemStore,
-} from '../src/items';
+import { CollectionStore, getCollectionByName } from '../src/collections';
+import { getItemByName, ItemStore } from '../src/items';
 
 type Llama = Readonly<{
   furLength: number;
@@ -41,11 +35,14 @@ const itemToRecordMapping = {
 };
 
 interface IStore {
-  collections: CollectionStore<Collections>,
-  items: ItemStore<Items>
+  collections: CollectionStore<Collections>;
+  items: ItemStore<Items>;
 }
 
-const collections = Collections<Collections, Items>(collectionToRecordMapping, itemToRecordMapping);
+const collections = Collections<Collections, Items>(
+  collectionToRecordMapping,
+  itemToRecordMapping
+);
 
 describe('Collections', () => {
   describe('store', () => {

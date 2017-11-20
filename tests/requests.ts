@@ -11,30 +11,30 @@ jest.mock('axios', () => {
 
   const axiosDefault: any = () => {
     const request = {
-      catch (fn: (...args: any[]) => any) {
+      catch(fn: (...args: any[]) => any) {
         failure = fn;
         return request;
       },
-      then (fn: (...args: any[]) => any) {
+      then(fn: (...args: any[]) => any) {
         success = fn;
         return request;
       },
-      failure (error: any) {
+      failure(error: any) {
         return failure(error);
       },
-      success (response: any) {
+      success(response: any) {
         return success(response);
-      }
+      },
     };
 
     return request;
   };
 
-  axiosDefault.defaults = {headers: {common: {}}};
+  axiosDefault.defaults = { headers: { common: {} } };
 
   return {
-    default: axiosDefault
-  }
+    default: axiosDefault,
+  };
 });
 
 import { AxiosResponse } from 'axios';
@@ -78,7 +78,7 @@ describe('Requests', () => {
             actionSet: ACTION_SET,
             data: 'hello',
             requestState: STATE,
-            tag: 'tag'
+            tag: 'tag',
           },
           type: REQUEST_STATE,
         });
@@ -88,7 +88,7 @@ describe('Requests', () => {
             actionSet: ACTION_SET,
             data: null,
             requestState: STATE,
-            tag: undefined
+            tag: undefined,
           },
           type: REQUEST_STATE,
         });
@@ -100,7 +100,7 @@ describe('Requests', () => {
         expect(resetRequestState(ACTION_SET, 'tag')).toEqual({
           payload: {
             actionSet: ACTION_SET,
-            tag: 'tag'
+            tag: 'tag',
           },
           type: RESET_REQUEST_STATE,
         });
@@ -108,7 +108,7 @@ describe('Requests', () => {
         expect(resetRequestState(ACTION_SET)).toEqual({
           payload: {
             actionSet: ACTION_SET,
-            tag: undefined
+            tag: undefined,
           },
           type: RESET_REQUEST_STATE,
         });
@@ -116,7 +116,6 @@ describe('Requests', () => {
     });
 
     describe('dispatchGenericRequest', () => {
-
       const dispatch = jest.fn();
       const getState = jest.fn();
       const thunk = dispatchGenericRequest(ACTION_SET, '/api/url/', METHOD);
@@ -147,89 +146,104 @@ describe('Requests', () => {
       });
 
       it('should dispatch request actions', () => {
-        request = thunk(dispatch, getState) as any as AxiosMock;  // FIXME: We need type-safe mocking
+        request = (thunk(dispatch, getState) as any) as AxiosMock; // FIXME: We need type-safe mocking
 
         expect(dispatch).toHaveBeenCalledWith({
           meta: {
-            tag: undefined
+            tag: undefined,
           },
           payload: {
-            preserveOriginal: undefined
+            preserveOriginal: undefined,
           },
           type: ACTION_SET.REQUEST,
         });
 
-        expect(dispatch).toHaveBeenCalledWith(setRequestState(ACTION_SET, 'REQUEST', null, undefined));
+        expect(dispatch).toHaveBeenCalledWith(
+          setRequestState(ACTION_SET, 'REQUEST', null, undefined)
+        );
       });
 
       it('should dispatch success actions', () => {
         request.success({
-          data: 'llama'
+          data: 'llama',
         });
 
         expect(dispatch).toHaveBeenCalledWith({
           meta: {
-            tag: undefined
+            tag: undefined,
           },
           payload: 'llama',
           type: ACTION_SET.SUCCESS,
         });
 
-        expect(dispatch).toHaveBeenCalledWith(setRequestState(ACTION_SET, 'SUCCESS', 'llama', undefined));
+        expect(dispatch).toHaveBeenCalledWith(
+          setRequestState(ACTION_SET, 'SUCCESS', 'llama', undefined)
+        );
       });
 
       it('should dispatch failure actions', () => {
-        request.failure({
-          response: {
-            data: 'llama'
-          }
-        }).catch(() => null);
+        request
+          .failure({
+            response: {
+              data: 'llama',
+            },
+          })
+          .catch(() => null);
 
         expect(dispatch).toHaveBeenCalledWith({
           meta: {
-            tag: undefined
+            tag: undefined,
           },
           payload: 'llama',
           type: ACTION_SET.FAILURE,
         });
 
-        expect(dispatch).toHaveBeenCalledWith(setRequestState(ACTION_SET, 'FAILURE', 'llama', undefined));
+        expect(dispatch).toHaveBeenCalledWith(
+          setRequestState(ACTION_SET, 'FAILURE', 'llama', undefined)
+        );
       });
     });
 
     describe('metaWithResponse', () => {
-
       const META: RequestMetaData = {};
 
       it('should return the same meta if the response is not valid', () => {
         expect(metaWithResponse(META, undefined)).toBe(META);
-        expect(metaWithResponse(META, {data: {}} as AxiosResponse)).toBe(META);
-        expect(metaWithResponse(META, {status: 200} as AxiosResponse)).toBe(META);
-        expect(metaWithResponse(META, {config: {}} as AxiosResponse)).toBe(META);
+        expect(metaWithResponse(META, { data: {} } as AxiosResponse)).toBe(
+          META
+        );
+        expect(metaWithResponse(META, { status: 200 } as AxiosResponse)).toBe(
+          META
+        );
+        expect(metaWithResponse(META, { config: {} } as AxiosResponse)).toBe(
+          META
+        );
       });
 
       it('should return meta with response data if the response is valid', () => {
-        const response = {data: {}, status: 200, config: {}} as AxiosResponse;
+        const response = { data: {}, status: 200, config: {} } as AxiosResponse;
         const result = metaWithResponse(META, response);
 
         expect(result).not.toBe(META);
-        expect(result).toEqual({response});
+        expect(result).toEqual({ response });
       });
-
     });
-
   });
 
   describe('reducers', () => {
     describe('responsesReducer', () => {
       it('should return a default state', () => {
-        const responsesState = responsesReducer(undefined, {type: 'action'});
+        const responsesState = responsesReducer(undefined, { type: 'action' });
         expect(responsesState).toEqual({});
       });
 
       it('should return the existing state if not modified', () => {
-        const currentResponsesState = responsesReducer(undefined, {type: 'action'});
-        const responsesState = responsesReducer(currentResponsesState, {type: 'action'});
+        const currentResponsesState = responsesReducer(undefined, {
+          type: 'action',
+        });
+        const responsesState = responsesReducer(currentResponsesState, {
+          type: 'action',
+        });
         expect(responsesState).toBe(currentResponsesState);
       });
 
@@ -283,9 +297,9 @@ describe('Requests', () => {
           [ACTION_SET.REQUEST]: {
             tag: {
               requestState: 'REQUEST',
-              data: null
-            }
-          }
+              data: null,
+            },
+          },
         };
         expect(isPending(responsesState, ACTION_SET, 'not-tag')).toBe(false);
         expect(isPending(responsesState, ACTION_SET, 'tag')).toBe(true);
@@ -298,9 +312,9 @@ describe('Requests', () => {
           [ACTION_SET.REQUEST]: {
             tag: {
               requestState: 'FAILURE',
-              data: null
-            }
-          }
+              data: null,
+            },
+          },
         };
 
         expect(hasFailed(responsesState, ACTION_SET, 'not-tag')).toBe(false);
@@ -314,9 +328,9 @@ describe('Requests', () => {
           [ACTION_SET.REQUEST]: {
             tag: {
               requestState: 'SUCCESS',
-              data: null
-            }
-          }
+              data: null,
+            },
+          },
         };
 
         expect(hasSucceded(responsesState, ACTION_SET, 'not-tag')).toBe(false);
@@ -330,38 +344,55 @@ describe('Requests', () => {
           [ACTION_SET.REQUEST]: {
             tag: {
               requestState: 'REQUEST',
-              data: null
-            }
-          }
+              data: null,
+            },
+          },
         };
-        expect(anyPending(responsesState, [[ACTION_SET, 'tag'], [OTHER_ACTION_SET, 'tag']])).toBe(true);
+        expect(
+          anyPending(responsesState, [
+            [ACTION_SET, 'tag'],
+            [OTHER_ACTION_SET, 'tag'],
+          ])
+        ).toBe(true);
 
         const responsesState2: ResponsesReducerState = {
           [ACTION_SET.REQUEST]: {
             tag: {
               requestState: 'SUCCESS',
-              data: null
-            }
-          }
+              data: null,
+            },
+          },
         };
-        expect(anyPending(responsesState2, [[ACTION_SET, 'tag'], [OTHER_ACTION_SET, 'tag']])).toBe(false);
+        expect(
+          anyPending(responsesState2, [
+            [ACTION_SET, 'tag'],
+            [OTHER_ACTION_SET, 'tag'],
+          ])
+        ).toBe(false);
 
         const responsesState3: ResponsesReducerState = {
           [ACTION_SET.REQUEST]: {
             tag: {
               requestState: 'SUCCESS',
-              data: null
-            }
+              data: null,
+            },
           },
           [OTHER_ACTION_SET.REQUEST]: {
             tag: {
               requestState: 'REQUEST',
-              data: null
-            }
-          }
+              data: null,
+            },
+          },
         };
-        expect(anyPending(responsesState3, [[ACTION_SET, 'tag'], [OTHER_ACTION_SET, 'tag']])).toBe(true);
-        expect(anyPending(responsesState3, [[ACTION_SET, 'tag'], OTHER_ACTION_SET])).toBe(false);
+        expect(
+          anyPending(responsesState3, [
+            [ACTION_SET, 'tag'],
+            [OTHER_ACTION_SET, 'tag'],
+          ])
+        ).toBe(true);
+        expect(
+          anyPending(responsesState3, [[ACTION_SET, 'tag'], OTHER_ACTION_SET])
+        ).toBe(false);
       });
     });
 
@@ -372,10 +403,10 @@ describe('Requests', () => {
             tag: {
               requestState: 'REQUEST',
               data: {
-                error: 'Error data!'
-              }
-            }
-          }
+                error: 'Error data!',
+              },
+            },
+          },
         };
         expect(getErrorData(responsesState, ACTION_SET, 'tag')).toBe(undefined);
 
@@ -384,12 +415,14 @@ describe('Requests', () => {
             tag: {
               requestState: 'FAILURE',
               data: {
-                error: 'Error data!'
-              }
-            }
-          }
+                error: 'Error data!',
+              },
+            },
+          },
         };
-        expect(getErrorData(responsesState2, ACTION_SET, 'tag')).toEqual({error: 'Error data!'});
+        expect(getErrorData(responsesState2, ACTION_SET, 'tag')).toEqual({
+          error: 'Error data!',
+        });
       });
     });
   });

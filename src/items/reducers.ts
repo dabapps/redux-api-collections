@@ -1,13 +1,8 @@
 import { isFSA } from 'flux-standard-action';
 import { AnyAction } from 'redux';
 import * as _ from 'underscore';
-import {
-  Dict,
-  TypeToRecordMapping,
-} from '../utils';
-import {
-  ItemStore,
-} from './types';
+import { Dict, TypeToRecordMapping } from '../utils';
+import { ItemStore } from './types';
 
 export function clearItem<T>(
   state: ItemStore<T>,
@@ -15,28 +10,22 @@ export function clearItem<T>(
   typeToRecordMapping: TypeToRecordMapping<T>
 ): ItemStore<T> {
   if (isFSA(action) && action.payload) {
-    const payload = (action.payload as Dict<string>);
+    const payload = action.payload as Dict<string>;
     const itemType = payload.type;
     const subgroup = payload.subgroup || '';
 
     if (itemType in typeToRecordMapping) {
-      return _.extend(
-        {},
-        state, {
-          [itemType]: _.extend(
-            {},
-            state[itemType], {
-              [subgroup]: undefined
-            }
-          ),
-        }
-      );
+      return _.extend({}, state, {
+        [itemType]: _.extend({}, state[itemType], {
+          [subgroup]: undefined,
+        }),
+      });
     }
   }
   return state;
 }
 
-export function setItemFromResponseAction<T> (
+export function setItemFromResponseAction<T>(
   state: ItemStore<T>,
   action: AnyAction,
   typeToRecordMapping: TypeToRecordMapping<T>
@@ -46,17 +35,11 @@ export function setItemFromResponseAction<T> (
     const subgroup = (action.meta as Dict<string>).subgroup || '';
     if (itemType in typeToRecordMapping) {
       const recordBuilder = typeToRecordMapping[itemType];
-      return _.extend(
-        {},
-        state, {
-          [itemType]: _.extend(
-            {},
-            state[itemType], {
-              [subgroup]: recordBuilder(action.payload)
-            }
-          ),
-        }
-      );
+      return _.extend({}, state, {
+        [itemType]: _.extend({}, state[itemType], {
+          [subgroup]: recordBuilder(action.payload),
+        }),
+      });
     }
   }
   return state;

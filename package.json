@@ -9,7 +9,7 @@
     "lint-js": "tslint --project tsconfig.json --type-check '@(src|tests|types|docs)/**/*.@(ts|tsx)'",
     "tests": "jest",
     "test": "npm run prettier-check && npm run dist && npm run lint-js && npm run tests -- --coverage",
-    "prettier": "prettier --write \"static/src/{ts,__tests__}/**/*.{ts,tsx,js,jsx}\"",
+    "prettier": "prettier --write \"{src,tests}/**/*.{ts,tsx,js,jsx}\"",
     "prettier-check": "./scripts/prettier-check",
     "postinstall": "npm run dist"
   },
