@@ -3,10 +3,9 @@ export * from './reducers';
 export * from './types';
 export * from './utils';
 
-// tslint:disable-next-line:no-unused-variable
 import { AxiosResponse } from 'axios';
-// tslint:disable-next-line:no-unused-variable
 import { AnyAction, Dispatch } from 'redux';
+import { ThunkAction } from 'redux-thunk';
 import { dispatchGenericRequest } from '../requests';
 import {
   UrlMethod,
@@ -43,15 +42,15 @@ export function itemsFunctor<T> (
     itemId: string,
     data: any,
     subgroup?: string
-  ) {
+  ): ThunkAction<Promise<AxiosResponse>, any, null> {
     return dispatchGenericRequest(UPDATE_ITEM, url, method, data, itemType, { itemId, subgroup });
   }
 
-  function actionItemAction (type: keyof T, id: string, action: string, data: any, subgroup?: string) {
+  function actionItemAction (type: keyof T, id: string, action: string, data: any, subgroup?: string): ThunkAction<Promise<AxiosResponse>, any, null> {
     return _updateItem(type, `/api/${type}/${id}/${action}/`, 'POST', id, data, subgroup);
   }
 
-  function clearItemAction (itemType: keyof T, subgroup?: string) {
+  function clearItemAction (itemType: keyof T, subgroup?: string): AnyAction{
     return {
       payload: {
         subgroup,
@@ -61,23 +60,23 @@ export function itemsFunctor<T> (
     };
   }
 
-  function getItemAction (itemType: keyof T, itemId: string, subgroup?: string) {
+  function getItemAction (itemType: keyof T, itemId: string, subgroup?: string): ThunkAction<Promise<AxiosResponse>, any, null> {
     const url = `/api/${itemType}/${itemId}/`;
     return dispatchGenericRequest(GET_ITEM, url, 'GET', null, itemType, { itemId, subgroup });
   }
 
-  function patchItemAction (type: keyof T, id: string, data: any, subgroup?: string) {
+  function patchItemAction (type: keyof T, id: string, data: any, subgroup?: string): ThunkAction<Promise<AxiosResponse>, any, null> {
     return _updateItem(type, `/api/${type}/${id}/`, 'PATCH' , id, data, subgroup);
   }
 
-  function updateItemAction (type: keyof T, id: string, data: any, subgroup?: string) {
+  function updateItemAction (type: keyof T, id: string, data: any, subgroup?: string): ThunkAction<Promise<AxiosResponse>, any, null> {
     return _updateItem(type, `/api/${type}/${id}/`, 'PUT', id, data, subgroup);
   }
 
   function itemsReducer (
     state: ItemStore<T> = buildItemStore(typeToRecordMapping),
     action: AnyAction
-  ) {
+  ): ItemStore<T> {
     switch (action.type) {
       case CLEAR_ITEM:
         return clearItem(state, action, typeToRecordMapping);
