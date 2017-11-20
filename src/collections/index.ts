@@ -4,7 +4,7 @@ export * from './types';
 export * from './utils';
 
 import { AxiosResponse } from 'axios';
-import { AnyAction, Dispatch } from 'redux';
+import { AnyAction } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import { dispatchGenericRequest } from '../requests';
 import { TypeToRecordMapping } from '../utils';
