@@ -1,21 +1,15 @@
 import { applyMiddleware, combineReducers, createStore } from 'redux';
 import { Collections } from '../src';
-import {
-  getCollectionByName,
-  TCollectionStore,
-} from '../src/collections';
-import {
-  getItemByName,
-  TItemStore,
-} from '../src/items';
+import { CollectionStore, getCollectionByName } from '../src/collections';
+import { getItemByName, ItemStore } from '../src/items';
 
-type ILlama = Readonly<{
+type Llama = Readonly<{
   furLength: number;
   id: string;
   name: string;
 }>;
 
-const LlamaRecord = (input: Partial<ILlama>): ILlama => {
+const LlamaRecord = (input: Partial<Llama>): Llama => {
   return {
     furLength: 0,
     id: '',
@@ -24,16 +18,16 @@ const LlamaRecord = (input: Partial<ILlama>): ILlama => {
   };
 };
 
-interface ICollections {
-  llamas: ILlama;
+interface Collections {
+  llamas: Llama;
 }
 
 const collectionToRecordMapping = {
   llamas: LlamaRecord,
 };
 
-interface IItems {
-  llamas: ILlama;
+interface Items {
+  llamas: Llama;
 }
 
 const itemToRecordMapping = {
@@ -41,11 +35,14 @@ const itemToRecordMapping = {
 };
 
 interface IStore {
-  collections: TCollectionStore<ICollections>,
-  items: TItemStore<IItems>
+  collections: CollectionStore<Collections>;
+  items: ItemStore<Items>;
 }
 
-const collections = Collections<ICollections, IItems>(collectionToRecordMapping, itemToRecordMapping);
+const collections = Collections<Collections, Items>(
+  collectionToRecordMapping,
+  itemToRecordMapping
+);
 
 describe('Collections', () => {
   describe('store', () => {

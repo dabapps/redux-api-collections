@@ -3,39 +3,18 @@ export * from './reducers';
 export * from './types';
 export * from './utils';
 
-// tslint:disable-next-line:no-unused-variable
-import { AxiosResponse} from 'axios';
-// tslint:disable-next-line:no-unused-variable
-import { AnyAction, Dispatch } from 'redux';
+import { AxiosResponse } from 'axios';
+import { AnyAction } from 'redux';
+import { ThunkAction } from 'redux-thunk';
 import { dispatchGenericRequest } from '../requests';
-import {
-  UrlMethod,
-} from '../requests/types';
-import {
-  Dict,
-  TTypeToRecordMapping,
-} from '../utils';
-import {
-  CLEAR_ITEM,
-  GET_ITEM,
-  UPDATE_ITEM,
-} from './actions';
-import {
-  clearItem,
-  setItemFromResponseAction,
-} from './reducers';
-import {
-  TItemStore,
-} from './types';
-import {
-  buildItemStore,
-  getItemByName,
-} from './utils';
+import { UrlMethod } from '../requests/types';
+import { Dict, TypeToRecordMapping } from '../utils';
+import { CLEAR_ITEM, GET_ITEM, UPDATE_ITEM } from './actions';
+import { clearItem, setItemFromResponseAction } from './reducers';
+import { ItemStore } from './types';
+import { buildItemStore, getItemByName } from './utils';
 
-export function itemsFunctor<T> (
-  typeToRecordMapping: TTypeToRecordMapping<T>,
-) {
-
+export function itemsFunctor<T>(typeToRecordMapping: TypeToRecordMapping<T>) {
   function _updateItem(
     itemType: keyof T,
     url: string,
@@ -43,15 +22,31 @@ export function itemsFunctor<T> (
     itemId: string,
     data: any,
     subgroup?: string
-  ) {
-    return dispatchGenericRequest(UPDATE_ITEM, url, method, data, itemType, { itemId, subgroup });
+  ): ThunkAction<Promise<AxiosResponse>, any, null> {
+    return dispatchGenericRequest(UPDATE_ITEM, url, method, data, itemType, {
+      itemId,
+      subgroup,
+    });
   }
 
-  function actionItemAction (type: keyof T, id: string, action: string, data: any, subgroup?: string) {
-    return _updateItem(type, `/api/${type}/${id}/${action}/`, 'POST', id, data, subgroup);
+  function actionItemAction(
+    type: keyof T,
+    id: string,
+    action: string,
+    data: any,
+    subgroup?: string
+  ): ThunkAction<Promise<AxiosResponse>, any, null> {
+    return _updateItem(
+      type,
+      `/api/${type}/${id}/${action}/`,
+      'POST',
+      id,
+      data,
+      subgroup
+    );
   }
 
-  function clearItemAction (itemType: keyof T, subgroup?: string) {
+  function clearItemAction(itemType: keyof T, subgroup?: string): AnyAction {
     return {
       payload: {
         subgroup,
@@ -61,23 +56,47 @@ export function itemsFunctor<T> (
     };
   }
 
-  function getItemAction (itemType: keyof T, itemId: string, subgroup?: string) {
+  function getItemAction(
+    itemType: keyof T,
+    itemId: string,
+    subgroup?: string
+  ): ThunkAction<Promise<AxiosResponse>, any, null> {
     const url = `/api/${itemType}/${itemId}/`;
-    return dispatchGenericRequest(GET_ITEM, url, 'GET', null, itemType, { itemId, subgroup });
+    return dispatchGenericRequest(GET_ITEM, url, 'GET', null, itemType, {
+      itemId,
+      subgroup,
+    });
   }
 
-  function patchItemAction (type: keyof T, id: string, data: any, subgroup?: string) {
-    return _updateItem(type, `/api/${type}/${id}/`, 'PATCH' , id, data, subgroup);
+  function patchItemAction(
+    type: keyof T,
+    id: string,
+    data: any,
+    subgroup?: string
+  ): ThunkAction<Promise<AxiosResponse>, any, null> {
+    return _updateItem(
+      type,
+      `/api/${type}/${id}/`,
+      'PATCH',
+      id,
+      data,
+      subgroup
+    );
   }
 
-  function updateItemAction (type: keyof T, id: string, data: any, subgroup?: string) {
+  function updateItemAction(
+    type: keyof T,
+    id: string,
+    data: any,
+    subgroup?: string
+  ): ThunkAction<Promise<AxiosResponse>, any, null> {
     return _updateItem(type, `/api/${type}/${id}/`, 'PUT', id, data, subgroup);
   }
 
-  function itemsReducer (
-    state: TItemStore<T> = buildItemStore(typeToRecordMapping),
+  function itemsReducer(
+    state: ItemStore<T> = buildItemStore(typeToRecordMapping),
     action: AnyAction
-  ) {
+  ): ItemStore<T> {
     switch (action.type) {
       case CLEAR_ITEM:
         return clearItem(state, action, typeToRecordMapping);
@@ -88,8 +107,13 @@ export function itemsFunctor<T> (
         const subgroup = (action.meta as Dict<string>).subgroup || '';
         if (itemType in typeToRecordMapping) {
           const item = getItemByName(state, itemType as keyof T, subgroup);
-          if (!item || (item as any).id === action.payload.id) {  // FIXME: we should be requiring ID on our objects
-            return setItemFromResponseAction(state, action, typeToRecordMapping);
+          if (!item || (item as any).id === action.payload.id) {
+            // FIXME: we should be requiring ID on our objects
+            return setItemFromResponseAction(
+              state,
+              action,
+              typeToRecordMapping
+            );
           }
         }
         return state;
@@ -108,6 +132,6 @@ export function itemsFunctor<T> (
     },
     reducers: {
       itemsReducer,
-    }
+    },
   };
 }

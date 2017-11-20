@@ -1,20 +1,15 @@
-import {
-  CLEAR_ITEM,
-  GET_ITEM,
-  getItemByName,
-  UPDATE_ITEM,
-} from '../src/items';
+import { CLEAR_ITEM, GET_ITEM, getItemByName, UPDATE_ITEM } from '../src/items';
 import * as requests from '../src/requests';
 
 import { Collections } from '../src';
 
-type ILlama = Readonly<{
+type Llama = Readonly<{
   furLength: number;
   id: string;
   name: string;
 }>;
 
-const LlamaRecord = (input: Partial<ILlama>): ILlama => {
+const LlamaRecord = (input: Partial<Llama>): Llama => {
   return {
     furLength: 0,
     id: '',
@@ -23,22 +18,21 @@ const LlamaRecord = (input: Partial<ILlama>): ILlama => {
   };
 };
 
-interface IItems {
-  llamas: ILlama;
+interface Items {
+  llamas: Llama;
 }
 
 const itemToRecordMapping = {
   llamas: LlamaRecord,
 };
 
-const collections = Collections<{}, IItems>({}, itemToRecordMapping);
+const collections = Collections<{}, Items>({}, itemToRecordMapping);
 
 describe('Items', () => {
-
   describe('actions', () => {
-
-    const dispatchGenericRequestSpy =
-      jest.spyOn(requests, 'dispatchGenericRequest').mockImplementation(() => null);
+    const dispatchGenericRequestSpy = jest
+      .spyOn(requests, 'dispatchGenericRequest')
+      .mockImplementation(() => null);
 
     beforeEach(() => {
       dispatchGenericRequestSpy.mockReset();
@@ -118,26 +112,29 @@ describe('Items', () => {
   describe('reducers', () => {
     function loadItem(item: any) {
       const action = {
-        meta: { itemId: 'first', tag: 'llamas', },
+        meta: { itemId: 'first', tag: 'llamas' },
         payload: item,
         type: GET_ITEM.SUCCESS,
       };
 
-      return collections.reducers.itemsReducer(undefined, action)
+      return collections.reducers.itemsReducer(undefined, action);
     }
 
     it('clears the item on clear item', () => {
       const action = { type: CLEAR_ITEM, payload: { type: 'llamas' } };
-      const state = collections.reducers.itemsReducer({
-        llamas: {
-          '': LlamaRecord({})
+      const state = collections.reducers.itemsReducer(
+        {
+          llamas: {
+            '': LlamaRecord({}),
+          },
         },
-      }, action);
+        action
+      );
       expect(getItemByName(state, 'llamas')).toBe(undefined);
     });
 
     it('sets the item on successful load', () => {
-      const newItem = { id: 'first', name: 'Llama drama', };
+      const newItem = { id: 'first', name: 'Llama drama' };
 
       const state = loadItem(newItem);
       const item = getItemByName(state, 'llamas');
@@ -147,11 +144,11 @@ describe('Items', () => {
     });
 
     it('updates the item on successful update', () => {
-      const oldItem = { id: 'first', name: 'Cats entry', };
-      const newItem = { id: 'first', name: 'Cats updated entry', };
+      const oldItem = { id: 'first', name: 'Cats entry' };
+      const newItem = { id: 'first', name: 'Cats updated entry' };
       const oldState = loadItem(oldItem);
       const action = {
-        meta: { itemId: 'first', tag: 'llamas', },
+        meta: { itemId: 'first', tag: 'llamas' },
         payload: newItem,
         type: UPDATE_ITEM.SUCCESS,
       };
@@ -171,17 +168,17 @@ describe('Items', () => {
         UPDATE_ITEM.SUCCESS,
       ];
 
-      const initialState = loadItem({ id: 'first', name: 'Cats entry', });
+      const initialState = loadItem({ id: 'first', name: 'Cats entry' });
 
-      actionTypes.forEach((type) => {
+      actionTypes.forEach(type => {
         const newState = collections.reducers.itemsReducer(initialState, {
           meta: {
-            tag: 'not-llamas'
+            tag: 'not-llamas',
           },
           payload: {
-            type: 'not-llamas'
+            type: 'not-llamas',
           },
-          type
+          type,
         });
 
         expect(newState).toBe(initialState);

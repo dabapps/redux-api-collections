@@ -1,20 +1,15 @@
 import { isFSA } from 'flux-standard-action';
 import { AnyAction } from 'redux';
+import { Dict } from '../utils';
+import { REQUEST_STATE, RESET_REQUEST_STATE } from './actions';
 import {
-  Dict,
-} from '../utils';
-import {
-  REQUEST_STATE,
-  RESET_REQUEST_STATE,
-} from './actions';
-import {
-  IResetRequestStatePayload,
-  IResponseState,
-  ISetRequestStatePayload,
+  ResetRequestStatePayload,
   ResponsesReducerState,
+  ResponseState,
+  SetRequestStatePayload,
 } from './types';
 
-export function responsesReducer (
+export function responsesReducer(
   state: ResponsesReducerState = {},
   action: AnyAction
 ): ResponsesReducerState {
@@ -26,7 +21,7 @@ export function responsesReducer (
           requestState,
           tag,
           data,
-        } = (action.payload as ISetRequestStatePayload);
+        } = action.payload as SetRequestStatePayload;
         const existing = state[actionSet.REQUEST] || {};
         return {
           ...state,
@@ -34,18 +29,15 @@ export function responsesReducer (
             ...existing,
             [tag || '']: {
               requestState,
-              data
-            }
-          }
+              data,
+            },
+          },
         };
       }
       break;
     case RESET_REQUEST_STATE:
       if (isFSA(action)) {
-        const {
-          actionSet,
-          tag,
-        } = (action.payload as IResetRequestStatePayload);
+        const { actionSet, tag } = action.payload as ResetRequestStatePayload;
         const existing = state[actionSet.REQUEST] || {};
         return {
           ...state,
@@ -53,9 +45,9 @@ export function responsesReducer (
             ...existing,
             [tag || '']: {
               requestState: null,
-              data: null
-            }
-          }
+              data: null,
+            },
+          },
         };
       }
       break;

@@ -1,13 +1,10 @@
-import {
-  TTypeToRecordMapping,
-} from '../utils';
-import {
-  TItemStore,
-  TItemStoreMutable,
-} from './types';
+import { TypeToRecordMapping } from '../utils';
+import { ItemStore, ItemStoreMutable } from './types';
 
-export function buildItemStore<T>(mapping: TTypeToRecordMapping<T>): TItemStore<T> {
-  const store = {} as TItemStoreMutable<T>;
+export function buildItemStore<T>(
+  mapping: TypeToRecordMapping<T>
+): ItemStore<T> {
+  const store = {} as ItemStoreMutable<T>;
   for (const key of Object.keys(mapping)) {
     store[key] = {};
   }
@@ -15,7 +12,7 @@ export function buildItemStore<T>(mapping: TTypeToRecordMapping<T>): TItemStore<
 }
 
 export function getItemByName<T>(
-  itemStore: TItemStore<T>,
+  itemStore: ItemStore<T>,
   key: keyof T,
   subgroup: string = ''
 ) {

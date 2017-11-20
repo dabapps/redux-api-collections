@@ -3,16 +3,11 @@ export * from './reducers';
 export * from './types';
 export * from './utils';
 
-// tslint:disable-next-line:no-unused-variable
 import { AxiosResponse } from 'axios';
-// tslint:disable-next-line:no-unused-variable
-import { AnyAction, Dispatch } from 'redux';
-import {
-  dispatchGenericRequest,
-} from '../requests';
-import {
-  TTypeToRecordMapping,
-} from '../utils';
+import { AnyAction } from 'redux';
+import { ThunkAction } from 'redux-thunk';
+import { dispatchGenericRequest } from '../requests';
+import { TypeToRecordMapping } from '../utils';
 import {
   ADD_TO_COLLECTION,
   CLEAR_COLLECTION,
@@ -25,25 +20,33 @@ import {
   deleteCollectionItem,
   setCollectionFromResponseAction,
 } from './reducers';
-import {
-  ICollectionOptions,
-  TCollectionStore,
-} from './types';
+import { CollectionOptions, CollectionStore } from './types';
 import {
   buildCollectionsStore,
   formatCollectionQueryParams,
   WHOLE_COLLECTION_PAGE_SIZE,
 } from './utils';
 
-export function collectionsFunctor<T> (
-  typeToRecordMapping: TTypeToRecordMapping<T>,
+export function collectionsFunctor<T>(
+  typeToRecordMapping: TypeToRecordMapping<T>
 ) {
-
-  function addItemAction (type: keyof T, data: any, subgroup?: string, url?: string) {
-    return dispatchGenericRequest(ADD_TO_COLLECTION, url || `/api/${type}/`, 'POST', data, type, { subgroup });
+  function addItemAction(
+    type: keyof T,
+    data: any,
+    subgroup?: string,
+    url?: string
+  ): ThunkAction<Promise<AxiosResponse>, any, null> {
+    return dispatchGenericRequest(
+      ADD_TO_COLLECTION,
+      url || `/api/${type}/`,
+      'POST',
+      data,
+      type,
+      { subgroup }
+    );
   }
 
-  function clearCollectionAction (type: keyof T, subgroup?: string) {
+  function clearCollectionAction(type: keyof T, subgroup?: string): AnyAction {
     return {
       payload: {
         subgroup,
@@ -53,7 +56,11 @@ export function collectionsFunctor<T> (
     };
   }
 
-  function deleteItemAction (type: keyof T, id: string, subgroup?: string) {
+  function deleteItemAction(
+    type: keyof T,
+    id: string,
+    subgroup?: string
+  ): ThunkAction<Promise<AxiosResponse>, any, null> {
     const url = `/api/${type}/${id}/`;
     return dispatchGenericRequest(
       DELETE_FROM_COLLECTION,
@@ -65,18 +72,26 @@ export function collectionsFunctor<T> (
     );
   }
 
-  function getAllCollectionAction (type: keyof T, opts?: ICollectionOptions, subgroup?: string) {
+  function getAllCollectionAction(
+    type: keyof T,
+    opts?: CollectionOptions,
+    subgroup?: string
+  ): ThunkAction<Promise<AxiosResponse>, any, null> {
     return getCollectionAction(
       type,
       {
         ...opts,
-        pageSize: WHOLE_COLLECTION_PAGE_SIZE
+        pageSize: WHOLE_COLLECTION_PAGE_SIZE,
       },
       subgroup
     );
   }
 
-  function getCollectionAction (type: keyof T, options: ICollectionOptions = {}, subgroup?: string) {
+  function getCollectionAction(
+    type: keyof T,
+    options: CollectionOptions = {},
+    subgroup?: string
+  ): ThunkAction<Promise<AxiosResponse>, any, null> {
     const url = `/api/${type}/`;
     const meta = {
       subgroup,
@@ -89,16 +104,27 @@ export function collectionsFunctor<T> (
 
     const urlWithParams = `${url}${formatCollectionQueryParams(options)}`;
 
-    return dispatchGenericRequest(GET_COLLECTION, urlWithParams, 'GET', null, type, meta);
+    return dispatchGenericRequest(
+      GET_COLLECTION,
+      urlWithParams,
+      'GET',
+      null,
+      type,
+      meta
+    );
   }
 
-  function collectionsReducer (
-    state: TCollectionStore<T> = buildCollectionsStore(typeToRecordMapping),
+  function collectionsReducer(
+    state: CollectionStore<T> = buildCollectionsStore(typeToRecordMapping),
     action: AnyAction
-  ) {
+  ): CollectionStore<T> {
     switch (action.type) {
       case GET_COLLECTION.SUCCESS:
-        return setCollectionFromResponseAction(state, action, typeToRecordMapping);
+        return setCollectionFromResponseAction(
+          state,
+          action,
+          typeToRecordMapping
+        );
       case ADD_TO_COLLECTION.SUCCESS:
         return addCollectionItem(state, action, typeToRecordMapping);
       case DELETE_FROM_COLLECTION.SUCCESS:
@@ -120,6 +146,6 @@ export function collectionsFunctor<T> (
     },
     reducers: {
       collectionsReducer,
-    }
+    },
   };
 }
