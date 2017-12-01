@@ -120,6 +120,13 @@ describe('Items', () => {
       return collections.reducers.itemsReducer(undefined, action);
     }
 
+    it('should provide an empty slot for our item types when first loading', () => {
+      const state = collections.reducers.itemsReducer(undefined, {
+        type: 'no',
+      });
+      expect(getItemByName(state, 'llamas')).toBe(undefined);
+    });
+
     it('clears the item on clear item', () => {
       const action = { type: CLEAR_ITEM, payload: { type: 'llamas' } };
       const state = collections.reducers.itemsReducer(

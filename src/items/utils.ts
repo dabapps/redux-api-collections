@@ -15,6 +15,6 @@ export function getItemByName<T>(
   itemStore: ItemStore<T>,
   key: keyof T,
   subgroup: string = ''
-) {
+): T[keyof T] | undefined {
   return itemStore[key][subgroup];
 }
