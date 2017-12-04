@@ -19,6 +19,7 @@
     "@types/underscore": "1.8.0",
     "axios": "0.16.2",
     "flux-standard-action": "1.2.0",
+    "immutable": "3.8.2",
     "js-cookie": "2.1.4",
     "redux": "3.7.2",
     "redux-thunk": "2.2.0",
@@ -42,7 +43,8 @@
   },
   "peerDependencies": {
     "axios": ">= 0.16.2 < 0.17",
-    "typescript": ">= 2.3.3 < 3"
+    "typescript": ">= 2.3.3 < 3",
+    "immutable": ">= 3.8.2 < 5"
   },
   "repository": {
     "type": "git",

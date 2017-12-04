@@ -1,6 +1,8 @@
+import { List } from 'immutable';
 import { formatQueryParams } from '../requests';
 import { IdKeyedMap, TypeToRecordMapping } from '../utils';
 import {
+  Collection,
   CollectionOptions,
   CollectionStore,
   CollectionStoreMutable,
@@ -43,14 +45,15 @@ export function buildCollectionsStore<T extends IdKeyedMap<T>>(
 export function getCollectionByName<T extends IdKeyedMap<T>>(
   collectionStore: CollectionStore<T>,
   key: keyof T,
-  subgroup: string = ''
-) {
+  subgroup: string = '',
+): Collection<T[keyof T]> {
   const collection = collectionStore[key][subgroup];
   return (
     collection || {
       page: 1,
       count: 0,
       results: [],
+      cachedOutput: List(),
     }
   );
 }
@@ -58,7 +61,15 @@ export function getCollectionByName<T extends IdKeyedMap<T>>(
 export function getCollectionResultsByName<T extends IdKeyedMap<T>>(
   collectionStore: CollectionStore<T>,
   key: keyof T,
-  subgroup: string = ''
+  subgroup: string = '',
 ) {
   return getCollectionByName(collectionStore, key, subgroup).results;
+}
+
+export function getImmutableCollectionResultsByName<T extends IdKeyedMap<T>>(
+  collectionStore: CollectionStore<T>,
+  key: keyof T,
+  subgroup: string = '',
+) {
+  return getCollectionByName(collectionStore, key, subgroup).cachedOutput;
 }
