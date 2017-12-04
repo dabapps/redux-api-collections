@@ -1,7 +1,7 @@
 import { isFSA } from 'flux-standard-action';
 import { AnyAction } from 'redux';
 import * as _ from 'underscore';
-import { Dict, TypeToRecordMapping } from '../utils';
+import { Dict, IdKeyed, IdKeyedMap, TypeToRecordMapping } from '../utils';
 import {
   CollectionGroup,
   CollectionResponseAction,
@@ -9,7 +9,7 @@ import {
 } from './types';
 import { getCollectionByName } from './utils';
 
-function updateCollectionItemsFromResponse<T>(
+function updateCollectionItemsFromResponse<T extends IdKeyed>(
   collectionData: CollectionGroup<T>,
   action: CollectionResponseAction,
   itemConstructor: (data: {}) => T
@@ -46,7 +46,7 @@ function updateCollectionItemsFromResponse<T>(
   };
 }
 
-export function setCollectionFromResponseAction<T>(
+export function setCollectionFromResponseAction<T extends IdKeyedMap<T>>(
   state: CollectionStore<T>,
   action: AnyAction,
   typeToRecordMapping: TypeToRecordMapping<T>
@@ -67,7 +67,7 @@ export function setCollectionFromResponseAction<T>(
   return state;
 }
 
-export function addCollectionItem<T>(
+export function addCollectionItem<T extends IdKeyedMap<T>>(
   state: CollectionStore<T>,
   action: AnyAction,
   typeToRecordMapping: TypeToRecordMapping<T>
@@ -101,7 +101,7 @@ export function addCollectionItem<T>(
   return state;
 }
 
-export function deleteCollectionItem<T>(
+export function deleteCollectionItem<T extends IdKeyedMap<T>>(
   state: CollectionStore<T>,
   action: AnyAction,
   typeToRecordMapping: TypeToRecordMapping<T>
@@ -118,9 +118,8 @@ export function deleteCollectionItem<T>(
         collectionType as keyof T,
         subgroup
       );
-      // FIXME: Type this correctly
       const results = existingCollection.results.filter(
-        (item: any) => item.id !== itemId
+        item => item.id !== itemId
       );
       const updatedCollection = {
         ...existingCollection,
@@ -137,7 +136,7 @@ export function deleteCollectionItem<T>(
   return state;
 }
 
-export function clearCollection<T>(
+export function clearCollection<T extends IdKeyedMap<T>>(
   state: CollectionStore<T>,
   action: AnyAction,
   typeToRecordMapping: TypeToRecordMapping<T>

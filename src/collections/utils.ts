@@ -1,5 +1,5 @@
 import { formatQueryParams } from '../requests';
-import { TypeToRecordMapping } from '../utils';
+import { IdKeyedMap, TypeToRecordMapping } from '../utils';
 import {
   CollectionOptions,
   CollectionStore,
@@ -30,7 +30,7 @@ export function formatCollectionQueryParams(
   });
 }
 
-export function buildCollectionsStore<T>(
+export function buildCollectionsStore<T extends IdKeyedMap<T>>(
   mapping: TypeToRecordMapping<T>
 ): CollectionStore<T> {
   const store = {} as CollectionStoreMutable<T>;
@@ -40,7 +40,7 @@ export function buildCollectionsStore<T>(
   return store;
 }
 
-export function getCollectionByName<T>(
+export function getCollectionByName<T extends IdKeyedMap<T>>(
   collectionStore: CollectionStore<T>,
   key: keyof T,
   subgroup: string = ''
@@ -55,7 +55,7 @@ export function getCollectionByName<T>(
   );
 }
 
-export function getCollectionResultsByName<T>(
+export function getCollectionResultsByName<T extends IdKeyedMap<T>>(
   collectionStore: CollectionStore<T>,
   key: keyof T,
   subgroup: string = ''

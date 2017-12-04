@@ -1,5 +1,5 @@
 import { FluxStandardAction } from 'flux-standard-action';
-import { Dict } from '../utils';
+import { Dict, IdKeyed, IdKeyedMap } from '../utils';
 
 export type CollectionParams = Readonly<{
   shouldAppend: boolean;
@@ -12,7 +12,7 @@ export type CollectionParams = Readonly<{
 }>;
 export type CollectionOptions = Partial<CollectionParams>;
 
-export type Collection<T> = Readonly<{
+export type Collection<T extends IdKeyed> = Readonly<{
   page: number;
   ordering?: string;
   reverseOrdering?: boolean;
@@ -22,11 +22,13 @@ export type Collection<T> = Readonly<{
   results: ReadonlyArray<T>;
 }>;
 
-export type CollectionGroup<T> = Dict<Collection<T>>;
-export type CollectionStoreMutable<T> = {
+export type CollectionGroup<T extends IdKeyed> = Dict<Collection<T>>;
+export type CollectionStoreMutable<T extends IdKeyedMap<T>> = {
   [K in keyof T]: CollectionGroup<T[K]>
 };
-export type CollectionStore<T> = Readonly<CollectionStoreMutable<T>>;
+export type CollectionStore<T extends IdKeyedMap<T>> = Readonly<
+  CollectionStoreMutable<T>
+>;
 
 export type CollectionResponseAction = FluxStandardAction<
   {

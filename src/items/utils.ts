@@ -1,7 +1,7 @@
-import { TypeToRecordMapping } from '../utils';
+import { IdKeyedMap, TypeToRecordMapping } from '../utils';
 import { ItemStore, ItemStoreMutable } from './types';
 
-export function buildItemStore<T>(
+export function buildItemStore<T extends IdKeyedMap<T>>(
   mapping: TypeToRecordMapping<T>
 ): ItemStore<T> {
   const store = {} as ItemStoreMutable<T>;
@@ -11,7 +11,7 @@ export function buildItemStore<T>(
   return store;
 }
 
-export function getItemByName<T>(
+export function getItemByName<T extends IdKeyedMap<T>>(
   itemStore: ItemStore<T>,
   key: keyof T,
   subgroup: string = ''
