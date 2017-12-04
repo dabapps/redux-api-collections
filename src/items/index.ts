@@ -8,13 +8,15 @@ import { AnyAction } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import { dispatchGenericRequest } from '../requests';
 import { UrlMethod } from '../requests/types';
-import { Dict, TypeToRecordMapping } from '../utils';
+import { Dict, IdKeyedMap, TypeToRecordMapping } from '../utils';
 import { CLEAR_ITEM, GET_ITEM, UPDATE_ITEM } from './actions';
 import { clearItem, setItemFromResponseAction } from './reducers';
 import { ItemStore } from './types';
 import { buildItemStore, getItemByName } from './utils';
 
-export function itemsFunctor<T>(typeToRecordMapping: TypeToRecordMapping<T>) {
+export function itemsFunctor<T extends IdKeyedMap<T>>(
+  typeToRecordMapping: TypeToRecordMapping<T>
+) {
   function _updateItem(
     itemType: keyof T,
     url: string,
@@ -107,8 +109,7 @@ export function itemsFunctor<T>(typeToRecordMapping: TypeToRecordMapping<T>) {
         const subgroup = (action.meta as Dict<string>).subgroup || '';
         if (itemType in typeToRecordMapping) {
           const item = getItemByName(state, itemType as keyof T, subgroup);
-          if (!item || (item as any).id === action.payload.id) {
-            // FIXME: we should be requiring ID on our objects
+          if (!item || item.id === action.payload.id) {
             return setItemFromResponseAction(
               state,
               action,

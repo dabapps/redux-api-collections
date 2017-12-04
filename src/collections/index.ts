@@ -7,7 +7,7 @@ import { AxiosResponse } from 'axios';
 import { AnyAction } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import { dispatchGenericRequest } from '../requests';
-import { TypeToRecordMapping } from '../utils';
+import { IdKeyedMap, TypeToRecordMapping } from '../utils';
 import {
   ADD_TO_COLLECTION,
   CLEAR_COLLECTION,
@@ -27,7 +27,7 @@ import {
   WHOLE_COLLECTION_PAGE_SIZE,
 } from './utils';
 
-export function collectionsFunctor<T>(
+export function collectionsFunctor<T extends IdKeyedMap<T>>(
   typeToRecordMapping: TypeToRecordMapping<T>
 ) {
   function addItemAction(

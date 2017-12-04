@@ -1,10 +1,10 @@
 import { isFSA } from 'flux-standard-action';
 import { AnyAction } from 'redux';
 import * as _ from 'underscore';
-import { Dict, TypeToRecordMapping } from '../utils';
+import { Dict, IdKeyedMap, TypeToRecordMapping } from '../utils';
 import { ItemStore } from './types';
 
-export function clearItem<T>(
+export function clearItem<T extends IdKeyedMap<T>>(
   state: ItemStore<T>,
   action: AnyAction,
   typeToRecordMapping: TypeToRecordMapping<T>
@@ -25,7 +25,7 @@ export function clearItem<T>(
   return state;
 }
 
-export function setItemFromResponseAction<T>(
+export function setItemFromResponseAction<T extends IdKeyedMap<T>>(
   state: ItemStore<T>,
   action: AnyAction,
   typeToRecordMapping: TypeToRecordMapping<T>

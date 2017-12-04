@@ -6,9 +6,9 @@ import { AxiosResponse } from 'axios';
 import { AnyAction, Dispatch } from 'redux';
 import { collectionsFunctor } from './collections';
 import { itemsFunctor } from './items';
-import { TypeToRecordMapping } from './utils';
+import { IdKeyedMap, TypeToRecordMapping } from './utils';
 
-export function Collections<T, U>(
+export function Collections<T extends IdKeyedMap<T>, U extends IdKeyedMap<U>>(
   collectionToRecordMapping: TypeToRecordMapping<T>,
   itemToRecordMapping: TypeToRecordMapping<U>
 ) {
