@@ -4,6 +4,9 @@ export * from './types';
 export * from './utils';
 
 import { AxiosResponse } from 'axios';
+// Required for re-exporting
+// tslint:disable-next-line:no-unused-variable
+import { List } from 'immutable';
 import { AnyAction } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import { dispatchGenericRequest } from '../requests';
