@@ -128,11 +128,26 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
           useImmutable
         );
       case ADD_TO_COLLECTION.SUCCESS:
-        return addCollectionItem(state, action, typeToRecordMapping, useImmutable);
+        return addCollectionItem(
+          state,
+          action,
+          typeToRecordMapping,
+          useImmutable
+        );
       case DELETE_FROM_COLLECTION.SUCCESS:
-        return deleteCollectionItem(state, action, typeToRecordMapping, useImmutable);
+        return deleteCollectionItem(
+          state,
+          action,
+          typeToRecordMapping,
+          useImmutable
+        );
       case CLEAR_COLLECTION:
-        return clearCollection(state, action, typeToRecordMapping, useImmutable);
+        return clearCollection(
+          state,
+          action,
+          typeToRecordMapping,
+          useImmutable
+        );
       default:
         return state;
     }

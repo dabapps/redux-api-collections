@@ -13,7 +13,10 @@ export function Collections<T extends IdKeyedMap<T>, U extends IdKeyedMap<U>>(
   itemToRecordMapping: TypeToRecordMapping<U>,
   useImmutableForCollections: boolean = false
 ) {
-  const collections = collectionsFunctor(collectionToRecordMapping, useImmutableForCollections);
+  const collections = collectionsFunctor(
+    collectionToRecordMapping,
+    useImmutableForCollections
+  );
   const items = itemsFunctor(itemToRecordMapping);
   return {
     actions: {

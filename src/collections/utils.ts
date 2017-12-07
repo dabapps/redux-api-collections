@@ -45,7 +45,7 @@ export function buildCollectionsStore<T extends IdKeyedMap<T>>(
 export function getCollectionByName<T extends IdKeyedMap<T>>(
   collectionStore: CollectionStore<T>,
   key: keyof T,
-  subgroup: string = '',
+  subgroup: string = ''
 ): Collection<T[keyof T]> {
   const collection = collectionStore[key][subgroup];
   return (
@@ -61,7 +61,7 @@ export function getCollectionByName<T extends IdKeyedMap<T>>(
 export function getCollectionResultsByName<T extends IdKeyedMap<T>>(
   collectionStore: CollectionStore<T>,
   key: keyof T,
-  subgroup: string = '',
+  subgroup: string = ''
 ): ReadonlyArray<T[keyof T]> {
   return getCollectionByName(collectionStore, key, subgroup).results;
 }
@@ -69,11 +69,14 @@ export function getCollectionResultsByName<T extends IdKeyedMap<T>>(
 export function getImmutableCollectionResultsByName<T extends IdKeyedMap<T>>(
   collectionStore: CollectionStore<T>,
   key: keyof T,
-  subgroup: string = '',
+  subgroup: string = ''
 ): List<T[keyof T]> {
-  const items = getCollectionByName(collectionStore, key, subgroup).immutableResults;
+  const items = getCollectionByName(collectionStore, key, subgroup)
+    .immutableResults;
   if (!items) {
-    throw new Error('You are trying to get Immutable collections without initializing Collections as Immutable');
+    throw new Error(
+      'You are trying to get Immutable collections without initializing Collections as Immutable'
+    );
   }
   return items;
 }
