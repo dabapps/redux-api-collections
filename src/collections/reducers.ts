@@ -14,7 +14,7 @@ function updateCollectionItemsFromResponse<T extends IdKeyed>(
   collectionData: CollectionGroup<T>,
   action: CollectionResponseAction,
   itemConstructor: (data: {}) => T,
-  useImmutable: boolean = false,
+  useImmutable: boolean,
 ): CollectionGroup<T> {
   const {
     subgroup,
@@ -39,7 +39,7 @@ function updateCollectionItemsFromResponse<T extends IdKeyed>(
     ordering,
     page,
     results: newCollectionResults,
-    cachedOutput: useImmutable ? List<T>(newCollectionResults) : null,
+    immutableResults: useImmutable ? List<T>(newCollectionResults) : null,
     reverseOrdering,
   };
 
@@ -52,7 +52,8 @@ function updateCollectionItemsFromResponse<T extends IdKeyed>(
 export function setCollectionFromResponseAction<T extends IdKeyedMap<T>>(
   state: CollectionStore<T>,
   action: AnyAction,
-  typeToRecordMapping: TypeToRecordMapping<T>
+  typeToRecordMapping: TypeToRecordMapping<T>,
+  useImmutable: boolean
 ): CollectionStore<T> {
   if (isFSA(action) && action.meta) {
     const collectionType = (action.meta as Dict<string>).tag;
@@ -62,7 +63,8 @@ export function setCollectionFromResponseAction<T extends IdKeyedMap<T>>(
         [collectionType]: updateCollectionItemsFromResponse(
           state[collectionType],
           action as CollectionResponseAction,
-          recordBuilder
+          recordBuilder,
+          useImmutable,
         ),
       });
     }
@@ -74,7 +76,7 @@ export function addCollectionItem<T extends IdKeyedMap<T>>(
   state: CollectionStore<T>,
   action: AnyAction,
   typeToRecordMapping: TypeToRecordMapping<T>,
-  useImmutable: boolean = false,
+  useImmutable: boolean,
 ): CollectionStore<T> {
   if (isFSA(action) && action.meta) {
     const meta = action.meta as Dict<string>;
@@ -95,7 +97,7 @@ export function addCollectionItem<T extends IdKeyedMap<T>>(
         ...existingCollection,
         count: existingCollection.count + 1,
         results,
-        cachedOutput: useImmutable ? List<T>(results) : null,
+        immutableResults: useImmutable ? List<T>(results) : null,
       };
       return _.extend({}, state, {
         [collectionType]: _.extend({}, state[collectionType], {
@@ -111,7 +113,7 @@ export function deleteCollectionItem<T extends IdKeyedMap<T>>(
   state: CollectionStore<T>,
   action: AnyAction,
   typeToRecordMapping: TypeToRecordMapping<T>,
-  useImmutable: boolean = false,
+  useImmutable: boolean,
 ): CollectionStore<T> {
   if (isFSA(action) && action.meta) {
     const meta = action.meta as Dict<string>;
@@ -132,7 +134,7 @@ export function deleteCollectionItem<T extends IdKeyedMap<T>>(
         ...existingCollection,
         count: results.length,
         results,
-        cachedOutput: useImmutable ? List<T>(results) : null,
+        immutableResults: useImmutable ? List<T>(results) : null,
       };
       return _.extend({}, state, {
         [collectionType]: _.extend({}, state[collectionType], {
@@ -148,7 +150,7 @@ export function clearCollection<T extends IdKeyedMap<T>>(
   state: CollectionStore<T>,
   action: AnyAction,
   typeToRecordMapping: TypeToRecordMapping<T>,
-  useImmutable: boolean = false,
+  useImmutable: boolean,
 ): CollectionStore<T> {
   if (isFSA(action) && action.payload) {
     const payload = action.payload as Dict<string>;
@@ -160,7 +162,7 @@ export function clearCollection<T extends IdKeyedMap<T>>(
         page: 1,
         count: 0,
         results: [],
-        cachedOutput: useImmutable ? List<T>() : null,
+        immutableResults: useImmutable ? List<T>() : null,
       };
       return _.extend({}, state, {
         [collectionType]: _.extend({}, state[collectionType], {

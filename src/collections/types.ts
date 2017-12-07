@@ -21,7 +21,7 @@ export type Collection<T extends IdKeyed> = Readonly<{
   next?: string;
   filters?: Dict<string>;
   results: ReadonlyArray<T>;
-  cachedOutput: List<T> | null;
+  immutableResults: List<T> | null;
 }>;
 
 export type CollectionGroup<T extends IdKeyed> = Dict<Collection<T>>;
