@@ -75,6 +75,17 @@ dispatch(action);
 // Later
 
 getCollectionByName(store.collections, 'users');
+getCollectionResultsByName(store.collections, 'users');
 ```
 
 Many functions can also be namespaced by a `subgroup` field - this will allow you to request the same endpoint from multiple places without overwriting their results.
+
+###Help, I want to use Immutable collections!
+
+We've got you covered.  When initializing Collections, pass `true` as the third argument to automatically generate Immutable List based collections, which can then be retrieved via `getImmutableCollectionResultsByName`
+
+```typescript
+const collections = Collections<Collections, Items>(collectionToRecordMapping, itemToRecordMapping, true);
+```
+
+However, we generate fresh `List`s with every change, as the internal APIs between `List`s and `ReadonlyArray`s are too dissimilar for the code to be generic across.  This feature exists mostly for backwards compatibility with projects that are currently using Immutable.

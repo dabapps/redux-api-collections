@@ -5,6 +5,7 @@ import {
   GET_COLLECTION,
   getCollectionByName,
   getCollectionResultsByName,
+  getImmutableCollectionResultsByName,
 } from '../src/collections';
 import * as requests from '../src/requests';
 
@@ -33,9 +34,9 @@ const collectionToRecordMapping = {
   llamas: LlamaRecord,
 };
 
-const collections = Collections(collectionToRecordMapping, {});
-
 describe('Collections', () => {
+  const collections = Collections(collectionToRecordMapping, {});
+
   describe('actions', () => {
     const dispatchGenericRequestSpy = jest
       .spyOn(requests, 'dispatchGenericRequest')
@@ -413,6 +414,238 @@ describe('Collections', () => {
 
         expect(newState).toBe(data);
       });
+    });
+  });
+});
+
+describe('Collections, immutably-backed', () => {
+  const collections = Collections(collectionToRecordMapping, {}, true);
+
+  describe('reducers', () => {
+    // Helpers for creating event callbacks
+    function getCollectionSuccess(
+      tag: keyof Collections,
+      subgroup: string,
+      results: ReadonlyArray<any>,
+      shouldAppend: boolean,
+      next?: string
+    ) {
+      return {
+        meta: { tag, shouldAppend, subgroup },
+        payload: {
+          count: results.length,
+          page: 1,
+          next,
+          results,
+        },
+        type: GET_COLLECTION.SUCCESS,
+      };
+    }
+
+    function addItemSuccess(
+      tag: keyof Collections,
+      subgroup: string,
+      result: any
+    ) {
+      return {
+        meta: { tag, subgroup },
+        payload: result,
+        type: ADD_TO_COLLECTION.SUCCESS,
+      };
+    }
+
+    function deleteItemSuccess(
+      tag: keyof Collections,
+      subgroup: string,
+      itemId: string
+    ) {
+      return {
+        meta: { tag, subgroup, itemId },
+        payload: '',
+        type: DELETE_FROM_COLLECTION.SUCCESS,
+      };
+    }
+
+    it('should provide us with a reducer that has stores for each of our types', () => {
+      const data = collections.reducers.collectionsReducer(undefined, {
+        type: 'blah',
+      });
+      expect(data.llamas).toEqual({});
+      const results = getImmutableCollectionResultsByName(data, 'llamas');
+      expect(results.toJS()).toEqual([]);
+      const subCollection = getCollectionByName(data, 'llamas');
+      expect(subCollection.page).toBe(1);
+      expect(subCollection.count).toBe(0);
+      expect(subCollection.immutableResults).toEqual(results);
+    });
+
+    it('should correctly parse GET_COLLECTION responses', () => {
+      const data = collections.reducers.collectionsReducer(
+        undefined,
+        getCollectionSuccess(
+          'llamas',
+          '',
+          [
+            {
+              furLength: 5,
+              id: '1',
+              name: 'Drama',
+            },
+          ],
+          false
+        )
+      );
+      const subCollection = getCollectionByName(data, 'llamas');
+      expect(subCollection.page).toBe(1);
+      expect(subCollection.count).toBe(1);
+      const results = getImmutableCollectionResultsByName(data, 'llamas');
+      expect(results).toBe(subCollection.immutableResults);
+      expect(results.count()).toBe(subCollection.count);
+      expect(results.get(0).furLength).toBe(5);
+    });
+
+    it('should correctly append on GET_COLLECTION responses', () => {
+      const data = collections.reducers.collectionsReducer(
+        undefined,
+        getCollectionSuccess(
+          'llamas',
+          '',
+          [
+            {
+              furLength: 5,
+              id: '1',
+              name: 'Drama',
+            },
+          ],
+          false
+        )
+      );
+      const data2 = collections.reducers.collectionsReducer(
+        data,
+        getCollectionSuccess(
+          'llamas',
+          '',
+          [
+            {
+              furLength: 10,
+              id: '2',
+              name: 'Pajama',
+            },
+          ],
+          true
+        )
+      );
+      const subCollection = getCollectionByName(data2, 'llamas');
+      expect(subCollection.page).toBe(1);
+      expect(subCollection.count).toBe(2);
+      const results = getImmutableCollectionResultsByName(data2, 'llamas');
+      expect(results).toBe(subCollection.immutableResults);
+      expect(results.count()).toBe(subCollection.count);
+      expect(results.get(0).furLength).toBe(5);
+      expect(results.get(1).furLength).toBe(10);
+    });
+
+    it('should add an item on ADD_TO_COLLECTION responses', () => {
+      const data = collections.reducers.collectionsReducer(
+        undefined,
+        getCollectionSuccess(
+          'llamas',
+          '',
+          [
+            {
+              furLength: 5,
+              id: '1',
+              name: 'Drama',
+            },
+          ],
+          false
+        )
+      );
+      const data2 = collections.reducers.collectionsReducer(
+        data,
+        addItemSuccess('llamas', '', {
+          furLength: 10,
+          id: '2',
+          name: 'Pajama',
+        })
+      );
+      const subCollection = getCollectionByName(data2, 'llamas');
+      expect(subCollection.page).toBe(1);
+      expect(subCollection.count).toBe(2);
+      const results = getImmutableCollectionResultsByName(data2, 'llamas');
+      expect(results).toBe(subCollection.immutableResults);
+      expect(results.count()).toBe(subCollection.count);
+      expect(results.get(0).furLength).toBe(5);
+      expect(results.get(1).furLength).toBe(10);
+    });
+
+    it('should delete an item on DELETE_FROM_COLLECTION responses', () => {
+      const data = collections.reducers.collectionsReducer(
+        undefined,
+        getCollectionSuccess(
+          'llamas',
+          '',
+          [
+            {
+              furLength: 5,
+              id: '1',
+              name: 'Drama',
+            },
+            {
+              furLength: 10,
+              id: '2',
+              name: 'Pajama',
+            },
+          ],
+          false
+        )
+      );
+
+      const data2 = collections.reducers.collectionsReducer(
+        data,
+        deleteItemSuccess('llamas', '', '1')
+      );
+      const subCollection = getCollectionByName(data2, 'llamas');
+      expect(subCollection.page).toBe(1);
+      expect(subCollection.count).toBe(1);
+      const results = getImmutableCollectionResultsByName(data2, 'llamas');
+      expect(results).toBe(subCollection.immutableResults);
+      expect(results.count()).toBe(subCollection.count);
+      expect(results.get(0).furLength).toBe(10);
+    });
+
+    it('should clear a collection on CLEAR_COLLECTION responses', () => {
+      const data = collections.reducers.collectionsReducer(
+        undefined,
+        getCollectionSuccess(
+          'llamas',
+          '',
+          [
+            {
+              furLength: 5,
+              id: '1',
+              name: 'Drama',
+            },
+            {
+              furLength: 10,
+              id: '2',
+              name: 'Pajama',
+            },
+          ],
+          false
+        )
+      );
+
+      const data2 = collections.reducers.collectionsReducer(
+        data,
+        collections.actions.clearCollection('llamas', '')
+      );
+      const subCollection = getCollectionByName(data2, 'llamas');
+      expect(subCollection.page).toBe(1);
+      expect(subCollection.count).toBe(0);
+      const results = getImmutableCollectionResultsByName(data2, 'llamas');
+      expect(results).toBe(subCollection.immutableResults);
+      expect(results.count()).toBe(subCollection.count);
     });
   });
 });

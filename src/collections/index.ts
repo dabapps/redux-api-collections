@@ -4,6 +4,9 @@ export * from './types';
 export * from './utils';
 
 import { AxiosResponse } from 'axios';
+// Required for re-exporting
+// tslint:disable-next-line:no-unused-variable
+import { List } from 'immutable';
 import { AnyAction } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import { dispatchGenericRequest } from '../requests';
@@ -28,7 +31,8 @@ import {
 } from './utils';
 
 export function collectionsFunctor<T extends IdKeyedMap<T>>(
-  typeToRecordMapping: TypeToRecordMapping<T>
+  typeToRecordMapping: TypeToRecordMapping<T>,
+  useImmutable: boolean
 ) {
   function addItemAction(
     type: keyof T,
@@ -123,14 +127,30 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
         return setCollectionFromResponseAction(
           state,
           action,
-          typeToRecordMapping
+          typeToRecordMapping,
+          useImmutable
         );
       case ADD_TO_COLLECTION.SUCCESS:
-        return addCollectionItem(state, action, typeToRecordMapping);
+        return addCollectionItem(
+          state,
+          action,
+          typeToRecordMapping,
+          useImmutable
+        );
       case DELETE_FROM_COLLECTION.SUCCESS:
-        return deleteCollectionItem(state, action, typeToRecordMapping);
+        return deleteCollectionItem(
+          state,
+          action,
+          typeToRecordMapping,
+          useImmutable
+        );
       case CLEAR_COLLECTION:
-        return clearCollection(state, action, typeToRecordMapping);
+        return clearCollection(
+          state,
+          action,
+          typeToRecordMapping,
+          useImmutable
+        );
       default:
         return state;
     }

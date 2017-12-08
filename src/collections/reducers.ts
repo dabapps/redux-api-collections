@@ -1,4 +1,5 @@
 import { isFSA } from 'flux-standard-action';
+import { List } from 'immutable';
 import { AnyAction } from 'redux';
 import * as _ from 'underscore';
 import { Dict, IdKeyed, IdKeyedMap, TypeToRecordMapping } from '../utils';
@@ -12,7 +13,8 @@ import { getCollectionByName } from './utils';
 function updateCollectionItemsFromResponse<T extends IdKeyed>(
   collectionData: CollectionGroup<T>,
   action: CollectionResponseAction,
-  itemConstructor: (data: {}) => T
+  itemConstructor: (data: {}) => T,
+  useImmutable: boolean
 ): CollectionGroup<T> {
   const {
     subgroup,
@@ -37,6 +39,7 @@ function updateCollectionItemsFromResponse<T extends IdKeyed>(
     ordering,
     page,
     results: newCollectionResults,
+    immutableResults: useImmutable ? List<T>(newCollectionResults) : null,
     reverseOrdering,
   };
 
@@ -49,7 +52,8 @@ function updateCollectionItemsFromResponse<T extends IdKeyed>(
 export function setCollectionFromResponseAction<T extends IdKeyedMap<T>>(
   state: CollectionStore<T>,
   action: AnyAction,
-  typeToRecordMapping: TypeToRecordMapping<T>
+  typeToRecordMapping: TypeToRecordMapping<T>,
+  useImmutable: boolean
 ): CollectionStore<T> {
   if (isFSA(action) && action.meta) {
     const collectionType = (action.meta as Dict<string>).tag;
@@ -59,7 +63,8 @@ export function setCollectionFromResponseAction<T extends IdKeyedMap<T>>(
         [collectionType]: updateCollectionItemsFromResponse(
           state[collectionType],
           action as CollectionResponseAction,
-          recordBuilder
+          recordBuilder,
+          useImmutable
         ),
       });
     }
@@ -70,7 +75,8 @@ export function setCollectionFromResponseAction<T extends IdKeyedMap<T>>(
 export function addCollectionItem<T extends IdKeyedMap<T>>(
   state: CollectionStore<T>,
   action: AnyAction,
-  typeToRecordMapping: TypeToRecordMapping<T>
+  typeToRecordMapping: TypeToRecordMapping<T>,
+  useImmutable: boolean
 ): CollectionStore<T> {
   if (isFSA(action) && action.meta) {
     const meta = action.meta as Dict<string>;
@@ -84,12 +90,14 @@ export function addCollectionItem<T extends IdKeyedMap<T>>(
         collectionType as keyof T,
         subgroup
       );
+      const results = existingCollection.results.concat([
+        recordBuilder(action.payload),
+      ]);
       const updatedCollection = {
         ...existingCollection,
         count: existingCollection.count + 1,
-        results: existingCollection.results.concat([
-          recordBuilder(action.payload),
-        ]),
+        results,
+        immutableResults: useImmutable ? List<T>(results) : null,
       };
       return _.extend({}, state, {
         [collectionType]: _.extend({}, state[collectionType], {
@@ -104,7 +112,8 @@ export function addCollectionItem<T extends IdKeyedMap<T>>(
 export function deleteCollectionItem<T extends IdKeyedMap<T>>(
   state: CollectionStore<T>,
   action: AnyAction,
-  typeToRecordMapping: TypeToRecordMapping<T>
+  typeToRecordMapping: TypeToRecordMapping<T>,
+  useImmutable: boolean
 ): CollectionStore<T> {
   if (isFSA(action) && action.meta) {
     const meta = action.meta as Dict<string>;
@@ -125,6 +134,7 @@ export function deleteCollectionItem<T extends IdKeyedMap<T>>(
         ...existingCollection,
         count: results.length,
         results,
+        immutableResults: useImmutable ? List<T>(results) : null,
       };
       return _.extend({}, state, {
         [collectionType]: _.extend({}, state[collectionType], {
@@ -139,7 +149,8 @@ export function deleteCollectionItem<T extends IdKeyedMap<T>>(
 export function clearCollection<T extends IdKeyedMap<T>>(
   state: CollectionStore<T>,
   action: AnyAction,
-  typeToRecordMapping: TypeToRecordMapping<T>
+  typeToRecordMapping: TypeToRecordMapping<T>,
+  useImmutable: boolean
 ): CollectionStore<T> {
   if (isFSA(action) && action.payload) {
     const payload = action.payload as Dict<string>;
@@ -151,6 +162,7 @@ export function clearCollection<T extends IdKeyedMap<T>>(
         page: 1,
         count: 0,
         results: [],
+        immutableResults: useImmutable ? List<T>() : null,
       };
       return _.extend({}, state, {
         [collectionType]: _.extend({}, state[collectionType], {
