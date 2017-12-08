@@ -5,6 +5,15 @@ Standardised, type-safe ways of interacting with DRF-style APIs.
 
 Redux API Collections aims to simplify and standardise the way in which we access Django Rest Framework endpoints when writing Redux applications in Typescript. It offers reducers for both collection endpoints and individual item endpoints, as well as the necessary tools to shunt data into them.
 
+## Installation
+Install via NPM:
+
+```
+npm install @dabapps/chadmin --save --save-exact
+```
+
+To install you will need the company npm token set in your env `NPM_TOKEN=` and also add an `./npmrc` file (the same as the one included here), to be able to authenticate with NPM Private Repos.
+
 ## Getting Started
 This project requires use of Redux-Thunk to correctly dispatch actions.  Collection endpoints must follow Django Rest Framework's pagination logic.  Item endpoints should return a single item.
 

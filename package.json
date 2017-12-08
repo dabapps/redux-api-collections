@@ -1,6 +1,6 @@
 {
-  "name": "redux-api-collections",
-  "version": "0.0.0",
+  "name": "@dabapps/redux-api-collections",
+  "version": "0.1.0",
   "description": "Type-safe helpers for dealing with Rest-Framework backed collections in Rust",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -61,6 +61,9 @@
     "redux",
     "state"
   ],
+  "publishConfig": {
+    "access": "restricted"
+  },
   "jest": {
     "collectCoverageFrom": [
       "src/ts/**/*.{ts,tsx,js,jsx}"
