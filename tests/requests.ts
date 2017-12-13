@@ -43,7 +43,7 @@ import {
   dispatchGenericRequest,
   getErrorData,
   hasFailed,
-  hasSucceded,
+  hasSucceeded,
   isPending,
   metaWithResponse,
   REQUEST_STATE,
@@ -322,7 +322,7 @@ describe('Requests', () => {
       });
     });
 
-    describe('hasSucceded', () => {
+    describe('hasSucceeded', () => {
       it('should return true if a request has succeeded', () => {
         const responsesState: ResponsesReducerState = {
           [ACTION_SET.REQUEST]: {
@@ -333,8 +333,8 @@ describe('Requests', () => {
           },
         };
 
-        expect(hasSucceded(responsesState, ACTION_SET, 'not-tag')).toBe(false);
-        expect(hasSucceded(responsesState, ACTION_SET, 'tag')).toBe(true);
+        expect(hasSucceeded(responsesState, ACTION_SET, 'not-tag')).toBe(false);
+        expect(hasSucceeded(responsesState, ACTION_SET, 'tag')).toBe(true);
       });
     });
 

@@ -100,7 +100,7 @@ export function hasFailed(
   return getResponse(state, actionSet, tag).requestState === 'FAILURE';
 }
 
-export function hasSucceded(
+export function hasSucceeded(
   state: ResponsesReducerState,
   actionSet: AsyncActionSet,
   tag?: string
