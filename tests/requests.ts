@@ -10,11 +10,11 @@ jest.mock('axios', () => {
   let success: (...args: any[]) => any;
 
   const axiosDefault = (params: {
-    url: string,
-    method: string,
-    data: {},
-    headers: {},
-    onUploadProgress?: (event: ProgressEvent) => void
+    url: string;
+    method: string;
+    data: {};
+    headers: {};
+    onUploadProgress?: (event: ProgressEvent) => void;
   }) => {
     const request = {
       catch(fn: (...args: any[]) => any) {
@@ -31,7 +31,7 @@ jest.mock('axios', () => {
       success(response: any) {
         return success(response);
       },
-      params
+      params,
     };
 
     return request;
@@ -171,8 +171,11 @@ describe('Requests', () => {
       });
 
       it('should normalize URLs', () => {
-        request = dispatchGenericRequest(ACTION_SET, '/api//llama/', METHOD)(dispatch, getState) as any;
-        expect((request as any).params.url).toEqual('/api/llama/')
+        request = dispatchGenericRequest(ACTION_SET, '/api//llama/', METHOD)(
+          dispatch,
+          getState
+        ) as any;
+        expect((request as any).params.url).toEqual('/api/llama/');
       });
 
       it('should dispatch success actions', () => {
