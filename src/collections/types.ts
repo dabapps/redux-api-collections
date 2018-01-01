@@ -2,16 +2,22 @@ import { FluxStandardAction } from 'flux-standard-action';
 import { List } from 'immutable';
 import { Dict, IdKeyed, IdKeyedMap } from '../utils';
 
-export type CollectionParams = Readonly<{
+export type CollectionParamsNoPageSize = Readonly<{
   shouldAppend: boolean;
   search: string;
   page: number;
   filters: Dict<string>;
-  pageSize: number;
   ordering: string;
   reverseOrdering: boolean;
 }>;
+
+export type CollectionParams = CollectionParamsNoPageSize &
+  Readonly<{
+    pageSize: number;
+  }>;
+
 export type CollectionOptions = Partial<CollectionParams>;
+export type CollectionOptionsNoPageSize = Partial<CollectionParamsNoPageSize>;
 
 export type Collection<T extends IdKeyed> = Readonly<{
   page: number;
