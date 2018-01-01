@@ -128,7 +128,8 @@ export function deleteCollectionItem<T extends IdKeyedMap<T>>(
         subgroup
       );
       const results = existingCollection.results.filter(
-        item => item.id !== itemId
+        // FIXME: IdKeyedMap should make this cast unneccesary
+        item => (item as any).id !== itemId
       );
       const updatedCollection = {
         ...existingCollection,
