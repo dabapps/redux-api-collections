@@ -1,6 +1,6 @@
 {
   "name": "@dabapps/redux-api-collections",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Type-safe helpers for dealing with Rest-Framework backed collections in Rust",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
