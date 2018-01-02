@@ -109,7 +109,8 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
         const subgroup = (action.meta as Dict<string>).subgroup || '';
         if (itemType in typeToRecordMapping) {
           const item = getItemByName(state, itemType as keyof T, subgroup);
-          if (!item || item.id === action.payload.id) {
+          // FIXME: IdKeyedMap should make this cast unneccesary
+          if (!item || (item as any).id === action.payload.id) {
             return setItemFromResponseAction(
               state,
               action,

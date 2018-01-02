@@ -37,7 +37,7 @@ export function buildCollectionsStore<T extends IdKeyedMap<T>>(
 ): CollectionStore<T> {
   const store = {} as CollectionStoreMutable<T>;
   for (const key of Object.keys(mapping)) {
-    store[key] = {};
+    (store as any)[key] = {} as any;
   }
   return store;
 }
