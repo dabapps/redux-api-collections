@@ -1,23 +1,20 @@
-import {
-  TTypeToRecordMapping,
-} from '../utils';
-import {
-  TItemStore,
-  TItemStoreMutable,
-} from './types';
+import { IdKeyedMap, TypeToRecordMapping } from '../utils';
+import { ItemStore, ItemStoreMutable } from './types';
 
-export function buildItemStore<T>(mapping: TTypeToRecordMapping<T>): TItemStore<T> {
-  const store = {} as TItemStoreMutable<T>;
+export function buildItemStore<T extends IdKeyedMap<T>>(
+  mapping: TypeToRecordMapping<T>
+): ItemStore<T> {
+  const store = {} as ItemStoreMutable<T>;
   for (const key of Object.keys(mapping)) {
-    store[key] = {};
+    (store as any)[key] = {}; // We know this is indexable
   }
   return store;
 }
 
-export function getItemByName<T>(
-  itemStore: TItemStore<T>,
+export function getItemByName<T extends IdKeyedMap<T>>(
+  itemStore: ItemStore<T>,
   key: keyof T,
   subgroup: string = ''
-) {
+): T[keyof T] | undefined {
   return itemStore[key][subgroup];
 }

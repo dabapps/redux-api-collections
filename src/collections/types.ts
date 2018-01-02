@@ -1,9 +1,8 @@
 import { FluxStandardAction } from 'flux-standard-action';
-import {
-  Dict,
-} from '../utils';
+import { List } from 'immutable';
+import { Dict, IdKeyed, IdKeyedMap } from '../utils';
 
-export type ICollectionParams = Readonly<{
+export type CollectionParams = Readonly<{
   shouldAppend: boolean;
   search: string;
   page: number;
@@ -12,9 +11,9 @@ export type ICollectionParams = Readonly<{
   ordering: string;
   reverseOrdering: boolean;
 }>;
-export type ICollectionOptions = Partial<ICollectionParams>;
+export type CollectionOptions = Partial<CollectionParams>;
 
-export type TCollection<T> = Readonly<{
+export type Collection<T extends IdKeyed> = Readonly<{
   page: number;
   ordering?: string;
   reverseOrdering?: boolean;
@@ -22,15 +21,26 @@ export type TCollection<T> = Readonly<{
   next?: string;
   filters?: Dict<string>;
   results: ReadonlyArray<T>;
+  immutableResults: List<T> | null;
 }>;
 
-export type TCollectionGroup<T> = Dict<TCollection<T>>;
-export type TCollectionStoreMutable<T> = {[K in keyof T]: TCollectionGroup<T[K]>};
-export type TCollectionStore<T> = Readonly<TCollectionStoreMutable<T>>;
+export type CollectionGroup<T extends IdKeyed> = Dict<Collection<T>>;
+export type CollectionStoreMutable<T extends IdKeyedMap<T>> = {
+  [K in keyof T]: CollectionGroup<T[K]>
+};
+export type CollectionStore<T extends IdKeyedMap<T>> = Readonly<
+  CollectionStoreMutable<T>
+>;
+export type CollectionStoreLoose = Readonly<{
+  [K: string]: CollectionGroup<any>;
+}>;
 
-export type CollectionResponseAction = FluxStandardAction<{
-  count: number,
-  next: string,
-  results: ReadonlyArray<{}>,
-  page: number
-}, ICollectionParams & {subgroup: string}>;
+export type CollectionResponseAction = FluxStandardAction<
+  {
+    count: number;
+    next: string;
+    results: ReadonlyArray<{}>;
+    page: number;
+  },
+  CollectionParams & { subgroup: string }
+>;

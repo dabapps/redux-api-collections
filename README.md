@@ -1,7 +1,18 @@
 # Redux API Collections
+[![Build Status](https://travis-ci.com/dabapps/redux-api-collections.svg?token=Vjwq9pDHXxGNhnyuktQ5&branch=master)](https://travis-ci.com/dabapps/redux-api-collections)
+
 Standardised, type-safe ways of interacting with DRF-style APIs.
 
 Redux API Collections aims to simplify and standardise the way in which we access Django Rest Framework endpoints when writing Redux applications in Typescript. It offers reducers for both collection endpoints and individual item endpoints, as well as the necessary tools to shunt data into them.
+
+## Installation
+Install via NPM:
+
+```
+npm install @dabapps/chadmin --save --save-exact
+```
+
+To install you will need the company npm token set in your env `NPM_TOKEN=` and also add an `./npmrc` file (the same as the one included here), to be able to authenticate with NPM Private Repos.
 
 ## Getting Started
 This project requires use of Redux-Thunk to correctly dispatch actions.  Collection endpoints must follow Django Rest Framework's pagination logic.  Item endpoints should return a single item.
@@ -14,11 +25,11 @@ type User = Readonly<{
   name: string
 }>;
 
-interface ICollections {
+interface Collections {
   users: User  // This is /api/users/ on the server
 }
 
-interface IItems {
+interface Items {
   users: User  // This is /api/users/[id]/ on the server
 }
 ```
@@ -26,9 +37,9 @@ interface IItems {
 With these two (or one) interfaces defined, you will need to attach them to your store. This is as simple as including the following code:
 
 ```typescript
-interface IStore {
-  collections: TCollectionStore<ICollections>,
-  items: TItemStore<IItems>
+interface Store {
+  collections: CollectionStore<Collections>,
+  items: ItemStore<Items>
 }
 ```
 You can, in theory, mount the stores elsewhere, but this is not recommended.
@@ -37,11 +48,11 @@ The next step is providing a mapping between paths and functions that will produ
 
 ```typescript
 const collectionToRecordMapping = {
-  users: (user: IUser) => user
+  users: (user: User) => user
 }
 
 const itemToRecordMapping = {
-  users: (user: IUser) => user
+  users: (user: User) => user
 }
 ```
 
@@ -51,7 +62,7 @@ Now we have mappings, plus interfaces, we can bring it all together.  You are li
 import { Collections } from 'redux-api-collections';
 import { responsesReducer } from 'redux-api-collections/requests';
 
-const collections = Collections<ICollections, IItems>(collectionToRecordMapping, itemToRecordMapping);
+const collections = Collections<Collections, Items>(collectionToRecordMapping, itemToRecordMapping);
 
 // elsewhere
 combineReducers({
@@ -73,6 +84,17 @@ dispatch(action);
 // Later
 
 getCollectionByName(store.collections, 'users');
+getCollectionResultsByName(store.collections, 'users');
 ```
 
 Many functions can also be namespaced by a `subgroup` field - this will allow you to request the same endpoint from multiple places without overwriting their results.
+
+###Help, I want to use Immutable collections!
+
+We've got you covered.  When initializing Collections, pass `true` as the third argument to automatically generate Immutable List based collections, which can then be retrieved via `getImmutableCollectionResultsByName`
+
+```typescript
+const collections = Collections<Collections, Items>(collectionToRecordMapping, itemToRecordMapping, true);
+```
+
+However, we generate fresh `List`s with every change, as the internal APIs between `List`s and `ReadonlyArray`s are too dissimilar for the code to be generic across.  This feature exists mostly for backwards compatibility with projects that are currently using Immutable.

@@ -3,13 +3,14 @@ export * from './reducers';
 export * from './types';
 export * from './utils';
 
+import { AxiosResponse } from 'axios';
+// Required for re-exporting
+// tslint:disable-next-line:no-unused-variable
+import { List } from 'immutable';
 import { AnyAction } from 'redux';
-import {
-  dispatchGenericRequest,
-} from '../requests';
-import {
-  TTypeToRecordMapping,
-} from '../utils';
+import { ThunkAction } from 'redux-thunk';
+import { dispatchGenericRequest } from '../requests';
+import { IdKeyedMap, TypeToRecordMapping } from '../utils';
 import {
   ADD_TO_COLLECTION,
   CLEAR_COLLECTION,
@@ -22,10 +23,7 @@ import {
   deleteCollectionItem,
   setCollectionFromResponseAction,
 } from './reducers';
-import {
-  ICollectionOptions,
-  TCollectionStore,
-} from './types';
+import { CollectionOptions, CollectionStore } from './types';
 import {
   buildCollectionsStore,
   formatCollectionQueryParams,
@@ -41,8 +39,9 @@ function buildSubgroup(prefix: string | undefined, subgroup: string | undefined)
   return subgroup;
 }
 
-export function collectionsFunctor<T> (
-  typeToRecordMapping: TTypeToRecordMapping<T>,
+export function collectionsFunctor<T extends IdKeyedMap<T>> (
+  typeToRecordMapping: TypeToRecordMapping<T>,
+  useImmutable: boolean,
   baseUrl: string = '/api/'
 ) {
 
@@ -58,7 +57,7 @@ export function collectionsFunctor<T> (
       );
     }
 
-    function clearCollectionAction (type: keyof T, subgroup?: string) {
+    function clearCollectionAction (type: keyof T, subgroup?: string): AnyAction {
       return {
         payload: {
           subgroup: buildSubgroup(overrideUrl, subgroup),
@@ -68,7 +67,7 @@ export function collectionsFunctor<T> (
       };
     }
 
-    function deleteItemAction (type: keyof T, id: string, subgroup?: string) {
+    function deleteItemAction (type: keyof T, id: string, subgroup?: string): ThunkAction<Promise<AxiosResponse>, any, null> {
       const url = overrideUrl ? `${overrideUrl}${id}/` : `${baseUrl}${type}/${id}/`;
       return dispatchGenericRequest(
         DELETE_FROM_COLLECTION,
@@ -80,7 +79,7 @@ export function collectionsFunctor<T> (
       );
     }
 
-    function getAllCollectionAction (type: keyof T, opts?: ICollectionOptions, subgroup?: string) {
+    function getAllCollectionAction (type: keyof T, opts?: CollectionOptions, subgroup?: string): ThunkAction<Promise<AxiosResponse>, any, null> {
       return getCollectionAction(
         type,
         {
@@ -91,7 +90,7 @@ export function collectionsFunctor<T> (
       );
     }
 
-    function getCollectionAction (type: keyof T, options: ICollectionOptions = {}, subgroup?: string) {
+    function getCollectionAction (type: keyof T, options: CollectionOptions = {}, subgroup?: string): ThunkAction<Promise<AxiosResponse>, any, null> {
       const url = overrideUrl || `${baseUrl}${type}/`;
       const meta = {
         subgroup: buildSubgroup(overrideUrl, subgroup),
@@ -103,7 +102,6 @@ export function collectionsFunctor<T> (
       };
 
       const urlWithParams = `${url}${formatCollectionQueryParams(options)}`;
-
       return dispatchGenericRequest(GET_COLLECTION, urlWithParams, 'GET', null, type, meta);
     }
 
@@ -116,19 +114,39 @@ export function collectionsFunctor<T> (
     };
   }
 
-  function collectionsReducer (
-    state: TCollectionStore<T> = buildCollectionsStore(typeToRecordMapping),
+  function collectionsReducer(
+    state: CollectionStore<T> = buildCollectionsStore(typeToRecordMapping),
     action: AnyAction
-  ) {
+  ): CollectionStore<T> {
     switch (action.type) {
       case GET_COLLECTION.SUCCESS:
-        return setCollectionFromResponseAction(state, action, typeToRecordMapping);
+        return setCollectionFromResponseAction(
+          state,
+          action,
+          typeToRecordMapping,
+          useImmutable
+        );
       case ADD_TO_COLLECTION.SUCCESS:
-        return addCollectionItem(state, action, typeToRecordMapping);
+        return addCollectionItem(
+          state,
+          action,
+          typeToRecordMapping,
+          useImmutable
+        );
       case DELETE_FROM_COLLECTION.SUCCESS:
-        return deleteCollectionItem(state, action, typeToRecordMapping);
+        return deleteCollectionItem(
+          state,
+          action,
+          typeToRecordMapping,
+          useImmutable
+        );
       case CLEAR_COLLECTION:
-        return clearCollection(state, action, typeToRecordMapping);
+        return clearCollection(
+          state,
+          action,
+          typeToRecordMapping,
+          useImmutable
+        );
       default:
         return state;
     }
@@ -142,7 +160,7 @@ export function collectionsFunctor<T> (
     const overrideUrl = `${baseUrl}${replaced}/`;
     const {
       addItem,
-      clearCollection,
+      clearCollection: clearCollectionAction,
       deleteItem,
       getAllCollection,
       getCollection,
@@ -150,7 +168,7 @@ export function collectionsFunctor<T> (
     return {
       actions: {
         addItem: addItem.bind(null, type),
-        clearCollection: clearCollection.bind(null, type),
+        clearCollection: clearCollectionAction.bind(null, type),
         deleteItem: deleteItem.bind(null, type),
         getAllCollection: getAllCollection.bind(null, type),
         getCollection: getCollection.bind(null, type),
