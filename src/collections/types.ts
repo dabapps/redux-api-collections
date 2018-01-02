@@ -37,6 +37,9 @@ export type CollectionStoreMutable<T extends IdKeyedMap<T>> = {
 export type CollectionStore<T extends IdKeyedMap<T>> = Readonly<
   CollectionStoreMutable<T>
 >;
+export type CollectionStoreLoose = Readonly<{
+  [K: string]: CollectionGroup<any>;
+}>;
 
 export type CollectionResponseAction = FluxStandardAction<
   {

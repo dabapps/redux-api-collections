@@ -23,10 +23,10 @@ export function formatQueryParams(params?: {}): string {
     return '';
   }
 
-  const filteredPairs = _.chain(params)
-    .pairs()
+  const asPairs: ReadonlyArray<[string, any]> = _.pairs(params) as any;
+  const filteredPairs = asPairs
     .filter(([key, value]) => value !== null && typeof value !== 'undefined')
-    .value();
+    .map(([key, value]) => [key, value.toString()]);
 
   if (!filteredPairs || !filteredPairs.length) {
     return '';
