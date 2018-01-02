@@ -172,7 +172,9 @@ export function collectionsFunctor<T extends IdKeyedMap<T>> (
         deleteItem: deleteItem.bind(null, type),
         getAllCollection: getAllCollection.bind(null, type),
         getCollection: getCollection.bind(null, type),
-      }
+      },
+      getSubpathCollection: () => {},
+      getSubpathCollectionResults: () => {},
     };
   }
 

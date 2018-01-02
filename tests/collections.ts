@@ -39,6 +39,27 @@ const collectionToRecordMapping = {
 describe('Collections', () => {
   const collections = Collections(collectionToRecordMapping, {});
 
+  // Helpers for creating event callbacks
+  function getCollectionSuccess(
+    tag: keyof Collections,
+    subgroup: string,
+    results: ReadonlyArray<any>,
+    shouldAppend: boolean,
+    next?: string
+  ) {
+    return {
+      meta: { tag, shouldAppend, subgroup },
+      payload: {
+        count: results.length,
+        page: 1,
+        next,
+        results,
+      },
+      type: GET_COLLECTION.SUCCESS,
+    };
+  }
+
+
   describe('actions', () => {
     const dispatchGenericRequestSpy = jest
       .spyOn(requests, 'dispatchGenericRequest')
@@ -159,26 +180,6 @@ describe('Collections', () => {
   });
 
   describe('reducers', () => {
-    // Helpers for creating event callbacks
-    function getCollectionSuccess(
-      tag: keyof Collections,
-      subgroup: string,
-      results: ReadonlyArray<any>,
-      shouldAppend: boolean,
-      next?: string
-    ) {
-      return {
-        meta: { tag, shouldAppend, subgroup },
-        payload: {
-          count: results.length,
-          page: 1,
-          next,
-          results,
-        },
-        type: GET_COLLECTION.SUCCESS,
-      };
-    }
-
     function addItemSuccess(
       tag: keyof Collections,
       subgroup: string,
@@ -532,6 +533,41 @@ describe('Collections', () => {
             shouldAppend: undefined
           }
         );
+      });
+    });
+
+    describe('reducers', () => {
+      it('should correctly allow us to get ', () => {
+        const ownerId = '12345';
+        const data = collections.reducers.collectionsReducer(
+          undefined,
+          getCollectionSuccess(
+            'owners/<owner_id>/llamas',
+            '/api/owners/${ownerId}/llamas/:llamadrama',
+            [
+              {
+                furLength: 5,
+                id: '1',
+                name: 'Drama',
+              },
+            ],
+            false
+          )
+        );
+        // They should not have filtered into the normal collection
+        const badCollection = getCollectionByName(data, 'llamas', 'llamadrama');
+        expect(badCollection.page).toBe(0);
+        expect(badCollection.count).toBe(0);
+
+        const subCollection = subpath.getSubpathCollection(data, 'llamadrama');
+        expect(subCollection.page).toBe(1);
+        expect(subCollection.count).toBe(1);
+
+
+        const results = subpath.getSubpathCollection(data, 'llamadrama');
+        expect(results).toBe(subCollection.results);
+        expect(results.length).toBe(subCollection.count);
+        expect(results[0].furLength).toBe(5);
       });
     });
   });
