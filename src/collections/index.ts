@@ -27,6 +27,9 @@ import { CollectionOptions, CollectionStore } from './types';
 import {
   buildCollectionsStore,
   formatCollectionQueryParams,
+  getCollectionByName,
+  getCollectionResultsByName,
+  getImmutableCollectionResultsByName,
   WHOLE_COLLECTION_PAGE_SIZE,
 } from './utils';
 
@@ -173,8 +176,9 @@ export function collectionsFunctor<T extends IdKeyedMap<T>> (
         getAllCollection: getAllCollection.bind(null, type),
         getCollection: getCollection.bind(null, type),
       },
-      getSubpathCollection: () => {},
-      getSubpathCollectionResults: () => {},
+      getSubpathCollection: (store: CollectionStore<T>, subgroup: string) => getCollectionByName(store, type, buildSubgroup(overrideUrl, subgroup)),
+      getSubpathCollectionResults: (store: CollectionStore<T>, subgroup: string) => getCollectionResultsByName(store, type, buildSubgroup(overrideUrl, subgroup)),
+      getImmutableSubpathCollectionResults: (store: CollectionStore<T>, subgroup: string) => getImmutableCollectionResultsByName(store, type, buildSubgroup(overrideUrl, subgroup)),
     };
   }
 

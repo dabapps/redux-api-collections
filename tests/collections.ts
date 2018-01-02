@@ -538,12 +538,11 @@ describe('Collections', () => {
 
     describe('reducers', () => {
       it('should correctly allow us to get ', () => {
-        const ownerId = '12345';
         const data = collections.reducers.collectionsReducer(
           undefined,
           getCollectionSuccess(
             'owners/<owner_id>/llamas',
-            '/api/owners/${ownerId}/llamas/:llamadrama',
+            `/api/owners/${ownerId}/llamas/:llamadrama`,
             [
               {
                 furLength: 5,
@@ -564,7 +563,7 @@ describe('Collections', () => {
         expect(subCollection.count).toBe(1);
 
 
-        const results = subpath.getSubpathCollection(data, 'llamadrama');
+        const results = subpath.getSubpathCollectionResults(data, 'llamadrama');
         expect(results).toBe(subCollection.results);
         expect(results.length).toBe(subCollection.count);
         expect(results[0].furLength).toBe(5);
