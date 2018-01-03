@@ -10,7 +10,7 @@ import { List } from 'immutable';
 import { AnyAction } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import { dispatchGenericRequest } from '../requests';
-import { IdKeyedMap, TypeToRecordMapping } from '../utils';
+import { buildSubgroup, IdKeyedMap, pathMatcher, TypeToRecordMapping } from '../utils';
 import {
   ADD_TO_COLLECTION,
   CLEAR_COLLECTION,
@@ -32,15 +32,6 @@ import {
   getImmutableCollectionResultsByName,
   WHOLE_COLLECTION_PAGE_SIZE,
 } from './utils';
-
-const pathMatcher = /<.*?>/;
-
-function buildSubgroup(prefix: string | undefined, subgroup: string | undefined): string | undefined {
-  if (prefix) {
-    return `${prefix}:${subgroup || ''}`;
-  }
-  return subgroup;
-}
 
 export function collectionsFunctor<T extends IdKeyedMap<T>> (
   typeToRecordMapping: TypeToRecordMapping<T>,
@@ -176,9 +167,9 @@ export function collectionsFunctor<T extends IdKeyedMap<T>> (
         getAllCollection: getAllCollection.bind(null, type),
         getCollection: getCollection.bind(null, type),
       },
-      getSubpathCollection: (store: CollectionStore<T>, subgroup: string) => getCollectionByName(store, type, buildSubgroup(overrideUrl, subgroup)),
-      getSubpathCollectionResults: (store: CollectionStore<T>, subgroup: string) => getCollectionResultsByName(store, type, buildSubgroup(overrideUrl, subgroup)),
-      getImmutableSubpathCollectionResults: (store: CollectionStore<T>, subgroup: string) => getImmutableCollectionResultsByName(store, type, buildSubgroup(overrideUrl, subgroup)),
+      getSubpathCollection: (store: CollectionStore<T>, subgroup: string = '') => getCollectionByName(store, type, buildSubgroup(overrideUrl, subgroup)),
+      getSubpathCollectionResults: (store: CollectionStore<T>, subgroup: string = '') => getCollectionResultsByName(store, type, buildSubgroup(overrideUrl, subgroup)),
+      getImmutableSubpathCollectionResults: (store: CollectionStore<T>, subgroup: string = '') => getImmutableCollectionResultsByName(store, type, buildSubgroup(overrideUrl, subgroup)),
     };
   }
 

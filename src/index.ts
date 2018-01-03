@@ -31,5 +31,6 @@ export function Collections<T extends IdKeyedMap<T>, U extends IdKeyedMap<U>>(
       ...items.reducers,
     },
     collectionAtSubpath: collections.collectionAtSubpath,
+    itemAtSubpath: items.itemAtSubpath,
   };
 }

@@ -12,3 +12,12 @@ export interface IdKeyed {
   id: any;
 }
 export type IdKeyedMap<T> = { [K in keyof T]: IdKeyed };
+
+export function buildSubgroup(prefix: string | undefined, subgroup: string | undefined): string | undefined {
+  if (prefix) {
+    return `${prefix}:${subgroup || ''}`;
+  }
+  return subgroup;
+}
+
+export const pathMatcher = /<.*?>/;
