@@ -28,7 +28,11 @@ import {
   deleteCollectionItem,
   setCollectionFromResponseAction,
 } from './reducers';
-import { CollectionOptions, CollectionStore } from './types';
+import {
+  CollectionOptions,
+  CollectionOptionsNoPageSize,
+  CollectionStore,
+} from './types';
 import {
   buildCollectionsStore,
   formatCollectionQueryParams,
@@ -93,7 +97,7 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
 
     function getAllCollectionAction(
       type: keyof T,
-      opts?: CollectionOptions,
+      opts?: CollectionOptionsNoPageSize,
       subgroup?: string
     ): ThunkAction<Promise<AxiosResponse>, any, null> {
       return getCollectionAction(

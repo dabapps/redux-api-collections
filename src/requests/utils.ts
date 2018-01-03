@@ -1,5 +1,6 @@
 import { AxiosPromise, AxiosResponse, default as axios } from 'axios';
 import * as Cookies from 'js-cookie';
+import * as path from 'path';
 import * as _ from 'underscore';
 import { Dict } from '../utils';
 import {
@@ -50,7 +51,7 @@ export function apiRequest(
   };
   return axios({
     method,
-    url,
+    url: path.normalize(url),
     data,
     headers: combinedHeaders,
     onUploadProgress,
@@ -100,7 +101,7 @@ export function hasFailed(
   return getResponse(state, actionSet, tag).requestState === 'FAILURE';
 }
 
-export function hasSucceded(
+export function hasSucceeded(
   state: ResponsesReducerState,
   actionSet: AsyncActionSet,
   tag?: string
