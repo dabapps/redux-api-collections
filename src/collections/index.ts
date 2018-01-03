@@ -8,6 +8,9 @@ import { AxiosResponse } from 'axios';
 // tslint:disable-next-line:no-unused-variable
 import { List } from 'immutable';
 import { AnyAction } from 'redux';
+// Required for re-exporting
+// tslint:disable-next-line:no-unused-variable
+import { Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import { dispatchGenericRequest } from '../requests';
 import {
