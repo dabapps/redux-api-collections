@@ -28,7 +28,6 @@ const itemToRecordMapping = {
   'owners/<owner_id>/llamas': LlamaRecord,
 };
 
-
 describe('Items', () => {
   const collections = Collections<{}, Items>({}, itemToRecordMapping);
 
@@ -199,7 +198,10 @@ describe('Items', () => {
 
   describe('Subpath', () => {
     const ownerId = 'abc1234';
-    const subpath = collections.itemAtSubpath('owners/<owner_id>/llamas', ownerId);
+    const subpath = collections.itemAtSubpath(
+      'owners/<owner_id>/llamas',
+      ownerId
+    );
 
     describe('actions', () => {
       const dispatchGenericRequestSpy = jest
@@ -284,7 +286,11 @@ describe('Items', () => {
     describe('reducers', () => {
       function loadItem(item: any) {
         const action = {
-          meta: { itemId: 'first', tag: 'owners/<owner_id>/llamas', subgroup: `/api/owners/${ownerId}/llamas/:llamadrama` },
+          meta: {
+            itemId: 'first',
+            tag: 'owners/<owner_id>/llamas',
+            subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
+          },
           payload: item,
           type: GET_ITEM.SUCCESS,
         };
@@ -306,7 +312,12 @@ describe('Items', () => {
 });
 
 describe('Items, alternate base URL', () => {
-  const collections = Collections<{}, Items>({}, itemToRecordMapping, false, '/alternate-url/');
+  const collections = Collections<{}, Items>(
+    {},
+    itemToRecordMapping,
+    false,
+    '/alternate-url/'
+  );
 
   describe('actions', () => {
     const dispatchGenericRequestSpy = jest

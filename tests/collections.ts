@@ -32,7 +32,7 @@ interface Collections {
 }
 
 const collectionToRecordMapping = {
-  'llamas': LlamaRecord,
+  llamas: LlamaRecord,
   'owners/<owner_id>/llamas': LlamaRecord,
 };
 
@@ -58,7 +58,6 @@ describe('Collections', () => {
       type: GET_COLLECTION.SUCCESS,
     };
   }
-
 
   describe('actions', () => {
     const dispatchGenericRequestSpy = jest
@@ -422,24 +421,33 @@ describe('Collections', () => {
 
   describe('Subpath', () => {
     const ownerId = 'abc1234';
-    const subpath = collections.collectionAtSubpath('owners/<owner_id>/llamas', ownerId);
+    const subpath = collections.collectionAtSubpath(
+      'owners/<owner_id>/llamas',
+      ownerId
+    );
 
     describe('actions', () => {
-      const dispatchGenericRequestSpy =
-        jest.spyOn(requests, 'dispatchGenericRequest').mockImplementation(() => null);
+      const dispatchGenericRequestSpy = jest
+        .spyOn(requests, 'dispatchGenericRequest')
+        .mockImplementation(() => null);
 
       beforeEach(() => {
         dispatchGenericRequestSpy.mockReset();
       });
 
       it('should properly construct an addItem action', () => {
-        subpath.actions.addItem({
-          furLength: 5,
-          id: '1',
-          name: 'Drama',
-        }, 'drama');
+        subpath.actions.addItem(
+          {
+            furLength: 5,
+            id: '1',
+            name: 'Drama',
+          },
+          'drama'
+        );
 
-        expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+        expect(
+          dispatchGenericRequestSpy
+        ).toHaveBeenCalledWith(
           ADD_TO_COLLECTION,
           `/api/owners/${ownerId}/llamas/`,
           'POST',
@@ -449,7 +457,7 @@ describe('Collections', () => {
             name: 'Drama',
           },
           'owners/<owner_id>/llamas',
-          {subgroup: `/api/owners/${ownerId}/llamas/:drama`}
+          { subgroup: `/api/owners/${ownerId}/llamas/:drama` }
         );
       });
 
@@ -462,7 +470,9 @@ describe('Collections', () => {
       it('should properly construct a deleteItem action', () => {
         subpath.actions.deleteItem('first', 'llamadrama');
 
-        expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+        expect(
+          dispatchGenericRequestSpy
+        ).toHaveBeenCalledWith(
           DELETE_FROM_COLLECTION,
           `/api/owners/${ownerId}/llamas/first/`,
           'DELETE',
@@ -470,7 +480,7 @@ describe('Collections', () => {
           'owners/<owner_id>/llamas',
           {
             subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
-            itemId: 'first'
+            itemId: 'first',
           }
         );
       });
@@ -490,7 +500,7 @@ describe('Collections', () => {
             ordering: undefined,
             page: undefined,
             reverseOrdering: undefined,
-            shouldAppend: undefined
+            shouldAppend: undefined,
           }
         );
       });
@@ -510,7 +520,7 @@ describe('Collections', () => {
             ordering: undefined,
             page: undefined,
             reverseOrdering: undefined,
-            shouldAppend: undefined
+            shouldAppend: undefined,
           }
         );
       });
@@ -530,7 +540,7 @@ describe('Collections', () => {
             ordering: undefined,
             page: undefined,
             reverseOrdering: undefined,
-            shouldAppend: undefined
+            shouldAppend: undefined,
           }
         );
       });
@@ -562,7 +572,6 @@ describe('Collections', () => {
         expect(subCollection.page).toBe(1);
         expect(subCollection.count).toBe(1);
 
-
         const results = subpath.getSubpathCollectionResults(data, 'llamadrama');
         expect(results).toBe(subCollection.results);
         expect(results.length).toBe(subCollection.count);
@@ -593,7 +602,6 @@ describe('Collections, immutably-backed', () => {
       type: GET_COLLECTION.SUCCESS,
     };
   }
-
 
   describe('reducers', () => {
     // Helpers for creating event callbacks
@@ -806,7 +814,10 @@ describe('Collections, immutably-backed', () => {
 
   describe('Subpath', () => {
     const ownerId = 'abc1234';
-    const subpath = collections.collectionAtSubpath('owners/<owner_id>/llamas', ownerId);
+    const subpath = collections.collectionAtSubpath(
+      'owners/<owner_id>/llamas',
+      ownerId
+    );
 
     describe('reducers', () => {
       it('should correctly allow us to get data out', () => {
@@ -834,8 +845,10 @@ describe('Collections, immutably-backed', () => {
         expect(subCollection.page).toBe(1);
         expect(subCollection.count).toBe(1);
 
-
-        const results = subpath.getImmutableSubpathCollectionResults(data, 'llamadrama');
+        const results = subpath.getImmutableSubpathCollectionResults(
+          data,
+          'llamadrama'
+        );
         expect(results).toBe(subCollection.immutableResults);
         expect(results.count()).toBe(subCollection.count);
         expect(results.get(0).furLength).toBe(5);
@@ -845,7 +858,12 @@ describe('Collections, immutably-backed', () => {
 });
 
 describe('Collections, alternate base URL', () => {
-  const collections = Collections(collectionToRecordMapping, {}, false, '/alternate-url/');
+  const collections = Collections(
+    collectionToRecordMapping,
+    {},
+    false,
+    '/alternate-url/'
+  );
 
   describe('actions', () => {
     const dispatchGenericRequestSpy = jest

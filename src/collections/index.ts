@@ -10,7 +10,12 @@ import { List } from 'immutable';
 import { AnyAction } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import { dispatchGenericRequest } from '../requests';
-import { buildSubgroup, IdKeyedMap, pathMatcher, TypeToRecordMapping } from '../utils';
+import {
+  buildSubgroup,
+  IdKeyedMap,
+  pathMatcher,
+  TypeToRecordMapping,
+} from '../utils';
 import {
   ADD_TO_COLLECTION,
   CLEAR_COLLECTION,
@@ -33,14 +38,18 @@ import {
   WHOLE_COLLECTION_PAGE_SIZE,
 } from './utils';
 
-export function collectionsFunctor<T extends IdKeyedMap<T>> (
+export function collectionsFunctor<T extends IdKeyedMap<T>>(
   typeToRecordMapping: TypeToRecordMapping<T>,
   useImmutable: boolean,
   baseUrl: string = '/api/'
 ) {
-
   function buildActionSet(overrideUrl?: string) {
-    function addItemAction (type: keyof T, data: any, subgroup?: string, url?: string) {
+    function addItemAction(
+      type: keyof T,
+      data: any,
+      subgroup?: string,
+      url?: string
+    ) {
       return dispatchGenericRequest(
         ADD_TO_COLLECTION,
         url || overrideUrl || `${baseUrl}${type}/`,
@@ -51,7 +60,10 @@ export function collectionsFunctor<T extends IdKeyedMap<T>> (
       );
     }
 
-    function clearCollectionAction (type: keyof T, subgroup?: string): AnyAction {
+    function clearCollectionAction(
+      type: keyof T,
+      subgroup?: string
+    ): AnyAction {
       return {
         payload: {
           subgroup: buildSubgroup(overrideUrl, subgroup),
@@ -61,8 +73,14 @@ export function collectionsFunctor<T extends IdKeyedMap<T>> (
       };
     }
 
-    function deleteItemAction (type: keyof T, id: string, subgroup?: string): ThunkAction<Promise<AxiosResponse>, any, null> {
-      const url = overrideUrl ? `${overrideUrl}${id}/` : `${baseUrl}${type}/${id}/`;
+    function deleteItemAction(
+      type: keyof T,
+      id: string,
+      subgroup?: string
+    ): ThunkAction<Promise<AxiosResponse>, any, null> {
+      const url = overrideUrl
+        ? `${overrideUrl}${id}/`
+        : `${baseUrl}${type}/${id}/`;
       return dispatchGenericRequest(
         DELETE_FROM_COLLECTION,
         url,
@@ -73,18 +91,26 @@ export function collectionsFunctor<T extends IdKeyedMap<T>> (
       );
     }
 
-    function getAllCollectionAction (type: keyof T, opts?: CollectionOptions, subgroup?: string): ThunkAction<Promise<AxiosResponse>, any, null> {
+    function getAllCollectionAction(
+      type: keyof T,
+      opts?: CollectionOptions,
+      subgroup?: string
+    ): ThunkAction<Promise<AxiosResponse>, any, null> {
       return getCollectionAction(
         type,
         {
           ...opts,
-          pageSize: WHOLE_COLLECTION_PAGE_SIZE
+          pageSize: WHOLE_COLLECTION_PAGE_SIZE,
         },
         subgroup
       );
     }
 
-    function getCollectionAction (type: keyof T, options: CollectionOptions = {}, subgroup?: string): ThunkAction<Promise<AxiosResponse>, any, null> {
+    function getCollectionAction(
+      type: keyof T,
+      options: CollectionOptions = {},
+      subgroup?: string
+    ): ThunkAction<Promise<AxiosResponse>, any, null> {
       const url = overrideUrl || `${baseUrl}${type}/`;
       const meta = {
         subgroup: buildSubgroup(overrideUrl, subgroup),
@@ -96,7 +122,14 @@ export function collectionsFunctor<T extends IdKeyedMap<T>> (
       };
 
       const urlWithParams = `${url}${formatCollectionQueryParams(options)}`;
-      return dispatchGenericRequest(GET_COLLECTION, urlWithParams, 'GET', null, type, meta);
+      return dispatchGenericRequest(
+        GET_COLLECTION,
+        urlWithParams,
+        'GET',
+        null,
+        type,
+        meta
+      );
     }
 
     return {
@@ -146,11 +179,11 @@ export function collectionsFunctor<T extends IdKeyedMap<T>> (
     }
   }
 
-  function collectionAtSubpath(
-    type: keyof T,
-    ...pathIds: string[]
-  ) {
-    const replaced = pathIds.reduce((memo, nextId) => memo.replace(pathMatcher, nextId), type);
+  function collectionAtSubpath(type: keyof T, ...pathIds: string[]) {
+    const replaced = pathIds.reduce(
+      (memo, nextId) => memo.replace(pathMatcher, nextId),
+      type
+    );
     const overrideUrl = `${baseUrl}${replaced}/`;
     const {
       addItem,
@@ -167,9 +200,29 @@ export function collectionsFunctor<T extends IdKeyedMap<T>> (
         getAllCollection: getAllCollection.bind(null, type),
         getCollection: getCollection.bind(null, type),
       },
-      getSubpathCollection: (store: CollectionStore<T>, subgroup: string = '') => getCollectionByName(store, type, buildSubgroup(overrideUrl, subgroup)),
-      getSubpathCollectionResults: (store: CollectionStore<T>, subgroup: string = '') => getCollectionResultsByName(store, type, buildSubgroup(overrideUrl, subgroup)),
-      getImmutableSubpathCollectionResults: (store: CollectionStore<T>, subgroup: string = '') => getImmutableCollectionResultsByName(store, type, buildSubgroup(overrideUrl, subgroup)),
+      getSubpathCollection: (
+        store: CollectionStore<T>,
+        subgroup: string = ''
+      ) =>
+        getCollectionByName(store, type, buildSubgroup(overrideUrl, subgroup)),
+      getSubpathCollectionResults: (
+        store: CollectionStore<T>,
+        subgroup: string = ''
+      ) =>
+        getCollectionResultsByName(
+          store,
+          type,
+          buildSubgroup(overrideUrl, subgroup)
+        ),
+      getImmutableSubpathCollectionResults: (
+        store: CollectionStore<T>,
+        subgroup: string = ''
+      ) =>
+        getImmutableCollectionResultsByName(
+          store,
+          type,
+          buildSubgroup(overrideUrl, subgroup)
+        ),
     };
   }
 
@@ -178,6 +231,6 @@ export function collectionsFunctor<T extends IdKeyedMap<T>> (
     reducers: {
       collectionsReducer,
     },
-    collectionAtSubpath
+    collectionAtSubpath,
   };
 }
