@@ -843,3 +843,42 @@ describe('Collections, immutably-backed', () => {
     });
   });
 });
+
+describe('Collections, alternate base URL', () => {
+  const collections = Collections(collectionToRecordMapping, {}, false, '/alternate-url/');
+
+  describe('actions', () => {
+    const dispatchGenericRequestSpy = jest
+      .spyOn(requests, 'dispatchGenericRequest')
+      .mockImplementation(() => null);
+
+    beforeEach(() => {
+      dispatchGenericRequestSpy.mockReset();
+    });
+
+    it('should properly construct an addItem action', () => {
+      collections.actions.addItem(
+        'llamas',
+        {
+          furLength: 5,
+          id: '1',
+          name: 'Drama',
+        },
+        'drama'
+      );
+
+      expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+        ADD_TO_COLLECTION,
+        '/alternate-url/llamas/',
+        'POST',
+        {
+          furLength: 5,
+          id: '1',
+          name: 'Drama',
+        },
+        'llamas',
+        { subgroup: 'drama' }
+      );
+    });
+  });
+});

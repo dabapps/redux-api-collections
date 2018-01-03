@@ -28,9 +28,10 @@ const itemToRecordMapping = {
   'owners/<owner_id>/llamas': LlamaRecord,
 };
 
-const collections = Collections<{}, Items>({}, itemToRecordMapping);
 
 describe('Items', () => {
+  const collections = Collections<{}, Items>({}, itemToRecordMapping);
+
   describe('actions', () => {
     const dispatchGenericRequestSpy = jest
       .spyOn(requests, 'dispatchGenericRequest')
@@ -300,6 +301,36 @@ describe('Items', () => {
         expect(item && item.id).toEqual(newItem.id);
         expect(item && item.name).toEqual(newItem.name);
       });
+    });
+  });
+});
+
+describe('Items, alternate base URL', () => {
+  const collections = Collections<{}, Items>({}, itemToRecordMapping, false, '/alternate-url/');
+
+  describe('actions', () => {
+    const dispatchGenericRequestSpy = jest
+      .spyOn(requests, 'dispatchGenericRequest')
+      .mockImplementation(() => null);
+
+    beforeEach(() => {
+      dispatchGenericRequestSpy.mockReset();
+    });
+
+    it('should be possible to construct getItem', () => {
+      collections.actions.getItem('llamas', 'drama');
+
+      expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+        GET_ITEM,
+        '/alternate-url/llamas/drama/',
+        'GET',
+        null,
+        'llamas',
+        {
+          itemId: 'drama',
+          subgroup: undefined,
+        }
+      );
     });
   });
 });
