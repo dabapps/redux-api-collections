@@ -564,7 +564,7 @@ describe('Collections', () => {
           )
         );
         // They should not have filtered into the normal collection
-        const badCollection = getCollectionByName(data, 'llamas', 'llamadrama');
+        const badCollection = getCollectionByName(data, 'owners/<owner_id>/llamas', 'llamadrama');
         expect(badCollection.page).toBe(1);
         expect(badCollection.count).toBe(0);
 
@@ -837,7 +837,7 @@ describe('Collections, immutably-backed', () => {
           )
         );
         // They should not have filtered into the normal collection
-        const badCollection = getCollectionByName(data, 'llamas', 'llamadrama');
+        const badCollection = getCollectionByName(data, 'owners/<owner_id>/llamas', 'llamadrama');
         expect(badCollection.page).toBe(1);
         expect(badCollection.count).toBe(0);
 
