@@ -314,8 +314,7 @@ describe('Items, alternate base URL', () => {
   const collections = Collections<{}, Items>(
     {},
     itemToRecordMapping,
-    false,
-    '/alternate-url/'
+    { baseUrl: '/alternate-url/' }
   );
 
   describe('actions', () => {

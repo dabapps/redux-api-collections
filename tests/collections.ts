@@ -585,7 +585,7 @@ describe('Collections', () => {
 });
 
 describe('Collections, immutably-backed', () => {
-  const collections = Collections(collectionToRecordMapping, {}, true);
+  const collections = Collections(collectionToRecordMapping, {}, { useImmutableForCollections: true });
 
   function getCollectionSuccess(
     tag: keyof Collections,
@@ -867,8 +867,7 @@ describe('Collections, alternate base URL', () => {
   const collections = Collections(
     collectionToRecordMapping,
     {},
-    false,
-    '/alternate-url/'
+    { baseUrl: '/alternate-url/' }
   );
 
   describe('actions', () => {

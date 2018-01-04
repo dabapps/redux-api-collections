@@ -127,10 +127,10 @@ itemSubpath.getSubpathItem(store);
 
 ### Help, I want to use Immutable collections!
 
-We've got you covered.  When initializing Collections, pass `true` as the third argument to automatically generate Immutable List based collections, which can then be retrieved via `getImmutableCollectionResultsByName`
+We've got you covered.  When initializing Collections, pass `true` in a configuration object to the third argument to automatically generate Immutable List based collections, which can then be retrieved via `getImmutableCollectionResultsByName`
 
 ```typescript
-const collections = Collections<Collections, Items>(collectionToRecordMapping, itemToRecordMapping, true);
+const collections = Collections<Collections, Items>(collectionToRecordMapping, itemToRecordMapping, { useImmutableForCollections: true });
 ```
 
 However, we generate fresh `List`s with every change, as the internal APIs between `List`s and `ReadonlyArray`s are too dissimilar for the code to be generic across.  This feature exists mostly for backwards compatibility with projects that are currently using Immutable.
@@ -142,5 +142,27 @@ You can parameterize the Collections object with different base URLs, for those 
 
 ```typescript
 import { Collections } from 'redux-api-collections';
-const collections = Collections<Collections, Items>(collectionToRecordMapping, itemToRecordMapping, false, '/another-base-url/');
+const collections = Collections<Collections, Items>(collectionToRecordMapping, itemToRecordMapping, { baseUrl: '/another-base-url/' });
+```
+
+
+### Help, I need to run some form of custom step on Collections/Reducers and make it react to a specific action
+
+You can provide custom Reducers that will be called by the built-in ones for post-processing the state when actions come in.
+
+```typescript
+import { Collections } from 'redux-api-collections';
+
+function myCustomCollectionReducer(state: CollectionStore<Collections>, action: AnyAction): CollectionStore<Collections> {
+  // Usual Reducer stuff
+}
+
+function myCustomItemReducer(state: ItemStore<Items>, action: AnyAction): ItemStore<Items> {
+  // More reducer stuff
+}
+
+const collections = Collections<Collections, Items>(collectionToRecordMapping, itemToRecordMapping, {
+    collectionReducerPlugin: myCustomCollectionReducer,
+    itemReducerPlugin: myCustomItemReducer
+});
 ```

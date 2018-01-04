@@ -18,12 +18,13 @@ import {
 } from '../utils';
 import { CLEAR_ITEM, GET_ITEM, UPDATE_ITEM } from './actions';
 import { clearItem, setItemFromResponseAction } from './reducers';
-import { ItemStore } from './types';
+import { ItemReducerPlugin, ItemStore } from './types';
 import { buildItemStore, getItemByName } from './utils';
 
 export function itemsFunctor<T extends IdKeyedMap<T>>(
   typeToRecordMapping: TypeToRecordMapping<T>,
-  baseUrl: string = '/api/'
+  baseUrl: string = '/api/',
+  reducerPlugin?: ItemReducerPlugin<T>
 ) {
   function buildActionSet(overrideUrl?: string) {
     function _updateItem(
@@ -122,11 +123,14 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
     state: ItemStore<T> = buildItemStore(typeToRecordMapping),
     action: AnyAction
   ): ItemStore<T> {
+    let newState = state;
     switch (action.type) {
       case CLEAR_ITEM:
-        return clearItem(state, action, typeToRecordMapping);
+        newState = clearItem(state, action, typeToRecordMapping);
+        break;
       case GET_ITEM.SUCCESS:
-        return setItemFromResponseAction(state, action, typeToRecordMapping);
+        newState = setItemFromResponseAction(state, action, typeToRecordMapping);
+        break;
       case UPDATE_ITEM.SUCCESS:
         const itemType = (action.meta as Dict<string>).tag;
         const subgroup = (action.meta as Dict<string>).subgroup || '';
@@ -134,17 +138,24 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
           const item = getItemByName(state, itemType as keyof T, subgroup);
           // FIXME: IdKeyedMap should make this cast unneccesary
           if (!item || (item as any).id === action.payload.id) {
-            return setItemFromResponseAction(
+            newState = setItemFromResponseAction(
               state,
               action,
               typeToRecordMapping
             );
           }
+        } else {
+          newState = state;
         }
-        return state;
+        break;
       default:
-        return state;
+        newState = state;
+        break;
     }
+    if (reducerPlugin) {
+      return reducerPlugin(state, action);
+    }
+    return newState;
   }
 
   function itemAtSubpath(type: keyof T, params: SubpathParams) {
