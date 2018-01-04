@@ -129,7 +129,11 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
         newState = clearItem(state, action, typeToRecordMapping);
         break;
       case GET_ITEM.SUCCESS:
-        newState = setItemFromResponseAction(state, action, typeToRecordMapping);
+        newState = setItemFromResponseAction(
+          state,
+          action,
+          typeToRecordMapping
+        );
         break;
       case UPDATE_ITEM.SUCCESS:
         const itemType = (action.meta as Dict<string>).tag;
@@ -153,7 +157,7 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
         break;
     }
     if (reducerPlugin) {
-      return reducerPlugin(state, action);
+      return reducerPlugin(newState, action);
     }
     return newState;
   }

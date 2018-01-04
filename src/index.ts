@@ -15,10 +15,11 @@ import { IdKeyedMap, TypeToRecordMapping } from './utils';
 export function Collections<T extends IdKeyedMap<T>, U extends IdKeyedMap<U>>(
   collectionToRecordMapping: TypeToRecordMapping<T>,
   itemToRecordMapping: TypeToRecordMapping<U>,
-  collectionOptions: CollectionOptions<T, U> = {},
+  collectionOptions: CollectionOptions<T, U> = {}
 ) {
   const baseUrl = collectionOptions.baseUrl || '/api/';
-  const useImmutableForCollections = collectionOptions.useImmutableForCollections || false;
+  const useImmutableForCollections =
+    collectionOptions.useImmutableForCollections || false;
 
   const collections = collectionsFunctor(
     collectionToRecordMapping,
@@ -26,7 +27,11 @@ export function Collections<T extends IdKeyedMap<T>, U extends IdKeyedMap<U>>(
     baseUrl,
     collectionOptions.collectionReducerPlugin
   );
-  const items = itemsFunctor(itemToRecordMapping, baseUrl, collectionOptions.itemReducerPlugin);
+  const items = itemsFunctor(
+    itemToRecordMapping,
+    baseUrl,
+    collectionOptions.itemReducerPlugin
+  );
   return {
     actions: {
       ...collections.actions,

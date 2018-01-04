@@ -194,7 +194,7 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
         break;
     }
     if (reducerPlugin) {
-      return reducerPlugin(state, action);
+      return reducerPlugin(newState, action);
     }
     return newState;
   }

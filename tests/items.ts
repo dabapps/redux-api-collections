@@ -1,4 +1,11 @@
-import { CLEAR_ITEM, GET_ITEM, getItemByName, UPDATE_ITEM } from '../src/items';
+import { AnyAction } from 'redux';
+import {
+  CLEAR_ITEM,
+  GET_ITEM,
+  getItemByName,
+  ItemStore,
+  UPDATE_ITEM,
+} from '../src/items';
 import * as requests from '../src/requests';
 
 import { Collections } from '../src';
@@ -311,11 +318,9 @@ describe('Items', () => {
 });
 
 describe('Items, alternate base URL', () => {
-  const collections = Collections<{}, Items>(
-    {},
-    itemToRecordMapping,
-    { baseUrl: '/alternate-url/' }
-  );
+  const collections = Collections<{}, Items>({}, itemToRecordMapping, {
+    baseUrl: '/alternate-url/',
+  });
 
   describe('actions', () => {
     const dispatchGenericRequestSpy = jest
@@ -340,6 +345,51 @@ describe('Items, alternate base URL', () => {
           subgroup: undefined,
         }
       );
+    });
+  });
+});
+
+describe('Items, custom reducer', () => {
+  function itemReducerPlugin(
+    store: ItemStore<Items>,
+    action: AnyAction
+  ): ItemStore<Items> {
+    switch (action.type) {
+      case GET_ITEM.SUCCESS:
+        return {
+          ...store,
+          llamas: {
+            ...store.llamas,
+            '': {
+              ...store.llamas[''],
+              name: store.llamas[''].name.toUpperCase(),
+            },
+          },
+        };
+      default:
+        return store;
+    }
+  }
+
+  const collections = Collections<{}, Items>({}, itemToRecordMapping, {
+    itemReducerPlugin,
+  });
+
+  describe('reducers', () => {
+    function loadItem(item: any) {
+      const action = {
+        meta: { itemId: 'first', tag: 'llamas' },
+        payload: item,
+        type: GET_ITEM.SUCCESS,
+      };
+
+      return collections.reducers.itemsReducer(undefined, action);
+    }
+
+    it('should run our plugin', () => {
+      const newItem = { id: 'first', name: 'Llama drama' };
+      const state = loadItem(newItem);
+      expect(state.llamas[''].name).toBe('LLAMA DRAMA');
     });
   });
 });

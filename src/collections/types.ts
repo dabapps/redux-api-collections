@@ -52,4 +52,7 @@ export type CollectionResponseAction = FluxStandardAction<
   CollectionParams & { subgroup: string }
 >;
 
-export type CollectionReducerPlugin<T extends IdKeyedMap<T>> = (state: CollectionStore<T>, action: AnyAction) => CollectionStore<T>;
+export type CollectionReducerPlugin<T extends IdKeyedMap<T>> = (
+  state: CollectionStore<T>,
+  action: AnyAction
+) => CollectionStore<T>;
