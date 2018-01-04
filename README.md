@@ -60,7 +60,7 @@ Now we have mappings, plus interfaces, we can bring it all together.  You are li
 
 ```typescript
 import { Collections } from 'redux-api-collections';
-import { responsesReducer } from 'redux-api-collections/requests';
+import { responsesReducer } from 'redux-api-collections/dist/requests';
 
 const collections = Collections<Collections, Items>(collectionToRecordMapping, itemToRecordMapping);
 
@@ -89,12 +89,80 @@ getCollectionResultsByName(store.collections, 'users');
 
 Many functions can also be namespaced by a `subgroup` field - this will allow you to request the same endpoint from multiple places without overwriting their results.
 
-###Help, I want to use Immutable collections!
+## Subpaths
 
-We've got you covered.  When initializing Collections, pass `true` as the third argument to automatically generate Immutable List based collections, which can then be retrieved via `getImmutableCollectionResultsByName`
+There are often situations where you want to have collections or items at a path with some form of ID in the middle of it. Provide your paths as something [path-to-regexp](https://github.com/pillarjs/path-to-regexp) understands:
 
 ```typescript
-const collections = Collections<Collections, Items>(collectionToRecordMapping, itemToRecordMapping, true);
+interface Collections {
+  'users/:userId/other-users': User  // This is /api/users/:userId/other_users/ on the server
+}
+
+interface Items {
+  'users/:userId/other-users': User  // This is /api/users/:userId/other_users/[id]/ on the server
+}
+```
+
+With these two paths, we need to be able to specify a separate `userId` for it to make sense. We can construct helper functions for working with this:
+
+```typescript
+const collectionSubpath = collections.collectionAtSubpath('users/:userId/other-users', {userId: '12345'});
+const itemSubpath = collections.itemAtSubpath('users/:userId/other-users', {userId: '23456'});
+```
+
+You pass a dictionary for each of the optional positions in the path.
+
+The two resulting structures contain pre-parameterized sets of action creators, as well as accessor functions.
+
+```typescript
+collectionSubpath.actions.getCollection(options);  // Contains a pre-bound action for each of the normal collection actions
+collectionSubpath.getSubpathCollection(store);  // Our collection object
+collectionSubpath.getSubpathCollectionResults(store);  // Just the items
+
+itemSubpath.actions.getItem('12345');
+itemSubpath.getSubpathItem(store);
+```
+
+## I'm stuck!
+
+### Help, I want to use Immutable collections!
+
+We've got you covered.  When initializing Collections, set `useImmutableForCollections` to `true` in a configuration object to the third argument to automatically generate Immutable List based collections, which can then be retrieved via `getImmutableCollectionResultsByName`
+
+```typescript
+const collections = Collections<Collections, Items>(collectionToRecordMapping, itemToRecordMapping, { useImmutableForCollections: true });
 ```
 
 However, we generate fresh `List`s with every change, as the internal APIs between `List`s and `ReadonlyArray`s are too dissimilar for the code to be generic across.  This feature exists mostly for backwards compatibility with projects that are currently using Immutable.
+
+### Help, my API isn't mounted at /api/
+
+You can parameterize the Collections object with different base URLs, for those odd cases where your API is different from the others we use.
+
+
+```typescript
+import { Collections } from 'redux-api-collections';
+const collections = Collections<Collections, Items>(collectionToRecordMapping, itemToRecordMapping, { baseUrl: '/another-base-url/' });
+```
+
+
+### Help, I need to run some form of custom step on Collections/Reducers and make it react to a specific action
+
+You can provide custom Reducers that will be called by the built-in ones for post-processing the state when actions come in.
+
+```typescript
+import { Collections } from 'redux-api-collections';
+
+function myCustomCollectionReducer(state: CollectionStore<Collections>, action: AnyAction): CollectionStore<Collections> {
+  // Usual Reducer stuff
+}
+
+function myCustomItemReducer(state: ItemStore<Items>, action: AnyAction): ItemStore<Items> {
+  // More reducer stuff
+}
+
+const collections = Collections<Collections, Items>(collectionToRecordMapping, itemToRecordMapping, {
+    collectionReducerPlugin: myCustomCollectionReducer,
+    itemReducerPlugin: myCustomItemReducer
+});
+```

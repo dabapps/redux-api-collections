@@ -1,7 +1,7 @@
 {
   "name": "@dabapps/redux-api-collections",
-  "version": "0.1.1",
-  "description": "Type-safe helpers for dealing with Rest-Framework backed collections in Rust",
+  "version": "0.2.0",
+  "description": "Type-safe helpers for dealing with Rest-Framework backed collections in Typescript",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -21,6 +21,8 @@
     "flux-standard-action": "1.2.0",
     "immutable": "3.8.2",
     "js-cookie": "2.1.4",
+    "path": "0.12.7",
+    "path-to-regexp": "2.1.0",
     "redux": "3.7.2",
     "redux-thunk": "2.2.0",
     "typescript": "2.6.2",

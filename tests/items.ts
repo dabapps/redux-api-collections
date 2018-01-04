@@ -1,4 +1,11 @@
-import { CLEAR_ITEM, GET_ITEM, getItemByName, UPDATE_ITEM } from '../src/items';
+import { AnyAction } from 'redux';
+import {
+  CLEAR_ITEM,
+  GET_ITEM,
+  getItemByName,
+  ItemStore,
+  UPDATE_ITEM,
+} from '../src/items';
 import * as requests from '../src/requests';
 
 import { Collections } from '../src';
@@ -20,15 +27,17 @@ const LlamaRecord = (input: Partial<Llama>): Llama => {
 
 interface Items {
   llamas: Llama;
+  'owners/:ownerId/llamas': Llama;
 }
 
 const itemToRecordMapping = {
   llamas: LlamaRecord,
+  'owners/:ownerId/llamas': LlamaRecord,
 };
 
-const collections = Collections<{}, Items>({}, itemToRecordMapping);
-
 describe('Items', () => {
+  const collections = Collections<{}, Items>({}, itemToRecordMapping);
+
   describe('actions', () => {
     const dispatchGenericRequestSpy = jest
       .spyOn(requests, 'dispatchGenericRequest')
@@ -134,6 +143,7 @@ describe('Items', () => {
           llamas: {
             '': LlamaRecord({}),
           },
+          'owners/:ownerId/llamas': {},
         },
         action
       );
@@ -190,6 +200,196 @@ describe('Items', () => {
 
         expect(newState).toBe(initialState);
       });
+    });
+  });
+
+  describe('Subpath', () => {
+    const ownerId = 'abc1234';
+    const subpath = collections.itemAtSubpath('owners/:ownerId/llamas', {
+      ownerId,
+    });
+
+    describe('actions', () => {
+      const dispatchGenericRequestSpy = jest
+        .spyOn(requests, 'dispatchGenericRequest')
+        .mockImplementation(() => null);
+
+      beforeEach(() => {
+        dispatchGenericRequestSpy.mockReset();
+      });
+
+      it('should be possible to construct getItem', () => {
+        subpath.actions.getItem('drama', 'llamadrama');
+
+        expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+          GET_ITEM,
+          `/api/owners/${ownerId}/llamas/drama/`,
+          'GET',
+          null,
+          'owners/:ownerId/llamas',
+          {
+            itemId: 'drama',
+            subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
+          }
+        );
+      });
+
+      it('should be possible to construct updateItem', () => {
+        subpath.actions.updateItem('drama', {}, 'llamadrama');
+
+        expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+          UPDATE_ITEM,
+          `/api/owners/${ownerId}/llamas/drama/`,
+          'PUT',
+          {},
+          'owners/:ownerId/llamas',
+          {
+            itemId: 'drama',
+            subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
+          }
+        );
+      });
+
+      it('should be possible to construct patchItem', () => {
+        subpath.actions.patchItem('drama', {}, 'llamadrama');
+
+        expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+          UPDATE_ITEM,
+          `/api/owners/${ownerId}/llamas/drama/`,
+          'PATCH',
+          {},
+          'owners/:ownerId/llamas',
+          {
+            itemId: 'drama',
+            subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
+          }
+        );
+      });
+
+      it('should be possible to construct actionItem', () => {
+        subpath.actions.actionItem('drama', 'pajama', {}, 'llamadrama');
+
+        expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+          UPDATE_ITEM,
+          `/api/owners/${ownerId}/llamas/drama/pajama/`,
+          'POST',
+          {},
+          'owners/:ownerId/llamas',
+          {
+            itemId: 'drama',
+            subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
+          }
+        );
+      });
+
+      it('should be possible to construct clearItem', () => {
+        const action = collections.actions.clearItem('llamas');
+        expect(action.type).toBe(CLEAR_ITEM);
+        expect(action.payload.type).toBe('llamas');
+      });
+    });
+
+    describe('reducers', () => {
+      function loadItem(item: any) {
+        const action = {
+          meta: {
+            itemId: 'first',
+            tag: 'owners/:ownerId/llamas',
+            subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
+          },
+          payload: item,
+          type: GET_ITEM.SUCCESS,
+        };
+
+        return collections.reducers.itemsReducer(undefined, action);
+      }
+
+      it('sets the item on successful load', () => {
+        const newItem = { id: 'first', name: 'Llama drama' };
+
+        const state = loadItem(newItem);
+        const item = subpath.getSubpathItem(state, 'llamadrama');
+        expect(item).toBeTruthy();
+        expect(item && item.id).toEqual(newItem.id);
+        expect(item && item.name).toEqual(newItem.name);
+      });
+    });
+  });
+});
+
+describe('Items, alternate base URL', () => {
+  const collections = Collections<{}, Items>({}, itemToRecordMapping, {
+    baseUrl: '/alternate-url/',
+  });
+
+  describe('actions', () => {
+    const dispatchGenericRequestSpy = jest
+      .spyOn(requests, 'dispatchGenericRequest')
+      .mockImplementation(() => null);
+
+    beforeEach(() => {
+      dispatchGenericRequestSpy.mockReset();
+    });
+
+    it('should be possible to construct getItem', () => {
+      collections.actions.getItem('llamas', 'drama');
+
+      expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+        GET_ITEM,
+        '/alternate-url/llamas/drama/',
+        'GET',
+        null,
+        'llamas',
+        {
+          itemId: 'drama',
+          subgroup: undefined,
+        }
+      );
+    });
+  });
+});
+
+describe('Items, custom reducer', () => {
+  function itemReducerPlugin(
+    store: ItemStore<Items>,
+    action: AnyAction
+  ): ItemStore<Items> {
+    switch (action.type) {
+      case GET_ITEM.SUCCESS:
+        return {
+          ...store,
+          llamas: {
+            ...store.llamas,
+            '': {
+              ...store.llamas[''],
+              name: store.llamas[''].name.toUpperCase(),
+            },
+          },
+        };
+      default:
+        return store;
+    }
+  }
+
+  const collections = Collections<{}, Items>({}, itemToRecordMapping, {
+    itemReducerPlugin,
+  });
+
+  describe('reducers', () => {
+    function loadItem(item: any) {
+      const action = {
+        meta: { itemId: 'first', tag: 'llamas' },
+        payload: item,
+        type: GET_ITEM.SUCCESS,
+      };
+
+      return collections.reducers.itemsReducer(undefined, action);
+    }
+
+    it('should run our plugin', () => {
+      const newItem = { id: 'first', name: 'Llama drama' };
+      const state = loadItem(newItem);
+      expect(state.llamas[''].name).toBe('LLAMA DRAMA');
     });
   });
 });
