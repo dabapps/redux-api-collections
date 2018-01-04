@@ -7,6 +7,7 @@ import { AxiosResponse } from 'axios';
 // Required for re-exporting
 // tslint:disable-next-line:no-unused-variable
 import { List } from 'immutable';
+import * as pathToRegexp from 'path-to-regexp';
 import { AnyAction } from 'redux';
 // Required for re-exporting
 // tslint:disable-next-line:no-unused-variable
@@ -16,7 +17,7 @@ import { dispatchGenericRequest } from '../requests';
 import {
   buildSubgroup,
   IdKeyedMap,
-  pathMatcher,
+  SubpathParams,
   TypeToRecordMapping,
 } from '../utils';
 import {
@@ -186,11 +187,9 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
     }
   }
 
-  function collectionAtSubpath(type: keyof T, ...pathIds: string[]) {
-    const replaced = pathIds.reduce(
-      (memo, nextId) => memo.replace(pathMatcher, nextId),
-      type
-    );
+  function collectionAtSubpath(type: keyof T, params: SubpathParams) {
+    const compiledPath = pathToRegexp.compile(type);
+    const replaced = compiledPath(params);
     const overrideUrl = `${baseUrl}${replaced}/`;
     const {
       addItem,

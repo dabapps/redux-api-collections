@@ -20,12 +20,12 @@ const LlamaRecord = (input: Partial<Llama>): Llama => {
 
 interface Items {
   llamas: Llama;
-  'owners/<owner_id>/llamas': Llama;
+  'owners/:ownerId/llamas': Llama;
 }
 
 const itemToRecordMapping = {
   llamas: LlamaRecord,
-  'owners/<owner_id>/llamas': LlamaRecord,
+  'owners/:ownerId/llamas': LlamaRecord,
 };
 
 describe('Items', () => {
@@ -136,7 +136,7 @@ describe('Items', () => {
           llamas: {
             '': LlamaRecord({}),
           },
-          'owners/<owner_id>/llamas': {},
+          'owners/:ownerId/llamas': {},
         },
         action
       );
@@ -198,10 +198,9 @@ describe('Items', () => {
 
   describe('Subpath', () => {
     const ownerId = 'abc1234';
-    const subpath = collections.itemAtSubpath(
-      'owners/<owner_id>/llamas',
-      ownerId
-    );
+    const subpath = collections.itemAtSubpath('owners/:ownerId/llamas', {
+      ownerId,
+    });
 
     describe('actions', () => {
       const dispatchGenericRequestSpy = jest
@@ -220,7 +219,7 @@ describe('Items', () => {
           `/api/owners/${ownerId}/llamas/drama/`,
           'GET',
           null,
-          'owners/<owner_id>/llamas',
+          'owners/:ownerId/llamas',
           {
             itemId: 'drama',
             subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
@@ -236,7 +235,7 @@ describe('Items', () => {
           `/api/owners/${ownerId}/llamas/drama/`,
           'PUT',
           {},
-          'owners/<owner_id>/llamas',
+          'owners/:ownerId/llamas',
           {
             itemId: 'drama',
             subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
@@ -252,7 +251,7 @@ describe('Items', () => {
           `/api/owners/${ownerId}/llamas/drama/`,
           'PATCH',
           {},
-          'owners/<owner_id>/llamas',
+          'owners/:ownerId/llamas',
           {
             itemId: 'drama',
             subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
@@ -268,7 +267,7 @@ describe('Items', () => {
           `/api/owners/${ownerId}/llamas/drama/pajama/`,
           'POST',
           {},
-          'owners/<owner_id>/llamas',
+          'owners/:ownerId/llamas',
           {
             itemId: 'drama',
             subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
@@ -288,7 +287,7 @@ describe('Items', () => {
         const action = {
           meta: {
             itemId: 'first',
-            tag: 'owners/<owner_id>/llamas',
+            tag: 'owners/:ownerId/llamas',
             subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
           },
           payload: item,

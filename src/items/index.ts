@@ -4,6 +4,7 @@ export * from './types';
 export * from './utils';
 
 import { AxiosResponse } from 'axios';
+import * as pathToRegexp from 'path-to-regexp';
 import { AnyAction } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import { dispatchGenericRequest } from '../requests';
@@ -12,7 +13,7 @@ import {
   buildSubgroup,
   Dict,
   IdKeyedMap,
-  pathMatcher,
+  SubpathParams,
   TypeToRecordMapping,
 } from '../utils';
 import { CLEAR_ITEM, GET_ITEM, UPDATE_ITEM } from './actions';
@@ -146,11 +147,9 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
     }
   }
 
-  function itemAtSubpath(type: keyof T, ...pathIds: string[]) {
-    const replaced = pathIds.reduce(
-      (memo, nextId) => memo.replace(pathMatcher, nextId),
-      type
-    );
+  function itemAtSubpath(type: keyof T, params: SubpathParams) {
+    const compiledPath = pathToRegexp.compile(type);
+    const replaced = compiledPath(params);
     const overrideUrl = `${baseUrl}${replaced}/`;
     const {
       updateItem,

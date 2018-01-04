@@ -28,12 +28,12 @@ const LlamaRecord = (input: Partial<Llama>): Llama => {
 
 interface Collections {
   llamas: Llama;
-  'owners/<owner_id>/llamas': Llama;
+  'owners/:ownerId/llamas': Llama;
 }
 
 const collectionToRecordMapping = {
   llamas: LlamaRecord,
-  'owners/<owner_id>/llamas': LlamaRecord,
+  'owners/:ownerId/llamas': LlamaRecord,
 };
 
 describe('Collections', () => {
@@ -421,10 +421,9 @@ describe('Collections', () => {
 
   describe('Subpath', () => {
     const ownerId = 'abc1234';
-    const subpath = collections.collectionAtSubpath(
-      'owners/<owner_id>/llamas',
-      ownerId
-    );
+    const subpath = collections.collectionAtSubpath('owners/:ownerId/llamas', {
+      ownerId,
+    });
 
     describe('actions', () => {
       const dispatchGenericRequestSpy = jest
@@ -456,7 +455,7 @@ describe('Collections', () => {
             id: '1',
             name: 'Drama',
           },
-          'owners/<owner_id>/llamas',
+          'owners/:ownerId/llamas',
           { subgroup: `/api/owners/${ownerId}/llamas/:drama` }
         );
       });
@@ -464,7 +463,7 @@ describe('Collections', () => {
       it('should properly construct a clearCollection action', () => {
         const action = subpath.actions.clearCollection();
         expect(action.type).toBe(CLEAR_COLLECTION);
-        expect(action.payload.type).toBe('owners/<owner_id>/llamas');
+        expect(action.payload.type).toBe('owners/:ownerId/llamas');
       });
 
       it('should properly construct a deleteItem action', () => {
@@ -477,7 +476,7 @@ describe('Collections', () => {
           `/api/owners/${ownerId}/llamas/first/`,
           'DELETE',
           null,
-          'owners/<owner_id>/llamas',
+          'owners/:ownerId/llamas',
           {
             subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
             itemId: 'first',
@@ -493,7 +492,7 @@ describe('Collections', () => {
           `/api/owners/${ownerId}/llamas/?page=1&page_size=10000`,
           'GET',
           null,
-          'owners/<owner_id>/llamas',
+          'owners/:ownerId/llamas',
           {
             subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
             filters: undefined,
@@ -513,7 +512,7 @@ describe('Collections', () => {
           `/api/owners/${ownerId}/llamas/?page=1&page_size=12`,
           'GET',
           null,
-          'owners/<owner_id>/llamas',
+          'owners/:ownerId/llamas',
           {
             subgroup: `/api/owners/${ownerId}/llamas/:`,
             filters: undefined,
@@ -533,7 +532,7 @@ describe('Collections', () => {
           `/api/owners/${ownerId}/llamas/?page=1&page_size=12`,
           'GET',
           null,
-          'owners/<owner_id>/llamas',
+          'owners/:ownerId/llamas',
           {
             subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
             filters: undefined,
@@ -551,7 +550,7 @@ describe('Collections', () => {
         const data = collections.reducers.collectionsReducer(
           undefined,
           getCollectionSuccess(
-            'owners/<owner_id>/llamas',
+            'owners/:ownerId/llamas',
             `/api/owners/${ownerId}/llamas/:llamadrama`,
             [
               {
@@ -566,7 +565,7 @@ describe('Collections', () => {
         // They should not have filtered into the normal collection
         const badCollection = getCollectionByName(
           data,
-          'owners/<owner_id>/llamas',
+          'owners/:ownerId/llamas',
           'llamadrama'
         );
         expect(badCollection.page).toBe(1);
@@ -818,17 +817,16 @@ describe('Collections, immutably-backed', () => {
 
   describe('Subpath', () => {
     const ownerId = 'abc1234';
-    const subpath = collections.collectionAtSubpath(
-      'owners/<owner_id>/llamas',
-      ownerId
-    );
+    const subpath = collections.collectionAtSubpath('owners/:ownerId/llamas', {
+      ownerId,
+    });
 
     describe('reducers', () => {
       it('should correctly allow us to get data out', () => {
         const data = collections.reducers.collectionsReducer(
           undefined,
           getCollectionSuccess(
-            'owners/<owner_id>/llamas',
+            'owners/:ownerId/llamas',
             `/api/owners/${ownerId}/llamas/:llamadrama`,
             [
               {
@@ -843,7 +841,7 @@ describe('Collections, immutably-backed', () => {
         // They should not have filtered into the normal collection
         const badCollection = getCollectionByName(
           data,
-          'owners/<owner_id>/llamas',
+          'owners/:ownerId/llamas',
           'llamadrama'
         );
         expect(badCollection.page).toBe(1);

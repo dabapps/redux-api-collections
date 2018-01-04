@@ -23,4 +23,6 @@ export function buildSubgroup(
   return subgroup;
 }
 
-export const pathMatcher = /<.*?>/;
+export type SubpathParams = Dict<
+  string | number | ReadonlyArray<string | number>
+>;

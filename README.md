@@ -91,25 +91,26 @@ Many functions can also be namespaced by a `subgroup` field - this will allow yo
 
 ## Subpaths
 
-There are often situations where you want to have collections or items at a path with some form of ID in the middle of it. This can be done:
+There are often situations where you want to have collections or items at a path with some form of ID in the middle of it. Provide your paths as something [path-to-regexp](https://github.com/pillarjs/path-to-regexp) understands:
 
 ```typescript
 interface Collections {
-  'users/<user_id>/other-users': User  // This is /api/users/<user_id>/other_users/ on the server
+  'users/:user_id/other-users': User  // This is /api/users/:userId/other_users/ on the server
 }
 
 interface Items {
-  'users/<user_id>/other-users': User  // This is /api/users/<user_id>/other_users/[id]/ on the server
+  'users/:user_id/other-users': User  // This is /api/users/:userId/other_users/[id]/ on the server
 }
 ```
 
-With these two paths, we need to be able to specify a separate `user_id` for it to make sense. We can construct helper functions for working with this:
+With these two paths, we need to be able to specify a separate `userId` for it to make sense. We can construct helper functions for working with this:
 
 ```typescript
-const collectionSubpath = collections.collectionAtSubpath('users/<user_id>/other-users', userId);
-const itemSubpath = collections.itemAtSubpath('users/<user_id>/other-users', userId);
+const collectionSubpath = collections.collectionAtSubpath('users/:userId/other-users', {userId: '12345'});
+const itemSubpath = collections.itemAtSubpath('users/:userId/other-users', {userId: '23456'});
 ```
-You will need to call these methods with an argument for every item in angle brackets - this currently cannot be statically enforced, though.
+
+You pass a dictionary for each of the optional positions in the path.
 
 The two resulting structures contain pre-parameterized sets of action creators, as well as accessor functions.
 
