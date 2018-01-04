@@ -95,11 +95,11 @@ There are often situations where you want to have collections or items at a path
 
 ```typescript
 interface Collections {
-  'users/:user_id/other-users': User  // This is /api/users/:userId/other_users/ on the server
+  'users/:userId/other-users': User  // This is /api/users/:userId/other_users/ on the server
 }
 
 interface Items {
-  'users/:user_id/other-users': User  // This is /api/users/:userId/other_users/[id]/ on the server
+  'users/:userId/other-users': User  // This is /api/users/:userId/other_users/[id]/ on the server
 }
 ```
 
