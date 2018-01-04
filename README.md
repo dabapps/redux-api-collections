@@ -127,7 +127,7 @@ itemSubpath.getSubpathItem(store);
 
 ### Help, I want to use Immutable collections!
 
-We've got you covered.  When initializing Collections, pass `true` in a configuration object to the third argument to automatically generate Immutable List based collections, which can then be retrieved via `getImmutableCollectionResultsByName`
+We've got you covered.  When initializing Collections, set `useImmutableForCollections` to `true` in a configuration object to the third argument to automatically generate Immutable List based collections, which can then be retrieved via `getImmutableCollectionResultsByName`
 
 ```typescript
 const collections = Collections<Collections, Items>(collectionToRecordMapping, itemToRecordMapping, { useImmutableForCollections: true });
