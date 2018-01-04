@@ -1,6 +1,8 @@
+import { AnyAction } from 'redux';
 import {
   ADD_TO_COLLECTION,
   CLEAR_COLLECTION,
+  CollectionStore,
   DELETE_FROM_COLLECTION,
   GET_COLLECTION,
   getCollectionByName,
@@ -585,7 +587,11 @@ describe('Collections', () => {
 });
 
 describe('Collections, immutably-backed', () => {
-  const collections = Collections(collectionToRecordMapping, {}, true);
+  const collections = Collections(
+    collectionToRecordMapping,
+    {},
+    { useImmutableForCollections: true }
+  );
 
   function getCollectionSuccess(
     tag: keyof Collections,
@@ -867,8 +873,7 @@ describe('Collections, alternate base URL', () => {
   const collections = Collections(
     collectionToRecordMapping,
     {},
-    false,
-    '/alternate-url/'
+    { baseUrl: '/alternate-url/' }
   );
 
   describe('actions', () => {
@@ -903,6 +908,78 @@ describe('Collections, alternate base URL', () => {
         'llamas',
         { subgroup: 'drama' }
       );
+    });
+  });
+});
+
+describe('Collections, custom reducer', () => {
+  function collectionReducerPlugin(
+    store: CollectionStore<Collections>,
+    action: AnyAction
+  ): CollectionStore<Collections> {
+    switch (action.type) {
+      case GET_COLLECTION.SUCCESS:
+        return {
+          ...store,
+          llamas: {
+            ...store.llamas,
+            '': {
+              ...store.llamas[''],
+              results: store.llamas[''].results.map(llama => ({
+                ...llama,
+                name: llama.name.toUpperCase(),
+              })),
+            },
+          },
+        };
+      default:
+        return store;
+    }
+  }
+
+  const collections = Collections(
+    collectionToRecordMapping,
+    {},
+    { collectionReducerPlugin }
+  );
+
+  function getCollectionSuccess(
+    tag: keyof Collections,
+    subgroup: string,
+    results: ReadonlyArray<any>,
+    shouldAppend: boolean,
+    next?: string
+  ) {
+    return {
+      meta: { tag, shouldAppend, subgroup },
+      payload: {
+        count: results.length,
+        page: 1,
+        next,
+        results,
+      },
+      type: GET_COLLECTION.SUCCESS,
+    };
+  }
+
+  describe('actions', () => {
+    it('should run the plugin', () => {
+      const data = collections.reducers.collectionsReducer(
+        undefined,
+        getCollectionSuccess(
+          'llamas',
+          '',
+          [
+            {
+              furLength: 5,
+              id: '1',
+              name: 'Drama',
+            },
+          ],
+          false
+        )
+      );
+      expect(data.llamas[''].results[0].name).toBe('DRAMA');
     });
   });
 });

@@ -9,20 +9,29 @@ import { List } from 'immutable';
 import { AnyAction, Dispatch } from 'redux';
 import { collectionsFunctor } from './collections';
 import { itemsFunctor } from './items';
+import { CollectionOptions } from './types';
 import { IdKeyedMap, TypeToRecordMapping } from './utils';
 
 export function Collections<T extends IdKeyedMap<T>, U extends IdKeyedMap<U>>(
   collectionToRecordMapping: TypeToRecordMapping<T>,
   itemToRecordMapping: TypeToRecordMapping<U>,
-  useImmutableForCollections: boolean = false,
-  baseUrl: string = '/api/'
+  collectionOptions: CollectionOptions<T, U> = {}
 ) {
+  const baseUrl = collectionOptions.baseUrl || '/api/';
+  const useImmutableForCollections =
+    collectionOptions.useImmutableForCollections || false;
+
   const collections = collectionsFunctor(
     collectionToRecordMapping,
     useImmutableForCollections,
-    baseUrl
+    baseUrl,
+    collectionOptions.collectionReducerPlugin
   );
-  const items = itemsFunctor(itemToRecordMapping, baseUrl);
+  const items = itemsFunctor(
+    itemToRecordMapping,
+    baseUrl,
+    collectionOptions.itemReducerPlugin
+  );
   return {
     actions: {
       ...collections.actions,

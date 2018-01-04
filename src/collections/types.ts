@@ -1,5 +1,6 @@
 import { FluxStandardAction } from 'flux-standard-action';
 import { List } from 'immutable';
+import { AnyAction } from 'redux';
 import { Dict, IdKeyed, IdKeyedMap } from '../utils';
 
 export type CollectionParamsNoPageSize = Readonly<{
@@ -50,3 +51,8 @@ export type CollectionResponseAction = FluxStandardAction<
   },
   CollectionParams & { subgroup: string }
 >;
+
+export type CollectionReducerPlugin<T extends IdKeyedMap<T>> = (
+  state: CollectionStore<T>,
+  action: AnyAction
+) => CollectionStore<T>;

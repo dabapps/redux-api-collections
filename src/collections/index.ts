@@ -35,6 +35,7 @@ import {
 import {
   CollectionOptions,
   CollectionOptionsNoPageSize,
+  CollectionReducerPlugin,
   CollectionStore,
 } from './types';
 import {
@@ -49,7 +50,8 @@ import {
 export function collectionsFunctor<T extends IdKeyedMap<T>>(
   typeToRecordMapping: TypeToRecordMapping<T>,
   useImmutable: boolean,
-  baseUrl: string = '/api/'
+  baseUrl: string = '/api/',
+  reducerPlugin?: CollectionReducerPlugin<T>
 ) {
   function buildActionSet(overrideUrl?: string) {
     function addItemAction(
@@ -153,38 +155,48 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
     state: CollectionStore<T> = buildCollectionsStore(typeToRecordMapping),
     action: AnyAction
   ): CollectionStore<T> {
+    let newState = state;
     switch (action.type) {
       case GET_COLLECTION.SUCCESS:
-        return setCollectionFromResponseAction(
+        newState = setCollectionFromResponseAction(
           state,
           action,
           typeToRecordMapping,
           useImmutable
         );
+        break;
       case ADD_TO_COLLECTION.SUCCESS:
-        return addCollectionItem(
+        newState = addCollectionItem(
           state,
           action,
           typeToRecordMapping,
           useImmutable
         );
+        break;
       case DELETE_FROM_COLLECTION.SUCCESS:
-        return deleteCollectionItem(
+        newState = deleteCollectionItem(
           state,
           action,
           typeToRecordMapping,
           useImmutable
         );
+        break;
       case CLEAR_COLLECTION:
-        return clearCollection(
+        newState = clearCollection(
           state,
           action,
           typeToRecordMapping,
           useImmutable
         );
+        break;
       default:
-        return state;
+        newState = state;
+        break;
     }
+    if (reducerPlugin) {
+      return reducerPlugin(newState, action);
+    }
+    return newState;
   }
 
   function collectionAtSubpath(type: keyof T, params: SubpathParams) {
