@@ -28,14 +28,36 @@ const LlamaRecord = (input: Partial<Llama>): Llama => {
 
 interface Collections {
   llamas: Llama;
+  'owners/:ownerId/llamas': Llama;
 }
 
 const collectionToRecordMapping = {
   llamas: LlamaRecord,
+  'owners/:ownerId/llamas': LlamaRecord,
 };
 
 describe('Collections', () => {
   const collections = Collections(collectionToRecordMapping, {});
+
+  // Helpers for creating event callbacks
+  function getCollectionSuccess(
+    tag: keyof Collections,
+    subgroup: string,
+    results: ReadonlyArray<any>,
+    shouldAppend: boolean,
+    next?: string
+  ) {
+    return {
+      meta: { tag, shouldAppend, subgroup },
+      payload: {
+        count: results.length,
+        page: 1,
+        next,
+        results,
+      },
+      type: GET_COLLECTION.SUCCESS,
+    };
+  }
 
   describe('actions', () => {
     const dispatchGenericRequestSpy = jest
@@ -157,26 +179,6 @@ describe('Collections', () => {
   });
 
   describe('reducers', () => {
-    // Helpers for creating event callbacks
-    function getCollectionSuccess(
-      tag: keyof Collections,
-      subgroup: string,
-      results: ReadonlyArray<any>,
-      shouldAppend: boolean,
-      next?: string
-    ) {
-      return {
-        meta: { tag, shouldAppend, subgroup },
-        payload: {
-          count: results.length,
-          page: 1,
-          next,
-          results,
-        },
-        type: GET_COLLECTION.SUCCESS,
-      };
-    }
-
     function addItemSuccess(
       tag: keyof Collections,
       subgroup: string,
@@ -416,32 +418,196 @@ describe('Collections', () => {
       });
     });
   });
+
+  describe('Subpath', () => {
+    const ownerId = 'abc1234';
+    const subpath = collections.collectionAtSubpath('owners/:ownerId/llamas', {
+      ownerId,
+    });
+
+    describe('actions', () => {
+      const dispatchGenericRequestSpy = jest
+        .spyOn(requests, 'dispatchGenericRequest')
+        .mockImplementation(() => null);
+
+      beforeEach(() => {
+        dispatchGenericRequestSpy.mockReset();
+      });
+
+      it('should properly construct an addItem action', () => {
+        subpath.actions.addItem(
+          {
+            furLength: 5,
+            id: '1',
+            name: 'Drama',
+          },
+          'drama'
+        );
+
+        expect(
+          dispatchGenericRequestSpy
+        ).toHaveBeenCalledWith(
+          ADD_TO_COLLECTION,
+          `/api/owners/${ownerId}/llamas/`,
+          'POST',
+          {
+            furLength: 5,
+            id: '1',
+            name: 'Drama',
+          },
+          'owners/:ownerId/llamas',
+          { subgroup: `/api/owners/${ownerId}/llamas/:drama` }
+        );
+      });
+
+      it('should properly construct a clearCollection action', () => {
+        const action = subpath.actions.clearCollection();
+        expect(action.type).toBe(CLEAR_COLLECTION);
+        expect(action.payload.type).toBe('owners/:ownerId/llamas');
+      });
+
+      it('should properly construct a deleteItem action', () => {
+        subpath.actions.deleteItem('first', 'llamadrama');
+
+        expect(
+          dispatchGenericRequestSpy
+        ).toHaveBeenCalledWith(
+          DELETE_FROM_COLLECTION,
+          `/api/owners/${ownerId}/llamas/first/`,
+          'DELETE',
+          null,
+          'owners/:ownerId/llamas',
+          {
+            subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
+            itemId: 'first',
+          }
+        );
+      });
+
+      it('should properly construct a getAllCollection action', () => {
+        subpath.actions.getAllCollection({}, 'llamadrama');
+
+        expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+          GET_COLLECTION,
+          `/api/owners/${ownerId}/llamas/?page=1&page_size=10000`,
+          'GET',
+          null,
+          'owners/:ownerId/llamas',
+          {
+            subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
+            filters: undefined,
+            ordering: undefined,
+            page: undefined,
+            reverseOrdering: undefined,
+            shouldAppend: undefined,
+          }
+        );
+      });
+
+      it('should properly construct a getCollection action with defaults', () => {
+        subpath.actions.getCollection();
+
+        expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+          GET_COLLECTION,
+          `/api/owners/${ownerId}/llamas/?page=1&page_size=12`,
+          'GET',
+          null,
+          'owners/:ownerId/llamas',
+          {
+            subgroup: `/api/owners/${ownerId}/llamas/:`,
+            filters: undefined,
+            ordering: undefined,
+            page: undefined,
+            reverseOrdering: undefined,
+            shouldAppend: undefined,
+          }
+        );
+      });
+
+      it('should properly construct a getCollection action with params', () => {
+        subpath.actions.getCollection({}, 'llamadrama');
+
+        expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+          GET_COLLECTION,
+          `/api/owners/${ownerId}/llamas/?page=1&page_size=12`,
+          'GET',
+          null,
+          'owners/:ownerId/llamas',
+          {
+            subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
+            filters: undefined,
+            ordering: undefined,
+            page: undefined,
+            reverseOrdering: undefined,
+            shouldAppend: undefined,
+          }
+        );
+      });
+    });
+
+    describe('reducers', () => {
+      it('should correctly allow us to get data out', () => {
+        const data = collections.reducers.collectionsReducer(
+          undefined,
+          getCollectionSuccess(
+            'owners/:ownerId/llamas',
+            `/api/owners/${ownerId}/llamas/:llamadrama`,
+            [
+              {
+                furLength: 5,
+                id: '1',
+                name: 'Drama',
+              },
+            ],
+            false
+          )
+        );
+        // They should not have filtered into the normal collection
+        const badCollection = getCollectionByName(
+          data,
+          'owners/:ownerId/llamas',
+          'llamadrama'
+        );
+        expect(badCollection.page).toBe(1);
+        expect(badCollection.count).toBe(0);
+
+        const subCollection = subpath.getSubpathCollection(data, 'llamadrama');
+        expect(subCollection.page).toBe(1);
+        expect(subCollection.count).toBe(1);
+
+        const results = subpath.getSubpathCollectionResults(data, 'llamadrama');
+        expect(results).toBe(subCollection.results);
+        expect(results.length).toBe(subCollection.count);
+        expect(results[0].furLength).toBe(5);
+      });
+    });
+  });
 });
 
 describe('Collections, immutably-backed', () => {
   const collections = Collections(collectionToRecordMapping, {}, true);
 
+  function getCollectionSuccess(
+    tag: keyof Collections,
+    subgroup: string,
+    results: ReadonlyArray<any>,
+    shouldAppend: boolean,
+    next?: string
+  ) {
+    return {
+      meta: { tag, shouldAppend, subgroup },
+      payload: {
+        count: results.length,
+        page: 1,
+        next,
+        results,
+      },
+      type: GET_COLLECTION.SUCCESS,
+    };
+  }
+
   describe('reducers', () => {
     // Helpers for creating event callbacks
-    function getCollectionSuccess(
-      tag: keyof Collections,
-      subgroup: string,
-      results: ReadonlyArray<any>,
-      shouldAppend: boolean,
-      next?: string
-    ) {
-      return {
-        meta: { tag, shouldAppend, subgroup },
-        payload: {
-          count: results.length,
-          page: 1,
-          next,
-          results,
-        },
-        type: GET_COLLECTION.SUCCESS,
-      };
-    }
-
     function addItemSuccess(
       tag: keyof Collections,
       subgroup: string,
@@ -646,6 +812,97 @@ describe('Collections, immutably-backed', () => {
       const results = getImmutableCollectionResultsByName(data2, 'llamas');
       expect(results).toBe(subCollection.immutableResults);
       expect(results.count()).toBe(subCollection.count);
+    });
+  });
+
+  describe('Subpath', () => {
+    const ownerId = 'abc1234';
+    const subpath = collections.collectionAtSubpath('owners/:ownerId/llamas', {
+      ownerId,
+    });
+
+    describe('reducers', () => {
+      it('should correctly allow us to get data out', () => {
+        const data = collections.reducers.collectionsReducer(
+          undefined,
+          getCollectionSuccess(
+            'owners/:ownerId/llamas',
+            `/api/owners/${ownerId}/llamas/:llamadrama`,
+            [
+              {
+                furLength: 5,
+                id: '1',
+                name: 'Drama',
+              },
+            ],
+            false
+          )
+        );
+        // They should not have filtered into the normal collection
+        const badCollection = getCollectionByName(
+          data,
+          'owners/:ownerId/llamas',
+          'llamadrama'
+        );
+        expect(badCollection.page).toBe(1);
+        expect(badCollection.count).toBe(0);
+
+        const subCollection = subpath.getSubpathCollection(data, 'llamadrama');
+        expect(subCollection.page).toBe(1);
+        expect(subCollection.count).toBe(1);
+
+        const results = subpath.getImmutableSubpathCollectionResults(
+          data,
+          'llamadrama'
+        );
+        expect(results).toBe(subCollection.immutableResults);
+        expect(results.count()).toBe(subCollection.count);
+        expect(results.get(0).furLength).toBe(5);
+      });
+    });
+  });
+});
+
+describe('Collections, alternate base URL', () => {
+  const collections = Collections(
+    collectionToRecordMapping,
+    {},
+    false,
+    '/alternate-url/'
+  );
+
+  describe('actions', () => {
+    const dispatchGenericRequestSpy = jest
+      .spyOn(requests, 'dispatchGenericRequest')
+      .mockImplementation(() => null);
+
+    beforeEach(() => {
+      dispatchGenericRequestSpy.mockReset();
+    });
+
+    it('should properly construct an addItem action', () => {
+      collections.actions.addItem(
+        'llamas',
+        {
+          furLength: 5,
+          id: '1',
+          name: 'Drama',
+        },
+        'drama'
+      );
+
+      expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+        ADD_TO_COLLECTION,
+        '/alternate-url/llamas/',
+        'POST',
+        {
+          furLength: 5,
+          id: '1',
+          name: 'Drama',
+        },
+        'llamas',
+        { subgroup: 'drama' }
+      );
     });
   });
 });
