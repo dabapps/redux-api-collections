@@ -9,7 +9,7 @@ Redux API Collections aims to simplify and standardise the way in which we acces
 Install via NPM:
 
 ```
-npm install @dabapps/chadmin --save --save-exact
+npm install @dabapps/redux-api-collections --save --save-exact
 ```
 
 To install you will need the company npm token set in your env `NPM_TOKEN=` and also add an `./npmrc` file (the same as the one included here), to be able to authenticate with NPM Private Repos.
