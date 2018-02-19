@@ -40,11 +40,13 @@ function updateCollectionItemsFromResponse<T extends IdKeyed>(
       ? oldCollectionItems.concat(newCollectionItems)
       : newCollectionItems;
   const newCollection = {
-    count: shouldAppend ? newCollectionResults.length : count,
+    count: shouldAppend
+      ? newCollectionResults.length
+      : count || newCollectionResults.length,
     filters,
     next,
     ordering,
-    page,
+    page: page || 1,
     results: newCollectionResults,
     immutableResults: useImmutable ? List<T>(newCollectionResults) : null,
     reverseOrdering,
