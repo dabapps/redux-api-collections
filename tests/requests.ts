@@ -178,6 +178,15 @@ describe('Requests', () => {
         expect((request as any).params.url).toEqual('/api/llama/');
       });
 
+      it('should not normalize absolute URLs', () => {
+        request = dispatchGenericRequest(
+          ACTION_SET,
+          'http://www.test.com',
+          METHOD
+        )(dispatch, getState) as any;
+        expect((request as any).params.url).toEqual('http://www.test.com');
+      });
+
       it('should dispatch success actions', () => {
         request.success({
           data: 'llama',

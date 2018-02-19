@@ -49,9 +49,17 @@ export function apiRequest(
     'X-CSRFToken': Cookies.get('csrftoken'),
     ...headers,
   };
+
+  let myPath;
+  if (url.split(/:\/\//).length > 1) {
+    myPath = url;
+  } else {
+    myPath = path.normalize(url);
+  }
+
   return axios({
     method,
-    url: path.normalize(url),
+    url: myPath,
     data,
     headers: combinedHeaders,
     onUploadProgress,
