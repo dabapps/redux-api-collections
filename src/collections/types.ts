@@ -44,10 +44,10 @@ export type CollectionStoreLoose = Readonly<{
 
 export type CollectionResponseAction = FluxStandardAction<
   {
-    count: number;
-    next: string;
+    count?: number;
+    next?: string;
     results: ReadonlyArray<{}>;
-    page: number;
+    page?: number;
   },
   CollectionParams & { subgroup: string }
 >;

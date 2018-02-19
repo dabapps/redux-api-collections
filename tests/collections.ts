@@ -419,6 +419,25 @@ describe('Collections', () => {
         expect(newState).toBe(data);
       });
     });
+
+    it('should handle incomplete response shapes', () => {
+      const data = collections.reducers.collectionsReducer(undefined, {
+        meta: { tag: 'llamas', shouldAppend: false, subgroup: '' },
+        payload: {
+          results: [
+            {
+              furLength: 5,
+              id: '1',
+              name: 'Drama',
+            },
+          ],
+        },
+        type: GET_COLLECTION.SUCCESS,
+      });
+      const subCollection = getCollectionByName(data, 'llamas');
+      expect(subCollection.page).toBe(1);
+      expect(subCollection.count).toBe(1);
+    });
   });
 
   describe('Subpath', () => {
