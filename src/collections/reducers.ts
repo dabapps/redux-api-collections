@@ -40,9 +40,7 @@ function updateCollectionItemsFromResponse<T extends IdKeyed>(
       ? oldCollectionItems.concat(newCollectionItems)
       : newCollectionItems;
   const newCollection = {
-    count: shouldAppend
-      ? newCollectionResults.length
-      : count || newCollectionResults.length,
+    count: count || newCollectionResults.length,
     filters,
     next,
     ordering,
