@@ -48,13 +48,14 @@ describe('Collections', () => {
     results: ReadonlyArray<any>,
     shouldAppend: boolean,
     count?: number,
+    metaPage?: number,
     next?: string
   ) {
     return {
-      meta: { tag, shouldAppend, subgroup },
+      meta: { tag, shouldAppend, subgroup, page: metaPage },
       payload: {
         count,
-        page: 1,
+        page: metaPage ? undefined : 1,
         next,
         results,
       },
@@ -317,6 +318,29 @@ describe('Collections', () => {
       expect(results).toBe(subCollection.results);
       expect(results.length).toBe(subCollection.count);
       expect(results[0].furLength).toBe(5);
+    });
+
+    it('should update the page from the GET_COLLECTION request meta if the server does not return the page number', () => {
+      const data = collections.reducers.collectionsReducer(
+        undefined,
+        getCollectionSuccess(
+          'llamas',
+          '',
+          [
+            {
+              furLength: 5,
+              id: '1',
+              name: 'Drama',
+            },
+          ],
+          false,
+          12,
+          6
+        )
+      );
+      const subCollection = getCollectionByName(data, 'llamas');
+      expect(subCollection.page).toBe(6);
+      expect(subCollection.count).toBe(12);
     });
 
     it('should add an item on ADD_TO_COLLECTION responses', () => {

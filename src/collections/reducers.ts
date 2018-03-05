@@ -30,7 +30,7 @@ function updateCollectionItemsFromResponse<T extends IdKeyed>(
     ordering,
     reverseOrdering,
   } = action.meta;
-  const { count, next, results, page } = action.payload;
+  const { count, next, results } = action.payload;
 
   const oldCollectionItems = (collectionData[subgroup || ''] || { results: [] })
     .results;
@@ -44,7 +44,7 @@ function updateCollectionItemsFromResponse<T extends IdKeyed>(
     filters,
     next,
     ordering,
-    page: page || 1,
+    page: action.meta.page || action.payload.page || 1,
     results: newCollectionResults,
     immutableResults: useImmutable ? List<T>(newCollectionResults) : null,
     reverseOrdering,
