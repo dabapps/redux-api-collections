@@ -294,7 +294,7 @@ describe('Collections', () => {
       expect(results[1].furLength).toBe(10);
     });
 
-    it('should default to the results length if no count param is returned from the server onn GET_COLLECTION responses', () => {
+    it('should default to the results length if no count param is returned from the server on GET_COLLECTION responses', () => {
       const data = collections.reducers.collectionsReducer(
         undefined,
         getCollectionSuccess(
