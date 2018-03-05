@@ -47,12 +47,13 @@ describe('Collections', () => {
     subgroup: string,
     results: ReadonlyArray<any>,
     shouldAppend: boolean,
+    count?: number,
     next?: string
   ) {
     return {
       meta: { tag, shouldAppend, subgroup },
       payload: {
-        count: results.length,
+        count,
         page: 1,
         next,
         results,
@@ -263,7 +264,8 @@ describe('Collections', () => {
               name: 'Drama',
             },
           ],
-          false
+          false,
+          2
         )
       );
       const data2 = collections.reducers.collectionsReducer(
@@ -278,7 +280,8 @@ describe('Collections', () => {
               name: 'Pajama',
             },
           ],
-          true
+          true,
+          2
         )
       );
       const subCollection = getCollectionByName(data2, 'llamas');
@@ -289,6 +292,31 @@ describe('Collections', () => {
       expect(results.length).toBe(subCollection.count);
       expect(results[0].furLength).toBe(5);
       expect(results[1].furLength).toBe(10);
+    });
+
+    it('should default to the results length if no count param is returned from the server on GET_COLLECTION responses', () => {
+      const data = collections.reducers.collectionsReducer(
+        undefined,
+        getCollectionSuccess(
+          'llamas',
+          '',
+          [
+            {
+              furLength: 5,
+              id: '1',
+              name: 'Drama',
+            },
+          ],
+          false
+        )
+      );
+      const subCollection = getCollectionByName(data, 'llamas');
+      expect(subCollection.page).toBe(1);
+      expect(subCollection.count).toBe(1);
+      const results = getCollectionResultsByName(data, 'llamas');
+      expect(results).toBe(subCollection.results);
+      expect(results.length).toBe(subCollection.count);
+      expect(results[0].furLength).toBe(5);
     });
 
     it('should add an item on ADD_TO_COLLECTION responses', () => {
@@ -617,12 +645,13 @@ describe('Collections, immutably-backed', () => {
     subgroup: string,
     results: ReadonlyArray<any>,
     shouldAppend: boolean,
+    count?: number,
     next?: string
   ) {
     return {
       meta: { tag, shouldAppend, subgroup },
       payload: {
-        count: results.length,
+        count,
         page: 1,
         next,
         results,
@@ -708,7 +737,8 @@ describe('Collections, immutably-backed', () => {
               name: 'Drama',
             },
           ],
-          false
+          false,
+          2
         )
       );
       const data2 = collections.reducers.collectionsReducer(
@@ -723,7 +753,8 @@ describe('Collections, immutably-backed', () => {
               name: 'Pajama',
             },
           ],
-          true
+          true,
+          2
         )
       );
       const subCollection = getCollectionByName(data2, 'llamas');
