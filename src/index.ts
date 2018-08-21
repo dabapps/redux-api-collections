@@ -12,6 +12,11 @@ import { itemsFunctor } from './items';
 import { CollectionOptions } from './types';
 import { IdKeyedMap, TypeToRecordMapping } from './utils';
 
+export { dispatchGenericRequest } from './requests/actions'
+export { makeAsyncActionSet } from './requests/utils'
+export { AsyncActionSet, UrlMethod, RequestMetaData } from './requests/types'
+
+
 export function Collections<T extends IdKeyedMap<T>, U extends IdKeyedMap<U>>(
   collectionToRecordMapping: TypeToRecordMapping<T>,
   itemToRecordMapping: TypeToRecordMapping<U>,
