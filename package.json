@@ -17,15 +17,15 @@
     "@types/js-cookie": "^2.0.28",
     "@types/node": "^7.0.18",
     "@types/underscore": "^1.8.0",
-    "axios": "^0.16.2",
+    "axios": ">= 0.16.2 < 0.17",
     "flux-standard-action": "^1.2.0",
-    "immutable": "^3.8.2",
+    "immutable": ">= 3.8.2 < 5",
     "js-cookie": "^2.1.4",
     "path": "^0.12.7",
     "path-to-regexp": "^2.1.0",
     "redux": "^3.7.2",
     "redux-thunk": "^2.2.0",
-    "typescript": "^2.6.2",
+    "typescript": ">= 2.3.3 < 3",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
@@ -45,8 +45,8 @@
   },
   "peerDependencies": {
     "axios": ">= 0.16.2 < 0.17",
-    "typescript": ">= 2.3.3 < 3",
-    "immutable": ">= 3.8.2 < 5"
+    "immutable": ">= 3.8.2 < 5",
+    "typescript": ">= 2.3.3 < 3"
   },
   "repository": {
     "type": "git",
