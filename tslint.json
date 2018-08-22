@@ -2,12 +2,5 @@
   "extends": [
     "tslint-config-dabapps",
     "tslint-config-prettier"
-  ],
-  "include": [
-    "./src/",
-    "./tests/"
-  ],
-  "exclude": [
-    "**/node_modules/**/*"
   ]
 }
