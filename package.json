@@ -6,7 +6,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "dist": "./scripts/dist",
-    "lint-js": "tslint --project tsconfig.json '@(src|tests|types|docs)/**/*.@(ts|tsx)'",
+    "lint-js": "tslint --project tsconfig.json",
     "tests": "jest",
     "test": "npm run prettier-check && npm run lint-js && npm run tests -- --coverage",
     "prettier": "prettier --write \"{src,tests}/**/*.{ts,tsx,js,jsx}\"",
