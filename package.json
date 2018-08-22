@@ -11,7 +11,7 @@
     "test": "npm run lint-js && npm run tests -- --coverage --runInBand",
     "prettier": "prettier --write \"{src,tests}/**/*.{ts,tsx,js,jsx}\"",
     "prettier-check": "./scripts/prettier-check",
-    "prepublish": "npm test && npm run dist"
+    "prepublishOnly": "npm test && npm run dist"
   },
   "dependencies": {
     "@types/js-cookie": "2.0.28",
