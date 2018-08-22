@@ -25,7 +25,7 @@ export function formatQueryParams(params?: {}): string {
 
   const asPairs: ReadonlyArray<[string, any]> = _.pairs(params) as any;
   const filteredPairs = asPairs
-    .filter(([, value]) => value !== null && typeof value !== 'undefined')
+    .filter(([key, value]) => value !== null && typeof value !== 'undefined')
     .map(([key, value]) => [key, value.toString()]);
 
   if (!filteredPairs || !filteredPairs.length) {

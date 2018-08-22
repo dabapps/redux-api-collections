@@ -1,3 +1,12 @@
+// Required for re-exporting
+// tslint:disable-next-line:no-unused-variable
+import { AxiosResponse } from 'axios';
+// Required for re-exporting
+// tslint:disable-next-line:no-unused-variable
+import { List } from 'immutable';
+// Required for re-exporting
+// tslint:disable-next-line:no-unused-variable
+import { AnyAction, Dispatch } from 'redux';
 import { collectionsFunctor } from './collections';
 import { itemsFunctor } from './items';
 import { CollectionOptions } from './types';
