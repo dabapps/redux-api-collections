@@ -3,7 +3,6 @@
   "compilerOptions": {
     "rootDir": "./src/",
     "outDir": "./dist/",
-    "module": "commonjs",
     "sourceMap": true,
     "declaration": true,
     "listFiles": true
