@@ -87,7 +87,7 @@ describe('genericRequestExposed', () => {
     });
 
     it('should dispatch request actions', () => {
-      request = (thunk(dispatch, getState) as any) as AxiosMock; // FIXME: We need type-safe mocking
+      request = (thunk(dispatch) as any) as AxiosMock; // FIXME: We need type-safe mocking
 
       expect(dispatch).toHaveBeenCalledWith({
         meta: {
@@ -106,8 +106,7 @@ describe('genericRequestExposed', () => {
 
     it('should normalize URLs', () => {
       request = dispatchGenericRequest(ACTION_SET, '/api//llama/', METHOD)(
-        dispatch,
-        getState
+        dispatch
       ) as any;
       expect((request as any).params.url).toEqual('/api/llama/');
     });
@@ -117,7 +116,7 @@ describe('genericRequestExposed', () => {
         ACTION_SET,
         'http://www.test.com',
         METHOD
-      )(dispatch, getState) as any;
+      )(dispatch) as any;
       expect((request as any).params.url).toEqual('http://www.test.com');
     });
 
