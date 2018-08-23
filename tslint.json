@@ -1,6 +1,5 @@
 {
   "extends": [
-    "tslint-config-dabapps",
-    "tslint-config-prettier"
+    "tslint-config-dabapps"
   ]
 }
