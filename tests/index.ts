@@ -47,12 +47,12 @@ const collections = Collections<Collections, Items>(
 describe('Collections', () => {
   describe('store', () => {
     it('should construct a store', () => {
-      const rootReducer = combineReducers({
+      const rootReducer = combineReducers<IStore>({
         collections: collections.reducers.collectionsReducer,
         items: collections.reducers.itemsReducer,
       });
-      const createStoreWithMiddleware = applyMiddleware()(createStore);
-      const store = createStoreWithMiddleware(rootReducer, {});
+
+      const store = createStore(rootReducer, applyMiddleware());
 
       const state: IStore = store.getState();
       const collection = getCollectionByName(state.collections, 'llamas');

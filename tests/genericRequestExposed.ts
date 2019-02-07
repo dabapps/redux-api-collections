@@ -68,8 +68,7 @@ describe('genericRequestExposed', () => {
     });
 
     it('should take a bunch of optional arguments', () => {
-      const requestWithLotsOfParams = dispatchGenericRequest.bind(
-        null,
+      const requestWithLotsOfParams = () => dispatchGenericRequest(
         ACTION_SET,
         '/api/url/',
         METHOD,
