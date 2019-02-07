@@ -1,4 +1,3 @@
-import { AxiosResponse } from 'axios'; // tslint:disable-line:no-unused-variable
 import { Dispatch } from 'redux';
 import {
   AsyncActionSet,
