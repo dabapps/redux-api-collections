@@ -6,9 +6,10 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "dist": "./scripts/dist",
-    "lint-js": "tsc --noEmit --project tsconfig.json && npm run prettier-check && tslint --project tsconfig.json '{src,tests}/**/*.ts?(x)'",
+    "lint": "npm run prettier-check && tslint --project tsconfig.json '{src,tests}/**/*.ts?(x)'",
+    "typecheck": "tsc --noEmit --project tsconfig.json",
     "tests": "jest",
-    "test": "npm run lint-js && npm run tests -- --coverage --runInBand",
+    "test": "npm run lint && npm run typecheck && npm run tests -- --coverage --runInBand",
     "prettier": "prettier --write \"{src,tests}/**/*.{ts,tsx,js,jsx}\"",
     "prettier-check": "./scripts/prettier-check",
     "prepublishOnly": "npm test && npm run dist"
