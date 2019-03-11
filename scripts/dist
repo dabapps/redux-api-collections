@@ -4,6 +4,6 @@ set -e
 
 rm -rf dist
 
-mkdir -p dist/
+mkdir -p dist/js
 
-tsc --project 'tsconfig.dist.json'
+tsc --project 'src/ts/tsconfig.json'
