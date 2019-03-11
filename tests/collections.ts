@@ -6,6 +6,7 @@ import {
   Collections,
   CollectionStore,
   DELETE_FROM_COLLECTION,
+  formatCollectionQueryParams,
   GET_COLLECTION,
   getCollectionByName,
   getCollectionResultsByName,
@@ -780,6 +781,39 @@ describe('Collections, custom reducer', () => {
         )
       );
       expect(data.llamas[''].results[0].name).toBe('DRAMA');
+    });
+  });
+
+  describe('utils', () => {
+    describe('formatCollectionQueryParams', () => {
+      it('should produce a string when no params are offered', () => {
+        expect(formatCollectionQueryParams()).toBe('?page=1&page_size=12');
+        expect(formatCollectionQueryParams({})).toBe('?page=1&page_size=12');
+      });
+
+      it('should handle filters', () => {
+        expect(formatCollectionQueryParams({ filters: { blargh: '1' } })).toBe(
+          '?blargh=1&page=1&page_size=12'
+        );
+      });
+
+      it('should handle pagination', () => {
+        expect(formatCollectionQueryParams({ page: 2 })).toBe(
+          '?page=2&page_size=12'
+        );
+      });
+
+      it('should handle ordering', () => {
+        expect(formatCollectionQueryParams({ ordering: 'id' })).toBe(
+          '?ordering=id&page=1&page_size=12'
+        );
+      });
+
+      it('should handle order reversing', () => {
+        expect(
+          formatCollectionQueryParams({ ordering: 'id', reverseOrdering: true })
+        ).toBe('?ordering=-id&page=1&page_size=12');
+      });
     });
   });
 });

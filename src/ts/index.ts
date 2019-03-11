@@ -20,6 +20,7 @@ export {
   getCollectionResultsByName,
   CollectionStore,
   getCollectionByName,
+  formatCollectionQueryParams,
 } from './collections';
 export {
   CLEAR_ITEM,
