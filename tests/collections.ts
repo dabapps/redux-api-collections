@@ -91,8 +91,10 @@ describe('Collections', () => {
           id: '1',
           name: 'Drama',
         },
-        'llamas',
-        { subgroup: 'drama' }
+        {
+          tag: 'llamas',
+          metaData: { subgroup: 'drama' }
+        }
       );
     });
 
@@ -111,11 +113,13 @@ describe('Collections', () => {
         DELETE_FROM_COLLECTION,
         '/api/llamas/first/',
         'DELETE',
-        null,
-        'llamas',
+        undefined,
         {
-          subgroup: 'llamadrama',
-          itemId: 'first',
+          tag: 'llamas',
+          metaData: {
+            subgroup: 'llamadrama',
+            itemId: 'first',
+          }
         }
       );
     });
@@ -127,16 +131,15 @@ describe('Collections', () => {
         GET_COLLECTION,
         '/api/llamas/?page=1&page_size=10000',
         'GET',
-        null,
-        'llamas',
-        {
+        undefined,
+        { tag: 'llamas', metaData: {
           subgroup: 'llamadrama',
           filters: undefined,
           ordering: undefined,
           page: undefined,
           reverseOrdering: undefined,
           shouldAppend: undefined,
-        }
+        }}
       );
     });
 
@@ -147,15 +150,17 @@ describe('Collections', () => {
         GET_COLLECTION,
         '/api/llamas/?page=1&page_size=12',
         'GET',
-        null,
-        'llamas',
+        undefined,
         {
-          subgroup: undefined,
-          filters: undefined,
-          ordering: undefined,
-          page: undefined,
-          reverseOrdering: undefined,
-          shouldAppend: undefined,
+          tag: 'llamas',
+          metaData: {
+            subgroup: undefined,
+            filters: undefined,
+            ordering: undefined,
+            page: undefined,
+            reverseOrdering: undefined,
+            shouldAppend: undefined,
+          }
         }
       );
     });
@@ -167,15 +172,17 @@ describe('Collections', () => {
         GET_COLLECTION,
         '/api/llamas/?page=1&page_size=12',
         'GET',
-        null,
-        'llamas',
+        undefined,
         {
-          subgroup: 'llamadrama',
-          filters: undefined,
-          ordering: undefined,
-          page: undefined,
-          reverseOrdering: undefined,
-          shouldAppend: undefined,
+          tag: 'llamas',
+          metaData: {
+            subgroup: 'llamadrama',
+            filters: undefined,
+            ordering: undefined,
+            page: undefined,
+            reverseOrdering: undefined,
+            shouldAppend: undefined,
+          }
         }
       );
     });
@@ -527,8 +534,9 @@ describe('Collections', () => {
             id: '1',
             name: 'Drama',
           },
-          'owners/:ownerId/llamas',
-          { subgroup: `/api/owners/${ownerId}/llamas/:drama` }
+          { tag: 'owners/:ownerId/llamas',
+            metaData: { subgroup: `/api/owners/${ownerId}/llamas/:drama` }
+          }
         );
       });
 
@@ -547,11 +555,13 @@ describe('Collections', () => {
           DELETE_FROM_COLLECTION,
           `/api/owners/${ownerId}/llamas/first/`,
           'DELETE',
-          null,
-          'owners/:ownerId/llamas',
+          undefined,
+          { tag: 'owners/:ownerId/llamas',
+            metaData:
           {
             subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
             itemId: 'first',
+          }
           }
         );
       });
@@ -563,16 +573,16 @@ describe('Collections', () => {
           GET_COLLECTION,
           `/api/owners/${ownerId}/llamas/?page=1&page_size=10000`,
           'GET',
-          null,
-          'owners/:ownerId/llamas',
-          {
+          undefined,
+          { tag: 'owners/:ownerId/llamas',
+            metaData: {
             subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
             filters: undefined,
             ordering: undefined,
             page: undefined,
             reverseOrdering: undefined,
             shouldAppend: undefined,
-          }
+          }}
         );
       });
 
@@ -583,16 +593,16 @@ describe('Collections', () => {
           GET_COLLECTION,
           `/api/owners/${ownerId}/llamas/?page=1&page_size=12`,
           'GET',
-          null,
-          'owners/:ownerId/llamas',
-          {
+          undefined,
+          { tag: 'owners/:ownerId/llamas',
+            metaData: {
             subgroup: `/api/owners/${ownerId}/llamas/:`,
             filters: undefined,
             ordering: undefined,
             page: undefined,
             reverseOrdering: undefined,
             shouldAppend: undefined,
-          }
+          }}
         );
       });
 
@@ -603,8 +613,9 @@ describe('Collections', () => {
           GET_COLLECTION,
           `/api/owners/${ownerId}/llamas/?page=1&page_size=12`,
           'GET',
-          null,
-          'owners/:ownerId/llamas',
+          undefined,
+
+          { tag: 'owners/:ownerId/llamas', metaData:
           {
             subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
             filters: undefined,
@@ -612,7 +623,7 @@ describe('Collections', () => {
             page: undefined,
             reverseOrdering: undefined,
             shouldAppend: undefined,
-          }
+          }}
         );
       });
     });
@@ -692,8 +703,9 @@ describe('Collections, alternate base URL', () => {
           id: '1',
           name: 'Drama',
         },
-        'llamas',
+        { tag: 'llamas', metaData:
         { subgroup: 'drama' }
+        }
       );
     });
   });

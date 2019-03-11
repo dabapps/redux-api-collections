@@ -1,9 +1,9 @@
+import { formatQueryParams } from '@dabapps/redux-requests';
 import { List } from 'immutable';
-// import { formatQueryParams } from '@dabapps/redux-requests';
 import { IdKeyedMap, TypeToRecordMapping } from '../utils';
 import {
   Collection,
-//  CollectionOptions,
+  CollectionOptions,
   CollectionStore,
   CollectionStoreMutable,
 } from './types';
@@ -11,7 +11,7 @@ import {
 export const ITEMS_PER_PAGE = 12;
 export const WHOLE_COLLECTION_PAGE_SIZE = 10000;
 
-/*export function formatCollectionQueryParams(
+export function formatCollectionQueryParams(
   options: CollectionOptions = {}
 ): string {
   const {
@@ -30,7 +30,7 @@ export const WHOLE_COLLECTION_PAGE_SIZE = 10000;
     page_size: pageSize,
     search: search || filters.search,
   });
-}*/
+}
 
 export function buildCollectionsStore<T extends IdKeyedMap<T>>(
   mapping: TypeToRecordMapping<T>

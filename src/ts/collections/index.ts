@@ -40,7 +40,7 @@ import {
 } from './types';
 import {
   buildCollectionsStore,
-// formatCollectionQueryParams,
+  formatCollectionQueryParams,
   getCollectionByName,
   getCollectionResultsByName,
   WHOLE_COLLECTION_PAGE_SIZE,
@@ -127,12 +127,12 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
         shouldAppend: options.shouldAppend,
       };
 
-      // const urlWithParams = `${url}${formatCollectionQueryParams(options)}`;
+      const urlWithParams = `${url}${formatCollectionQueryParams(options)}`;
       return request(
         GET_COLLECTION,
-        url,
+        urlWithParams,
         'GET',
-        options,
+        undefined,
         { tag: `${type}`, metaData }
       ) as any;
     }

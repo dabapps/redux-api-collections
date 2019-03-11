@@ -13,7 +13,7 @@
     "prepublishOnly": "npm test && npm run dist"
   },
   "dependencies": {
-    "@dabapps/redux-requests": "^0.5.2",
+    "@dabapps/redux-requests": "^0.5.3",
     "@types/js-cookie": "^2.0.28",
     "@types/node": "^7.0.18",
     "@types/underscore": "^1.8.0",
