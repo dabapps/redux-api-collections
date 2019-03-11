@@ -1,14 +1,13 @@
+import * as requests from '@dabapps/redux-requests';
 import { AnyAction } from 'redux';
 import {
   CLEAR_ITEM,
+  Collections,
   GET_ITEM,
   getItemByName,
   ItemStore,
   UPDATE_ITEM,
-} from '../src/items';
-import * as requests from '../src/requests';
-
-import { Collections } from '../src';
+} from '../src/ts/';
 
 type Llama = Readonly<{
   furLength: number;
@@ -39,18 +38,18 @@ describe('Items', () => {
   const collections = Collections<{}, Items>({}, itemToRecordMapping);
 
   describe('actions', () => {
-    const dispatchGenericRequestSpy = jest
-      .spyOn(requests, 'dispatchGenericRequest')
+    const requestSpy = jest
+      .spyOn(requests, 'request')
       .mockImplementation(() => null);
 
     beforeEach(() => {
-      dispatchGenericRequestSpy.mockReset();
+      requestSpy.mockReset();
     });
 
     it('should be possible to construct getItem', () => {
       collections.actions.getItem('llamas', 'drama');
 
-      expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+      expect(requestSpy).toHaveBeenCalledWith(
         GET_ITEM,
         '/api/llamas/drama/',
         'GET',
@@ -66,7 +65,7 @@ describe('Items', () => {
     it('should be possible to construct updateItem', () => {
       collections.actions.updateItem('llamas', 'drama', {});
 
-      expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+      expect(requestSpy).toHaveBeenCalledWith(
         UPDATE_ITEM,
         '/api/llamas/drama/',
         'PUT',
@@ -82,7 +81,7 @@ describe('Items', () => {
     it('should be possible to construct patchItem', () => {
       collections.actions.patchItem('llamas', 'drama', {});
 
-      expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+      expect(requestSpy).toHaveBeenCalledWith(
         UPDATE_ITEM,
         '/api/llamas/drama/',
         'PATCH',
@@ -98,7 +97,7 @@ describe('Items', () => {
     it('should be possible to construct actionItem', () => {
       collections.actions.actionItem('llamas', 'drama', 'pajama', {});
 
-      expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+      expect(requestSpy).toHaveBeenCalledWith(
         UPDATE_ITEM,
         '/api/llamas/drama/pajama/',
         'POST',
@@ -210,18 +209,18 @@ describe('Items', () => {
     });
 
     describe('actions', () => {
-      const dispatchGenericRequestSpy = jest
-        .spyOn(requests, 'dispatchGenericRequest')
+      const requestSpy = jest
+        .spyOn(requests, 'request')
         .mockImplementation(() => null);
 
       beforeEach(() => {
-        dispatchGenericRequestSpy.mockReset();
+        requestSpy.mockReset();
       });
 
       it('should be possible to construct getItem', () => {
         subpath.actions.getItem('drama', 'llamadrama');
 
-        expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+        expect(requestSpy).toHaveBeenCalledWith(
           GET_ITEM,
           `/api/owners/${ownerId}/llamas/drama/`,
           'GET',
@@ -237,7 +236,7 @@ describe('Items', () => {
       it('should be possible to construct updateItem', () => {
         subpath.actions.updateItem('drama', {}, 'llamadrama');
 
-        expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+        expect(requestSpy).toHaveBeenCalledWith(
           UPDATE_ITEM,
           `/api/owners/${ownerId}/llamas/drama/`,
           'PUT',
@@ -253,7 +252,7 @@ describe('Items', () => {
       it('should be possible to construct patchItem', () => {
         subpath.actions.patchItem('drama', {}, 'llamadrama');
 
-        expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+        expect(requestSpy).toHaveBeenCalledWith(
           UPDATE_ITEM,
           `/api/owners/${ownerId}/llamas/drama/`,
           'PATCH',
@@ -269,7 +268,7 @@ describe('Items', () => {
       it('should be possible to construct actionItem', () => {
         subpath.actions.actionItem('drama', 'pajama', {}, 'llamadrama');
 
-        expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+        expect(requestSpy).toHaveBeenCalledWith(
           UPDATE_ITEM,
           `/api/owners/${ownerId}/llamas/drama/pajama/`,
           'POST',
@@ -323,18 +322,18 @@ describe('Items, alternate base URL', () => {
   });
 
   describe('actions', () => {
-    const dispatchGenericRequestSpy = jest
-      .spyOn(requests, 'dispatchGenericRequest')
+    const requestSpy = jest
+      .spyOn(requests, 'request')
       .mockImplementation(() => null);
 
     beforeEach(() => {
-      dispatchGenericRequestSpy.mockReset();
+      requestSpy.mockReset();
     });
 
     it('should be possible to construct getItem', () => {
       collections.actions.getItem('llamas', 'drama');
 
-      expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+      expect(requestSpy).toHaveBeenCalledWith(
         GET_ITEM,
         '/alternate-url/llamas/drama/',
         'GET',

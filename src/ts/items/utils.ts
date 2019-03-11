@@ -16,5 +16,5 @@ export function getItemByName<T extends IdKeyedMap<T>>(
   key: keyof T,
   subgroup: string = ''
 ): T[keyof T] | undefined {
-  return itemStore[key][subgroup];
+  return (itemStore[key] as any)[subgroup];
 }

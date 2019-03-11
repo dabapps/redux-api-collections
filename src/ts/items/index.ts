@@ -3,12 +3,12 @@ export * from './reducers';
 export * from './types';
 export * from './utils';
 
+import { request, UrlMethod } from '@dabapps/redux-requests';
+
 import { AxiosResponse } from 'axios';
 import * as pathToRegexp from 'path-to-regexp';
 import { AnyAction } from 'redux';
 import { ThunkAction } from 'redux-thunk';
-import { dispatchGenericRequest } from '../requests';
-import { UrlMethod } from '../requests/types';
 import {
   buildSubgroup,
   Dict,
@@ -35,10 +35,13 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
       data: any,
       subgroup?: string
     ): ThunkAction<Promise<AxiosResponse>, any, null> {
-      return dispatchGenericRequest(UPDATE_ITEM, url, method, data, itemType, {
-        itemId,
-        subgroup: buildSubgroup(overrideUrl, subgroup),
-      });
+      return request(UPDATE_ITEM, url, method, data, {
+        tag: `${itemType}`,
+        metaData: {
+          itemId,
+          subgroup: buildSubgroup(overrideUrl, subgroup),
+        }
+      }) as any;
     }
 
     function actionItemAction(
@@ -72,10 +75,13 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
       const url = overrideUrl
         ? `${overrideUrl}${itemId}/`
         : `${baseUrl}${itemType}/${itemId}/`;
-      return dispatchGenericRequest(GET_ITEM, url, 'GET', null, itemType, {
-        itemId,
-        subgroup: buildSubgroup(overrideUrl, subgroup),
-      });
+      return request(GET_ITEM, url, 'GET', undefined, {
+        tag: `${itemType}`,
+        metaData: {
+          itemId,
+          subgroup: buildSubgroup(overrideUrl, subgroup),
+        }
+      }) as any;
     }
 
     function patchItemAction(
@@ -163,7 +169,7 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
   }
 
   function itemAtSubpath(type: keyof T, params: SubpathParams) {
-    const compiledPath = pathToRegexp.compile(type);
+    const compiledPath = pathToRegexp.compile(`${type}`);
     const replaced = compiledPath(params);
     const overrideUrl = `${baseUrl}${replaced}/`;
     const {

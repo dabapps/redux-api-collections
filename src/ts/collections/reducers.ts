@@ -1,5 +1,4 @@
 import { isFSA } from 'flux-standard-action';
-import { List } from 'immutable';
 import { AnyAction } from 'redux';
 import * as _ from 'underscore';
 import {
@@ -21,7 +20,6 @@ function updateCollectionItemsFromResponse<T extends IdKeyed>(
   collectionData: CollectionGroup<T>,
   action: CollectionResponseAction,
   itemConstructor: (data: {}) => T,
-  useImmutable: boolean
 ): CollectionGroup<T> {
   const {
     subgroup,
@@ -46,7 +44,6 @@ function updateCollectionItemsFromResponse<T extends IdKeyed>(
     ordering,
     page: action.meta.page || action.payload.page || 1,
     results: newCollectionResults,
-    immutableResults: useImmutable ? List<T>(newCollectionResults) : null,
     reverseOrdering,
   };
 
@@ -60,7 +57,6 @@ export function setCollectionFromResponseAction<T extends IdKeyedMap<T>>(
   state: CollectionStore<T>,
   action: AnyAction,
   typeToRecordMapping: TypeToRecordMapping<T>,
-  useImmutable: boolean
 ): CollectionStore<T> {
   if (isFSA(action) && action.meta) {
     const collectionType = (action.meta as Dict<string>).tag;
@@ -73,7 +69,6 @@ export function setCollectionFromResponseAction<T extends IdKeyedMap<T>>(
           stateLoose[collectionType],
           action as CollectionResponseAction,
           recordBuilder,
-          useImmutable
         ),
       });
     }
@@ -85,7 +80,6 @@ export function addCollectionItem<T extends IdKeyedMap<T>>(
   state: CollectionStore<T>,
   action: AnyAction,
   typeToRecordMapping: TypeToRecordMapping<T>,
-  useImmutable: boolean
 ): CollectionStore<T> {
   if (isFSA(action) && action.meta) {
     const meta = action.meta as Dict<string>;
@@ -108,7 +102,6 @@ export function addCollectionItem<T extends IdKeyedMap<T>>(
         ...existingCollection,
         count: existingCollection.count + 1,
         results,
-        immutableResults: useImmutable ? List<T>(results) : null,
       };
       return _.extend({}, stateLoose, {
         [collectionType]: _.extend({}, stateLoose[collectionType], {
@@ -124,7 +117,6 @@ export function deleteCollectionItem<T extends IdKeyedMap<T>>(
   state: CollectionStore<T>,
   action: AnyAction,
   typeToRecordMapping: TypeToRecordMapping<T>,
-  useImmutable: boolean
 ): CollectionStore<T> {
   if (isFSA(action) && action.meta) {
     const meta = action.meta as Dict<string>;
@@ -146,7 +138,6 @@ export function deleteCollectionItem<T extends IdKeyedMap<T>>(
         ...existingCollection,
         count: results.length,
         results,
-        immutableResults: useImmutable ? List<T>(results) : null,
       };
       const stateLoose: CollectionStoreLoose = state as any; // We know this is indexable
       return _.extend({}, stateLoose, {
@@ -163,7 +154,6 @@ export function clearCollection<T extends IdKeyedMap<T>>(
   state: CollectionStore<T>,
   action: AnyAction,
   typeToRecordMapping: TypeToRecordMapping<T>,
-  useImmutable: boolean
 ): CollectionStore<T> {
   if (isFSA(action) && action.payload) {
     const payload = action.payload as Dict<string>;
@@ -175,7 +165,6 @@ export function clearCollection<T extends IdKeyedMap<T>>(
         page: 1,
         count: 0,
         results: [],
-        immutableResults: useImmutable ? List<T>() : null,
       };
       const stateLoose: CollectionStoreLoose = state as any; // We know this is indexable
       return _.extend({}, stateLoose, {

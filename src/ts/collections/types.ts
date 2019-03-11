@@ -1,5 +1,4 @@
 import { FluxStandardAction } from 'flux-standard-action';
-import { List } from 'immutable';
 import { AnyAction } from 'redux';
 import { Dict, IdKeyed, IdKeyedMap } from '../utils';
 
@@ -28,7 +27,6 @@ export type Collection<T extends IdKeyed> = Readonly<{
   next?: string;
   filters?: Dict<string>;
   results: ReadonlyArray<T>;
-  immutableResults: List<T> | null;
 }>;
 
 export type CollectionGroup<T extends IdKeyed> = Dict<Collection<T>>;

@@ -12,9 +12,8 @@ import { itemsFunctor } from './items';
 import { CollectionOptions } from './types';
 import { IdKeyedMap, TypeToRecordMapping } from './utils';
 
-export { dispatchGenericRequest } from './requests/actions';
-export { makeAsyncActionSet } from './requests/utils';
-export { AsyncActionSet, UrlMethod, RequestMetaData } from './requests/types';
+export { ADD_TO_COLLECTION, CLEAR_COLLECTION, DELETE_FROM_COLLECTION, GET_COLLECTION, getCollectionResultsByName, CollectionStore, getCollectionByName } from './collections';
+export { CLEAR_ITEM, GET_ITEM, getItemByName, ItemStore, UPDATE_ITEM } from './items';
 
 export function Collections<T extends IdKeyedMap<T>, U extends IdKeyedMap<U>>(
   collectionToRecordMapping: TypeToRecordMapping<T>,
@@ -22,12 +21,9 @@ export function Collections<T extends IdKeyedMap<T>, U extends IdKeyedMap<U>>(
   collectionOptions: CollectionOptions<T, U> = {}
 ) {
   const baseUrl = collectionOptions.baseUrl || '/api/';
-  const useImmutableForCollections =
-    collectionOptions.useImmutableForCollections || false;
 
   const collections = collectionsFunctor(
     collectionToRecordMapping,
-    useImmutableForCollections,
     baseUrl,
     collectionOptions.collectionReducerPlugin
   );

@@ -1,7 +1,5 @@
 import { applyMiddleware, combineReducers, createStore } from 'redux';
-import { Collections } from '../src';
-import { CollectionStore, getCollectionByName } from '../src/collections';
-import { getItemByName, ItemStore } from '../src/items';
+import { Collections, CollectionStore, getCollectionByName, getItemByName, ItemStore } from '../src/ts';
 
 type Llama = Readonly<{
   furLength: number;
@@ -54,7 +52,7 @@ describe('Collections', () => {
       const createStoreWithMiddleware = applyMiddleware()(createStore);
       const store = createStoreWithMiddleware(rootReducer, {});
 
-      const state: IStore = store.getState();
+      const state: IStore = store.getState() as any;
       const collection = getCollectionByName(state.collections, 'llamas');
       expect(collection.count).toBe(0);
       const item = getItemByName(state.items, 'llamas');

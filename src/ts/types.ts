@@ -5,7 +5,6 @@ import { IdKeyedMap } from './utils';
 export type CollectionOptions<T extends IdKeyedMap<T>, U> = Readonly<
   Partial<{
     baseUrl: string;
-    useImmutableForCollections: boolean;
     collectionReducerPlugin: CollectionReducerPlugin<T>;
     itemReducerPlugin: ItemReducerPlugin<U>;
   }>

@@ -1,17 +1,16 @@
+import * as requests from '@dabapps/redux-requests';
 import { AnyAction } from 'redux';
 import {
   ADD_TO_COLLECTION,
   CLEAR_COLLECTION,
+  Collections,
   CollectionStore,
   DELETE_FROM_COLLECTION,
   GET_COLLECTION,
   getCollectionByName,
   getCollectionResultsByName,
-  getImmutableCollectionResultsByName,
-} from '../src/collections';
-import * as requests from '../src/requests';
+} from '../src/ts';
 
-import { Collections } from '../src';
 
 type Llama = Readonly<{
   furLength: number;
@@ -65,7 +64,7 @@ describe('Collections', () => {
 
   describe('actions', () => {
     const dispatchGenericRequestSpy = jest
-      .spyOn(requests, 'dispatchGenericRequest')
+      .spyOn(requests, 'request')
       .mockImplementation(() => null);
 
     beforeEach(() => {
@@ -500,7 +499,7 @@ describe('Collections', () => {
 
     describe('actions', () => {
       const dispatchGenericRequestSpy = jest
-        .spyOn(requests, 'dispatchGenericRequest')
+        .spyOn(requests, 'request')
         .mockImplementation(() => null);
 
       beforeEach(() => {
@@ -657,292 +656,6 @@ describe('Collections', () => {
   });
 });
 
-describe('Collections, immutably-backed', () => {
-  const collections = Collections(
-    collectionToRecordMapping,
-    {},
-    { useImmutableForCollections: true }
-  );
-
-  function getCollectionSuccess(
-    tag: keyof Collections,
-    subgroup: string,
-    results: ReadonlyArray<any>,
-    shouldAppend: boolean,
-    count?: number,
-    next?: string
-  ) {
-    return {
-      meta: { tag, shouldAppend, subgroup },
-      payload: {
-        count,
-        page: 1,
-        next,
-        results,
-      },
-      type: GET_COLLECTION.SUCCESS,
-    };
-  }
-
-  describe('reducers', () => {
-    // Helpers for creating event callbacks
-    function addItemSuccess(
-      tag: keyof Collections,
-      subgroup: string,
-      result: any
-    ) {
-      return {
-        meta: { tag, subgroup },
-        payload: result,
-        type: ADD_TO_COLLECTION.SUCCESS,
-      };
-    }
-
-    function deleteItemSuccess(
-      tag: keyof Collections,
-      subgroup: string,
-      itemId: string
-    ) {
-      return {
-        meta: { tag, subgroup, itemId },
-        payload: '',
-        type: DELETE_FROM_COLLECTION.SUCCESS,
-      };
-    }
-
-    it('should provide us with a reducer that has stores for each of our types', () => {
-      const data = collections.reducers.collectionsReducer(undefined, {
-        type: 'blah',
-      });
-      expect(data.llamas).toEqual({});
-      const results = getImmutableCollectionResultsByName(data, 'llamas');
-      expect(results.toJS()).toEqual([]);
-      const subCollection = getCollectionByName(data, 'llamas');
-      expect(subCollection.page).toBe(1);
-      expect(subCollection.count).toBe(0);
-      expect(subCollection.immutableResults).toEqual(results);
-    });
-
-    it('should correctly parse GET_COLLECTION responses', () => {
-      const data = collections.reducers.collectionsReducer(
-        undefined,
-        getCollectionSuccess(
-          'llamas',
-          '',
-          [
-            {
-              furLength: 5,
-              id: '1',
-              name: 'Drama',
-            },
-          ],
-          false
-        )
-      );
-      const subCollection = getCollectionByName(data, 'llamas');
-      expect(subCollection.page).toBe(1);
-      expect(subCollection.count).toBe(1);
-      const results = getImmutableCollectionResultsByName(data, 'llamas');
-      expect(results).toBe(subCollection.immutableResults);
-      expect(results.count()).toBe(subCollection.count);
-      expect(results.get(0).furLength).toBe(5);
-    });
-
-    it('should correctly append on GET_COLLECTION responses', () => {
-      const data = collections.reducers.collectionsReducer(
-        undefined,
-        getCollectionSuccess(
-          'llamas',
-          '',
-          [
-            {
-              furLength: 5,
-              id: '1',
-              name: 'Drama',
-            },
-          ],
-          false,
-          2
-        )
-      );
-      const data2 = collections.reducers.collectionsReducer(
-        data,
-        getCollectionSuccess(
-          'llamas',
-          '',
-          [
-            {
-              furLength: 10,
-              id: '2',
-              name: 'Pajama',
-            },
-          ],
-          true,
-          2
-        )
-      );
-      const subCollection = getCollectionByName(data2, 'llamas');
-      expect(subCollection.page).toBe(1);
-      expect(subCollection.count).toBe(2);
-      const results = getImmutableCollectionResultsByName(data2, 'llamas');
-      expect(results).toBe(subCollection.immutableResults);
-      expect(results.count()).toBe(subCollection.count);
-      expect(results.get(0).furLength).toBe(5);
-      expect(results.get(1).furLength).toBe(10);
-    });
-
-    it('should add an item on ADD_TO_COLLECTION responses', () => {
-      const data = collections.reducers.collectionsReducer(
-        undefined,
-        getCollectionSuccess(
-          'llamas',
-          '',
-          [
-            {
-              furLength: 5,
-              id: '1',
-              name: 'Drama',
-            },
-          ],
-          false
-        )
-      );
-      const data2 = collections.reducers.collectionsReducer(
-        data,
-        addItemSuccess('llamas', '', {
-          furLength: 10,
-          id: '2',
-          name: 'Pajama',
-        })
-      );
-      const subCollection = getCollectionByName(data2, 'llamas');
-      expect(subCollection.page).toBe(1);
-      expect(subCollection.count).toBe(2);
-      const results = getImmutableCollectionResultsByName(data2, 'llamas');
-      expect(results).toBe(subCollection.immutableResults);
-      expect(results.count()).toBe(subCollection.count);
-      expect(results.get(0).furLength).toBe(5);
-      expect(results.get(1).furLength).toBe(10);
-    });
-
-    it('should delete an item on DELETE_FROM_COLLECTION responses', () => {
-      const data = collections.reducers.collectionsReducer(
-        undefined,
-        getCollectionSuccess(
-          'llamas',
-          '',
-          [
-            {
-              furLength: 5,
-              id: '1',
-              name: 'Drama',
-            },
-            {
-              furLength: 10,
-              id: '2',
-              name: 'Pajama',
-            },
-          ],
-          false
-        )
-      );
-
-      const data2 = collections.reducers.collectionsReducer(
-        data,
-        deleteItemSuccess('llamas', '', '1')
-      );
-      const subCollection = getCollectionByName(data2, 'llamas');
-      expect(subCollection.page).toBe(1);
-      expect(subCollection.count).toBe(1);
-      const results = getImmutableCollectionResultsByName(data2, 'llamas');
-      expect(results).toBe(subCollection.immutableResults);
-      expect(results.count()).toBe(subCollection.count);
-      expect(results.get(0).furLength).toBe(10);
-    });
-
-    it('should clear a collection on CLEAR_COLLECTION responses', () => {
-      const data = collections.reducers.collectionsReducer(
-        undefined,
-        getCollectionSuccess(
-          'llamas',
-          '',
-          [
-            {
-              furLength: 5,
-              id: '1',
-              name: 'Drama',
-            },
-            {
-              furLength: 10,
-              id: '2',
-              name: 'Pajama',
-            },
-          ],
-          false
-        )
-      );
-
-      const data2 = collections.reducers.collectionsReducer(
-        data,
-        collections.actions.clearCollection('llamas', '')
-      );
-      const subCollection = getCollectionByName(data2, 'llamas');
-      expect(subCollection.page).toBe(1);
-      expect(subCollection.count).toBe(0);
-      const results = getImmutableCollectionResultsByName(data2, 'llamas');
-      expect(results).toBe(subCollection.immutableResults);
-      expect(results.count()).toBe(subCollection.count);
-    });
-  });
-
-  describe('Subpath', () => {
-    const ownerId = 'abc1234';
-    const subpath = collections.collectionAtSubpath('owners/:ownerId/llamas', {
-      ownerId,
-    });
-
-    describe('reducers', () => {
-      it('should correctly allow us to get data out', () => {
-        const data = collections.reducers.collectionsReducer(
-          undefined,
-          getCollectionSuccess(
-            'owners/:ownerId/llamas',
-            `/api/owners/${ownerId}/llamas/:llamadrama`,
-            [
-              {
-                furLength: 5,
-                id: '1',
-                name: 'Drama',
-              },
-            ],
-            false
-          )
-        );
-        // They should not have filtered into the normal collection
-        const badCollection = getCollectionByName(
-          data,
-          'owners/:ownerId/llamas',
-          'llamadrama'
-        );
-        expect(badCollection.page).toBe(1);
-        expect(badCollection.count).toBe(0);
-
-        const subCollection = subpath.getSubpathCollection(data, 'llamadrama');
-        expect(subCollection.page).toBe(1);
-        expect(subCollection.count).toBe(1);
-
-        const results = subpath.getImmutableSubpathCollectionResults(
-          data,
-          'llamadrama'
-        );
-        expect(results).toBe(subCollection.immutableResults);
-        expect(results.count()).toBe(subCollection.count);
-        expect(results.get(0).furLength).toBe(5);
-      });
-    });
-  });
-});
-
 describe('Collections, alternate base URL', () => {
   const collections = Collections(
     collectionToRecordMapping,
@@ -952,7 +665,7 @@ describe('Collections, alternate base URL', () => {
 
   describe('actions', () => {
     const dispatchGenericRequestSpy = jest
-      .spyOn(requests, 'dispatchGenericRequest')
+      .spyOn(requests, 'request')
       .mockImplementation(() => null);
 
     beforeEach(() => {
