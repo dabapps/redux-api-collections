@@ -19,7 +19,7 @@ import { getCollectionByName } from './utils';
 function updateCollectionItemsFromResponse<T extends IdKeyed>(
   collectionData: CollectionGroup<T>,
   action: CollectionResponseAction,
-  itemConstructor: (data: {}) => T,
+  itemConstructor: (data: {}) => T
 ): CollectionGroup<T> {
   const {
     subgroup,
@@ -56,7 +56,7 @@ function updateCollectionItemsFromResponse<T extends IdKeyed>(
 export function setCollectionFromResponseAction<T extends IdKeyedMap<T>>(
   state: CollectionStore<T>,
   action: AnyAction,
-  typeToRecordMapping: TypeToRecordMapping<T>,
+  typeToRecordMapping: TypeToRecordMapping<T>
 ): CollectionStore<T> {
   if (isFSA(action) && action.meta) {
     const collectionType = (action.meta as Dict<string>).tag;
@@ -68,7 +68,7 @@ export function setCollectionFromResponseAction<T extends IdKeyedMap<T>>(
         [collectionType]: updateCollectionItemsFromResponse(
           stateLoose[collectionType],
           action as CollectionResponseAction,
-          recordBuilder,
+          recordBuilder
         ),
       });
     }
@@ -79,7 +79,7 @@ export function setCollectionFromResponseAction<T extends IdKeyedMap<T>>(
 export function addCollectionItem<T extends IdKeyedMap<T>>(
   state: CollectionStore<T>,
   action: AnyAction,
-  typeToRecordMapping: TypeToRecordMapping<T>,
+  typeToRecordMapping: TypeToRecordMapping<T>
 ): CollectionStore<T> {
   if (isFSA(action) && action.meta) {
     const meta = action.meta as Dict<string>;
@@ -116,7 +116,7 @@ export function addCollectionItem<T extends IdKeyedMap<T>>(
 export function deleteCollectionItem<T extends IdKeyedMap<T>>(
   state: CollectionStore<T>,
   action: AnyAction,
-  typeToRecordMapping: TypeToRecordMapping<T>,
+  typeToRecordMapping: TypeToRecordMapping<T>
 ): CollectionStore<T> {
   if (isFSA(action) && action.meta) {
     const meta = action.meta as Dict<string>;
@@ -153,7 +153,7 @@ export function deleteCollectionItem<T extends IdKeyedMap<T>>(
 export function clearCollection<T extends IdKeyedMap<T>>(
   state: CollectionStore<T>,
   action: AnyAction,
-  typeToRecordMapping: TypeToRecordMapping<T>,
+  typeToRecordMapping: TypeToRecordMapping<T>
 ): CollectionStore<T> {
   if (isFSA(action) && action.payload) {
     const payload = action.payload as Dict<string>;

@@ -54,11 +54,13 @@ describe('Items', () => {
         '/api/llamas/drama/',
         'GET',
         undefined,
-        { tag: 'llamas',
+        {
+          tag: 'llamas',
           metaData: {
-          itemId: 'drama',
-          subgroup: undefined,
-        }}
+            itemId: 'drama',
+            subgroup: undefined,
+          },
+        }
       );
     });
 
@@ -75,7 +77,7 @@ describe('Items', () => {
           metaData: {
             itemId: 'drama',
             subgroup: undefined,
-          }
+          },
         }
       );
     });
@@ -91,9 +93,9 @@ describe('Items', () => {
         {
           tag: 'llamas',
           metaData: {
-          itemId: 'drama',
-          subgroup: undefined,
-        }
+            itemId: 'drama',
+            subgroup: undefined,
+          },
         }
       );
     });
@@ -107,11 +109,11 @@ describe('Items', () => {
         'POST',
         {},
         {
-        tag: 'llamas',
-        metaData: {
-          itemId: 'drama',
-          subgroup: undefined,
-        }
+          tag: 'llamas',
+          metaData: {
+            itemId: 'drama',
+            subgroup: undefined,
+          },
         }
       );
     });
@@ -231,11 +233,13 @@ describe('Items', () => {
           `/api/owners/${ownerId}/llamas/drama/`,
           'GET',
           undefined,
-          { tag: 'owners/:ownerId/llamas',
+          {
+            tag: 'owners/:ownerId/llamas',
             metaData: {
-            itemId: 'drama',
-            subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
-          }}
+              itemId: 'drama',
+              subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
+            },
+          }
         );
       });
 
@@ -247,11 +251,13 @@ describe('Items', () => {
           `/api/owners/${ownerId}/llamas/drama/`,
           'PUT',
           {},
-          { tag: 'owners/:ownerId/llamas',
+          {
+            tag: 'owners/:ownerId/llamas',
             metaData: {
-            itemId: 'drama',
-            subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
-          }}
+              itemId: 'drama',
+              subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
+            },
+          }
         );
       });
 
@@ -263,11 +269,13 @@ describe('Items', () => {
           `/api/owners/${ownerId}/llamas/drama/`,
           'PATCH',
           {},
-          { tag: 'owners/:ownerId/llamas',
+          {
+            tag: 'owners/:ownerId/llamas',
             metaData: {
-            itemId: 'drama',
-            subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
-          }}
+              itemId: 'drama',
+              subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
+            },
+          }
         );
       });
 
@@ -279,11 +287,13 @@ describe('Items', () => {
           `/api/owners/${ownerId}/llamas/drama/pajama/`,
           'POST',
           {},
-          { tag: 'owners/:ownerId/llamas',
+          {
+            tag: 'owners/:ownerId/llamas',
             metaData: {
-            itemId: 'drama',
-            subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
-          }}
+              itemId: 'drama',
+              subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
+            },
+          }
         );
       });
 
@@ -344,11 +354,13 @@ describe('Items, alternate base URL', () => {
         '/alternate-url/llamas/drama/',
         'GET',
         undefined,
-        { tag: 'llamas',
+        {
+          tag: 'llamas',
           metaData: {
-          itemId: 'drama',
-          subgroup: undefined,
-        }}
+            itemId: 'drama',
+            subgroup: undefined,
+          },
+        }
       );
     });
   });

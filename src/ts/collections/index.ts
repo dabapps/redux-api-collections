@@ -63,7 +63,10 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
         url || overrideUrl || `${baseUrl}${type}/`,
         'POST',
         data,
-        { tag: `${type}`, metaData: {subgroup: buildSubgroup(overrideUrl, subgroup) }}
+        {
+          tag: `${type}`,
+          metaData: { subgroup: buildSubgroup(overrideUrl, subgroup) },
+        }
       );
     }
 
@@ -88,13 +91,13 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
       const url = overrideUrl
         ? `${overrideUrl}${id}/`
         : `${baseUrl}${type}/${id}/`;
-      return request(
-        DELETE_FROM_COLLECTION,
-        url,
-        'DELETE',
-        undefined,
-        { tag: `${type}`, metaData: {subgroup: buildSubgroup(overrideUrl, subgroup), itemId: id }}
-      ) as any;
+      return request(DELETE_FROM_COLLECTION, url, 'DELETE', undefined, {
+        tag: `${type}`,
+        metaData: {
+          subgroup: buildSubgroup(overrideUrl, subgroup),
+          itemId: id,
+        },
+      }) as any;
     }
 
     function getAllCollectionAction(
@@ -128,13 +131,10 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
       };
 
       const urlWithParams = `${url}${formatCollectionQueryParams(options)}`;
-      return request(
-        GET_COLLECTION,
-        urlWithParams,
-        'GET',
-        undefined,
-        { tag: `${type}`, metaData }
-      ) as any;
+      return request(GET_COLLECTION, urlWithParams, 'GET', undefined, {
+        tag: `${type}`,
+        metaData,
+      }) as any;
     }
 
     return {
@@ -156,29 +156,17 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
         newState = setCollectionFromResponseAction(
           state,
           action,
-          typeToRecordMapping,
+          typeToRecordMapping
         );
         break;
       case ADD_TO_COLLECTION.SUCCESS:
-        newState = addCollectionItem(
-          state,
-          action,
-          typeToRecordMapping,
-        );
+        newState = addCollectionItem(state, action, typeToRecordMapping);
         break;
       case DELETE_FROM_COLLECTION.SUCCESS:
-        newState = deleteCollectionItem(
-          state,
-          action,
-          typeToRecordMapping,
-        );
+        newState = deleteCollectionItem(state, action, typeToRecordMapping);
         break;
       case CLEAR_COLLECTION:
-        newState = clearCollection(
-          state,
-          action,
-          typeToRecordMapping,
-        );
+        newState = clearCollection(state, action, typeToRecordMapping);
         break;
       default:
         newState = state;
@@ -222,7 +210,7 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
           store,
           type,
           buildSubgroup(overrideUrl, subgroup)
-        )
+        ),
     };
   }
 

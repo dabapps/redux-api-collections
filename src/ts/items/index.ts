@@ -40,7 +40,7 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
         metaData: {
           itemId,
           subgroup: buildSubgroup(overrideUrl, subgroup),
-        }
+        },
       }) as any;
     }
 
@@ -80,7 +80,7 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
         metaData: {
           itemId,
           subgroup: buildSubgroup(overrideUrl, subgroup),
-        }
+        },
       }) as any;
     }
 

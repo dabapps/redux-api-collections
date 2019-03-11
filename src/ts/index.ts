@@ -12,8 +12,22 @@ import { itemsFunctor } from './items';
 import { CollectionOptions } from './types';
 import { IdKeyedMap, TypeToRecordMapping } from './utils';
 
-export { ADD_TO_COLLECTION, CLEAR_COLLECTION, DELETE_FROM_COLLECTION, GET_COLLECTION, getCollectionResultsByName, CollectionStore, getCollectionByName } from './collections';
-export { CLEAR_ITEM, GET_ITEM, getItemByName, ItemStore, UPDATE_ITEM } from './items';
+export {
+  ADD_TO_COLLECTION,
+  CLEAR_COLLECTION,
+  DELETE_FROM_COLLECTION,
+  GET_COLLECTION,
+  getCollectionResultsByName,
+  CollectionStore,
+  getCollectionByName,
+} from './collections';
+export {
+  CLEAR_ITEM,
+  GET_ITEM,
+  getItemByName,
+  ItemStore,
+  UPDATE_ITEM,
+} from './items';
 
 export function Collections<T extends IdKeyedMap<T>, U extends IdKeyedMap<U>>(
   collectionToRecordMapping: TypeToRecordMapping<T>,

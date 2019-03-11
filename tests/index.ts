@@ -1,5 +1,11 @@
 import { applyMiddleware, combineReducers, createStore } from 'redux';
-import { Collections, CollectionStore, getCollectionByName, getItemByName, ItemStore } from '../src/ts';
+import {
+  Collections,
+  CollectionStore,
+  getCollectionByName,
+  getItemByName,
+  ItemStore,
+} from '../src/ts';
 
 type Llama = Readonly<{
   furLength: number;

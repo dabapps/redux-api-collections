@@ -5,7 +5,7 @@ export type TypeToRecordMapping<T, U extends { [key: string]: any } = {}> = {
   [K in keyof T]: RecordConstructor<U, T[K]>
 };
 export interface TypeToRecordMappingLoose {
-  [K: string]: ((input: any) => any);
+  [K: string]: (input: any) => any;
 }
 
 export interface IdKeyed {
