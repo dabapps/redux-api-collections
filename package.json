@@ -2,7 +2,7 @@
   "name": "@dabapps/redux-api-collections",
   "version": "0.3.0",
   "description": "Type-safe helpers for dealing with Rest-Framework backed collections in Typescript",
-  "main": "dist/index.js",
+  "main": "dist/js/index.js",
   "scripts": {
     "dist": "./scripts/dist",
     "lint": "tsc --noEmit --project tsconfig.json && npm run prettier-check && tslint --project tsconfig.json '{src,tests,types,examples,docs}/**/*.@(ts|tsx)'",

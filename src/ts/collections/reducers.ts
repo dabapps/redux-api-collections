@@ -28,7 +28,7 @@ function updateCollectionItemsFromResponse<T extends IdKeyed>(
     ordering,
     reverseOrdering,
   } = action.meta;
-  const { count, next, results } = action.payload;
+  const { count, next, results, page } = action.payload.data;
 
   const oldCollectionItems = (collectionData[subgroup || ''] || { results: [] })
     .results;
@@ -42,14 +42,14 @@ function updateCollectionItemsFromResponse<T extends IdKeyed>(
     filters,
     next,
     ordering,
-    page: action.meta.page || action.payload.page || 1,
+    page: action.meta.page || page || 1,
     results: newCollectionResults,
     reverseOrdering,
   };
 
   return {
     ...collectionData,
-    [subgroup]: newCollection,
+    [subgroup || '']: newCollection,
   };
 }
 
@@ -59,7 +59,8 @@ export function setCollectionFromResponseAction<T extends IdKeyedMap<T>>(
   typeToRecordMapping: TypeToRecordMapping<T>
 ): CollectionStore<T> {
   if (isFSA(action) && action.meta) {
-    const collectionType = (action.meta as Dict<string>).tag;
+    const castAction = action as CollectionResponseAction;
+    const collectionType = castAction.meta.tag;
     if (collectionType in typeToRecordMapping) {
       const looseMapping: TypeToRecordMappingLoose = typeToRecordMapping as any; // We know it's indexable, as it's constrained elsewhere
       const stateLoose: CollectionStoreLoose = state as any; // We also know this is indexable

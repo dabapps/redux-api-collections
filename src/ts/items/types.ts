@@ -1,3 +1,4 @@
+import { FluxStandardAction } from 'flux-standard-action';
 import { AnyAction } from 'redux';
 import { Dict } from '../utils';
 
@@ -10,3 +11,10 @@ export type ItemReducerPlugin<T> = (
   state: ItemStore<T>,
   action: AnyAction
 ) => ItemStore<T>;
+
+export type ItemResponseAction = FluxStandardAction<
+  {
+    data: Dict<string>
+  },
+  { tag: string, subgroup?: string }
+>;

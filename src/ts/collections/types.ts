@@ -42,12 +42,14 @@ export type CollectionStoreLoose = Readonly<{
 
 export type CollectionResponseAction = FluxStandardAction<
   {
-    count?: number;
-    next?: string;
-    results: ReadonlyArray<{}>;
-    page?: number;
+    data: {
+      count?: number;
+      next?: string;
+      results: ReadonlyArray<{}>;
+      page?: number;
+    }
   },
-  CollectionParams & { subgroup: string }
+  CollectionParams & { subgroup?: string, tag: string }
 >;
 
 export type CollectionReducerPlugin<T extends IdKeyedMap<T>> = (
