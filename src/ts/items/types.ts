@@ -14,7 +14,7 @@ export type ItemReducerPlugin<T> = (
 
 export type ItemResponseAction = FluxStandardAction<
   {
-    data: Dict<string>
+    data: Dict<string>;
   },
-  { tag: string, subgroup?: string }
+  { tag: string; subgroup?: string }
 >;

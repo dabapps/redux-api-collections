@@ -159,7 +159,7 @@ export function clearCollection<T extends IdKeyedMap<T>>(
   if (isFSA(action) && action.payload) {
     const payload = action.payload as Dict<string>;
     const collectionType = payload.type;
-    const subgroup = payload.subgroup;
+    const subgroup = payload.subgroup || '';
 
     if (collectionType in typeToRecordMapping) {
       const updatedCollection = {

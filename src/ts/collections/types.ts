@@ -47,9 +47,9 @@ export type CollectionResponseAction = FluxStandardAction<
       next?: string;
       results: ReadonlyArray<{}>;
       page?: number;
-    }
+    };
   },
-  CollectionParams & { subgroup?: string, tag: string }
+  CollectionParams & { subgroup?: string; tag: string }
 >;
 
 export type CollectionReducerPlugin<T extends IdKeyedMap<T>> = (
