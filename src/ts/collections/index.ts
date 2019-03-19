@@ -33,6 +33,7 @@ import {
   CollectionOptions,
   CollectionOptionsNoPageSize,
   CollectionReducerPlugin,
+  CollectionsListInterface,
   CollectionStore,
 } from './types';
 import {
@@ -47,14 +48,14 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
   typeToRecordMapping: TypeToRecordMapping<T>,
   baseUrl: string = '/api/',
   reducerPlugin?: CollectionReducerPlugin<T>
-) {
+): CollectionsListInterface<T> {
   function buildActionSet(overrideUrl?: string) {
     function addItemAction(
       type: keyof T,
       data: any,
       subgroup?: string,
       url?: string
-    ) {
+    ): ThunkAction<Promise<AxiosResponse>, any, null> {
       return request(
         ADD_TO_COLLECTION,
         url || overrideUrl || `${baseUrl}${type}/`,
@@ -64,7 +65,7 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
           tag: `${type}`,
           metaData: { subgroup: buildSubgroup(overrideUrl, subgroup) },
         }
-      );
+      ) as any;
     }
 
     function clearCollectionAction(

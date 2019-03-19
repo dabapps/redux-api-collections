@@ -18,14 +18,14 @@ import {
 } from '../utils';
 import { CLEAR_ITEM, GET_ITEM, UPDATE_ITEM } from './actions';
 import { clearItem, setItemFromResponseAction } from './reducers';
-import { ItemReducerPlugin, ItemStore } from './types';
+import { ItemReducerPlugin, ItemsInterface, ItemStore } from './types';
 import { buildItemStore, getItemByName } from './utils';
 
 export function itemsFunctor<T extends IdKeyedMap<T>>(
   typeToRecordMapping: TypeToRecordMapping<T>,
   baseUrl: string = '/api/',
   reducerPlugin?: ItemReducerPlugin<T>
-) {
+): ItemsInterface<T> {
   function buildActionSet(overrideUrl?: string) {
     function _updateItem(
       itemType: keyof T,

@@ -1,6 +1,8 @@
+import { AxiosResponse } from 'axios';
 import { FluxStandardAction } from 'flux-standard-action';
 import { AnyAction } from 'redux';
-import { Dict, IdKeyed, IdKeyedMap } from '../utils';
+import { ThunkAction } from 'redux-thunk';
+import { Dict, IdKeyed, IdKeyedMap, SubpathParams } from '../utils';
 
 export type CollectionParamsNoPageSize = Readonly<{
   shouldAppend: boolean;
@@ -56,3 +58,73 @@ export type CollectionReducerPlugin<T extends IdKeyedMap<T>> = (
   state: CollectionStore<T>,
   action: AnyAction
 ) => CollectionStore<T>;
+
+export interface CollectionActions<T extends IdKeyedMap<T>> {
+  addItem: (
+    type: keyof T,
+    data: any,
+    subgroup?: string,
+    url?: string
+  ) => ThunkAction<Promise<AxiosResponse<any>>, any, null>;
+  clearCollection: (type: keyof T, subgroup?: string) => AnyAction;
+  deleteItem: (
+    type: keyof T,
+    id: string,
+    subgroup?: string
+  ) => ThunkAction<Promise<AxiosResponse<any>>, any, null>;
+  getCollection: (
+    type: keyof T,
+    options?: Partial<CollectionParams>,
+    subgroup?: string
+  ) => ThunkAction<Promise<AxiosResponse<any>>, any, null>;
+  getAllCollection: (
+    type: keyof T,
+    options?: Partial<CollectionOptionsNoPageSize>,
+    subgroup?: string
+  ) => ThunkAction<Promise<AxiosResponse<any>>, any, null>;
+}
+
+export interface CollectionAtSubpathActions {
+  addItem: (
+    data: any,
+    subgroup?: string,
+    url?: string
+  ) => ThunkAction<Promise<AxiosResponse<any>>, any, null>;
+  clearCollection: (subgroup?: string) => AnyAction;
+  deleteItem: (
+    id: string,
+    subgroup?: string
+  ) => ThunkAction<Promise<AxiosResponse<any>>, any, null>;
+  getCollection: (
+    options?: Partial<CollectionParams>,
+    subgroup?: string
+  ) => ThunkAction<Promise<AxiosResponse<any>>, any, null>;
+  getAllCollection: (
+    options?: Partial<CollectionOptionsNoPageSize>,
+    subgroup?: string
+  ) => ThunkAction<Promise<AxiosResponse<any>>, any, null>;
+}
+
+export interface CollectionsListInterface<T extends IdKeyedMap<T>> {
+  actions: CollectionActions<T>;
+  reducers: {
+    collectionsReducer: (
+      state: CollectionStore<T> | undefined,
+      action: AnyAction
+    ) => CollectionStore<T>;
+  };
+  collectionAtSubpath: (
+    type: keyof T,
+    params: SubpathParams
+  ) => {
+    actions: CollectionAtSubpathActions;
+    getSubpathCollection: (
+      store: CollectionStore<T>,
+      subgroup: string
+    ) => Collection<T[keyof T]>;
+    getSubpathCollectionResults: (
+      store: CollectionStore<T>,
+      subgroup: string
+    ) => ReadonlyArray<T[keyof T]>;
+  };
+}

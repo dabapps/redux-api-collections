@@ -6,7 +6,7 @@ import { AxiosResponse } from 'axios';
 import { AnyAction, Dispatch } from 'redux';
 import { collectionsFunctor } from './collections';
 import { itemsFunctor } from './items';
-import { CollectionOptions } from './types';
+import { CollectionOptions, CollectionsInterface } from './types';
 import { IdKeyedMap, TypeToRecordMapping } from './utils';
 
 export {
@@ -26,12 +26,13 @@ export {
   ItemStore,
   UPDATE_ITEM,
 } from './items';
+export { CollectionsInterface, CollectionOptions } from './types';
 
 export function Collections<T extends IdKeyedMap<T>, U extends IdKeyedMap<U>>(
   collectionToRecordMapping: TypeToRecordMapping<T>,
   itemToRecordMapping: TypeToRecordMapping<U>,
   collectionOptions: CollectionOptions<T, U> = {}
-) {
+): CollectionsInterface<T, U> {
   const baseUrl = collectionOptions.baseUrl || '/api/';
 
   const collections = collectionsFunctor(
