@@ -1,6 +1,6 @@
 {
   "name": "@dabapps/redux-api-collections",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Type-safe helpers for dealing with Rest-Framework backed collections in Typescript",
   "main": "dist/js/index.js",
   "scripts": {
@@ -19,13 +19,11 @@
     "@types/underscore": "^1.8.0",
     "axios": "^0.18.0",
     "flux-standard-action": "^1.2.0",
-    "immutable": ">= 3.8.2 < 5",
     "js-cookie": "^2.1.4",
     "path": "^0.12.7",
     "path-to-regexp": "^2.1.0",
     "redux": "^3.7.2",
     "redux-thunk": "^2.2.0",
-    "typescript": "^2.9.2",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
@@ -35,19 +33,19 @@
     "request": "^2.88.0",
     "ts-jest": "^23.1.4",
     "tslint": "^5.11.0",
-    "tslint-config-dabapps": "github:dabapps/tslint-config-dabapps#v0.5.1"
+    "tslint-config-dabapps": "github:dabapps/tslint-config-dabapps#v0.5.1",
+    "typescript": "^2.9.2"
   },
   "peerDependencies": {
-    "axios": ">= 0.16.2 < 0.17",
-    "immutable": ">= 3.8.2 < 5",
-    "typescript": ">= 2.3.3 < 3"
+    "redux-thunk": ">= 2 < 3",
+    "redux": ">= 3 < 4"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dabapps/redux-api-collections.git"
   },
   "author": "DabApps",
-  "license": "UNLICENSED",
+  "license": "BSD-3-Clause",
   "bugs": {
     "url": "https://github.com/dabapps/redux-api-collections/issues"
   },
