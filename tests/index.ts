@@ -5,7 +5,7 @@ import {
   getCollectionByName,
   getItemByName,
   ItemStore,
-} from '../src/ts';
+} from '../src';
 
 type Llama = Readonly<{
   furLength: number;

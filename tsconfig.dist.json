@@ -1,13 +1,13 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "rootDir": "./src/ts/",
+    "rootDir": "./src/",
     "outDir": "./dist/",
     "sourceMap": true,
     "declaration": true,
     "listFiles": true
   },
   "include": [
-    "./src/ts/"
+    "./src/"
   ]
 }

@@ -7,7 +7,7 @@ import {
   getItemByName,
   ItemStore,
   UPDATE_ITEM,
-} from '../src/ts/';
+} from '../src';
 
 type Llama = Readonly<{
   furLength: number;
