@@ -1,5 +1,4 @@
 import { formatQueryParams } from '@dabapps/redux-requests';
-import { List } from 'immutable';
 import { IdKeyedMap, TypeToRecordMapping } from '../utils';
 import {
   Collection,
@@ -53,7 +52,6 @@ export function getCollectionByName<T extends IdKeyedMap<T>>(
       page: 1,
       count: 0,
       results: [],
-      immutableResults: List(),
     }
   );
 }
