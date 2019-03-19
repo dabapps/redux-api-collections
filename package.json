@@ -2,7 +2,8 @@
   "name": "@dabapps/redux-api-collections",
   "version": "0.4.0",
   "description": "Type-safe helpers for dealing with Rest-Framework backed collections in Typescript",
-  "main": "dist/js/index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "dist": "./scripts/dist",
     "lint": "tsc --noEmit --project tsconfig.json && npm run prettier-check && tslint --project tsconfig.json '{src,tests,types,examples,docs}/**/*.@(ts|tsx)'",
@@ -35,7 +36,7 @@
     "ts-jest": "^23.1.4",
     "tslint": "^5.14.0",
     "tslint-config-dabapps": "github:dabapps/tslint-config-dabapps#v0.5.1",
-    "typescript": "^2.9.2"
+    "typescript": "^3.3.3333"
   },
   "peerDependencies": {
     "redux-thunk": ">= 2 < 3",
