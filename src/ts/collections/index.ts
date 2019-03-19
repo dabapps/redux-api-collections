@@ -7,9 +7,6 @@ import { request } from '@dabapps/redux-requests';
 import { AxiosResponse } from 'axios';
 import * as pathToRegexp from 'path-to-regexp';
 import { AnyAction } from 'redux';
-// Required for re-exporting
-// tslint:disable-next-line:no-unused-variable
-import { Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import {
   buildSubgroup,
