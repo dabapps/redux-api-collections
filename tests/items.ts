@@ -129,7 +129,9 @@ describe('Items', () => {
     function loadItem(item: any) {
       const action = {
         meta: { itemId: 'first', tag: 'llamas' },
-        payload: item,
+        payload: {
+          data: item,
+        },
         type: GET_ITEM.SUCCESS,
       };
 
@@ -173,7 +175,9 @@ describe('Items', () => {
       const oldState = loadItem(oldItem);
       const action = {
         meta: { itemId: 'first', tag: 'llamas' },
-        payload: newItem,
+        payload: {
+          data: newItem,
+        },
         type: UPDATE_ITEM.SUCCESS,
       };
 
@@ -312,7 +316,9 @@ describe('Items', () => {
             tag: 'owners/:ownerId/llamas',
             subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
           },
-          payload: item,
+          payload: {
+            data: item,
+          },
           type: GET_ITEM.SUCCESS,
         };
 
@@ -396,7 +402,9 @@ describe('Items, custom reducer', () => {
     function loadItem(item: any) {
       const action = {
         meta: { itemId: 'first', tag: 'llamas' },
-        payload: item,
+        payload: {
+          data: item,
+        },
         type: GET_ITEM.SUCCESS,
       };
 

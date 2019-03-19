@@ -53,10 +53,12 @@ describe('Collections', () => {
     return {
       meta: { tag, shouldAppend, subgroup, page: metaPage },
       payload: {
-        count,
-        page: metaPage ? undefined : 1,
-        next,
-        results,
+        data: {
+          count,
+          page: metaPage ? undefined : 1,
+          next,
+          results,
+        },
       },
       type: GET_COLLECTION.SUCCESS,
     };
@@ -483,13 +485,15 @@ describe('Collections', () => {
       const data = collections.reducers.collectionsReducer(undefined, {
         meta: { tag: 'llamas', shouldAppend: false, subgroup: '' },
         payload: {
-          results: [
-            {
-              furLength: 5,
-              id: '1',
-              name: 'Drama',
-            },
-          ],
+          data: {
+            results: [
+              {
+                furLength: 5,
+                id: '1',
+                name: 'Drama',
+              },
+            ],
+          },
         },
         type: GET_COLLECTION.SUCCESS,
       });
@@ -754,10 +758,12 @@ describe('Collections, custom reducer', () => {
     return {
       meta: { tag, shouldAppend, subgroup },
       payload: {
-        count: results.length,
-        page: 1,
-        next,
-        results,
+        data: {
+          count: results.length,
+          page: 1,
+          next,
+          results,
+        },
       },
       type: GET_COLLECTION.SUCCESS,
     };
