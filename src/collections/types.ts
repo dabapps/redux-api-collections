@@ -1,8 +1,12 @@
-import { AxiosResponse } from 'axios';
 import { FluxStandardAction } from 'flux-standard-action';
 import { AnyAction } from 'redux';
-import { ThunkAction } from 'redux-thunk';
-import { Dict, IdKeyed, IdKeyedMap, SubpathParams } from '../utils';
+import {
+  Dict,
+  IdKeyed,
+  IdKeyedMap,
+  SubpathParams,
+  ThunkResponse,
+} from '../utils';
 
 export type CollectionParamsNoPageSize = Readonly<{
   shouldAppend: boolean;
@@ -65,44 +69,33 @@ export interface CollectionActions<T extends IdKeyedMap<T>> {
     data: any,
     subgroup?: string,
     url?: string
-  ) => ThunkAction<Promise<AxiosResponse<any>>, any, null>;
+  ) => ThunkResponse;
   clearCollection: (type: keyof T, subgroup?: string) => AnyAction;
-  deleteItem: (
-    type: keyof T,
-    id: string,
-    subgroup?: string
-  ) => ThunkAction<Promise<AxiosResponse<any>>, any, null>;
+  deleteItem: (type: keyof T, id: string, subgroup?: string) => ThunkResponse;
   getCollection: (
     type: keyof T,
     options?: Partial<CollectionParams>,
     subgroup?: string
-  ) => ThunkAction<Promise<AxiosResponse<any>>, any, null>;
+  ) => ThunkResponse;
   getAllCollection: (
     type: keyof T,
     options?: Partial<CollectionOptionsNoPageSize>,
     subgroup?: string
-  ) => ThunkAction<Promise<AxiosResponse<any>>, any, null>;
+  ) => ThunkResponse;
 }
 
 export interface CollectionAtSubpathActions {
-  addItem: (
-    data: any,
-    subgroup?: string,
-    url?: string
-  ) => ThunkAction<Promise<AxiosResponse<any>>, any, null>;
+  addItem: (data: any, subgroup?: string, url?: string) => ThunkResponse;
   clearCollection: (subgroup?: string) => AnyAction;
-  deleteItem: (
-    id: string,
-    subgroup?: string
-  ) => ThunkAction<Promise<AxiosResponse<any>>, any, null>;
+  deleteItem: (id: string, subgroup?: string) => ThunkResponse;
   getCollection: (
     options?: Partial<CollectionParams>,
     subgroup?: string
-  ) => ThunkAction<Promise<AxiosResponse<any>>, any, null>;
+  ) => ThunkResponse;
   getAllCollection: (
     options?: Partial<CollectionOptionsNoPageSize>,
     subgroup?: string
-  ) => ThunkAction<Promise<AxiosResponse<any>>, any, null>;
+  ) => ThunkResponse;
 }
 
 export interface CollectionsListInterface<T extends IdKeyedMap<T>> {

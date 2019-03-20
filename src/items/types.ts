@@ -1,8 +1,6 @@
-import { AxiosResponse } from 'axios';
 import { FluxStandardAction } from 'flux-standard-action';
 import { AnyAction } from 'redux';
-import { ThunkAction } from 'redux-thunk';
-import { Dict, SubpathParams } from '../utils';
+import { Dict, SubpathParams, ThunkResponse } from '../utils';
 
 export type ItemGroup<T> = Dict<T>;
 export type ItemStoreMutable<T> = { [K in keyof T]: ItemGroup<T[K]> };
@@ -33,19 +31,19 @@ export interface ItemsInterface<T> {
       itemType: keyof T,
       itemId: string,
       subgroup?: string
-    ) => ThunkAction<Promise<AxiosResponse<any>>, any, null>;
+    ) => ThunkResponse;
     updateItem: (
       type: keyof T,
       id: string,
       data: any,
       subgroup?: string
-    ) => ThunkAction<Promise<AxiosResponse<any>>, any, null>;
+    ) => ThunkResponse;
     patchItem: (
       type: keyof T,
       id: string,
       data: any,
       subgroup?: string
-    ) => ThunkAction<Promise<AxiosResponse<any>>, any, null>;
+    ) => ThunkResponse;
     clearItem: (itemType: keyof T, subgroup?: string) => AnyAction;
     actionItem: (
       type: keyof T,
@@ -53,34 +51,23 @@ export interface ItemsInterface<T> {
       action: string,
       data: any,
       subgroup?: string
-    ) => ThunkAction<Promise<AxiosResponse<any>>, any, null>;
+    ) => ThunkResponse;
   };
   itemAtSubpath: (
     type: keyof T,
     params: SubpathParams
   ) => {
     actions: {
-      getItem: (
-        itemId: string,
-        subgroup?: string
-      ) => ThunkAction<Promise<AxiosResponse<any>>, any, null>;
-      updateItem: (
-        id: string,
-        data: any,
-        subgroup?: string
-      ) => ThunkAction<Promise<AxiosResponse<any>>, any, null>;
-      patchItem: (
-        id: string,
-        data: any,
-        subgroup?: string
-      ) => ThunkAction<Promise<AxiosResponse<any>>, any, null>;
+      getItem: (itemId: string, subgroup?: string) => ThunkResponse;
+      updateItem: (id: string, data: any, subgroup?: string) => ThunkResponse;
+      patchItem: (id: string, data: any, subgroup?: string) => ThunkResponse;
       clearItem: (subgroup?: string) => AnyAction;
       actionItem: (
         id: string,
         action: string,
         data: any,
         subgroup?: string
-      ) => ThunkAction<Promise<AxiosResponse<any>>, any, null>;
+      ) => ThunkResponse;
     };
     getSubpathItem: (
       store: ItemStore<T>,

@@ -34,14 +34,14 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
       itemId: string,
       data: any,
       subgroup?: string
-    ): ThunkAction<Promise<AxiosResponse>, any, null> {
+    ): ThunkAction<Promise<AxiosResponse | void>, any, null> {
       return request(UPDATE_ITEM, url, method, data, {
         tag: `${itemType}`,
         metaData: {
           itemId,
           subgroup: buildSubgroup(overrideUrl, subgroup),
         },
-      }) as any;
+      });
     }
 
     function actionItemAction(
@@ -50,7 +50,7 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
       action: string,
       data: any,
       subgroup?: string
-    ): ThunkAction<Promise<AxiosResponse>, any, null> {
+    ): ThunkAction<Promise<AxiosResponse | void>, any, null> {
       const url = overrideUrl
         ? `${overrideUrl}${id}/`
         : `${baseUrl}${type}/${id}/`;
@@ -71,7 +71,7 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
       itemType: keyof T,
       itemId: string,
       subgroup?: string
-    ): ThunkAction<Promise<AxiosResponse>, any, null> {
+    ): ThunkAction<Promise<AxiosResponse | void>, any, null> {
       const url = overrideUrl
         ? `${overrideUrl}${itemId}/`
         : `${baseUrl}${itemType}/${itemId}/`;
@@ -81,7 +81,7 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
           itemId,
           subgroup: buildSubgroup(overrideUrl, subgroup),
         },
-      }) as any;
+      });
     }
 
     function patchItemAction(
@@ -89,7 +89,7 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
       id: string,
       data: any,
       subgroup?: string
-    ): ThunkAction<Promise<AxiosResponse>, any, null> {
+    ): ThunkAction<Promise<AxiosResponse | void>, any, null> {
       return _updateItem(
         type,
         overrideUrl ? `${overrideUrl}${id}/` : `${baseUrl}${type}/${id}/`,
@@ -105,7 +105,7 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
       id: string,
       data: any,
       subgroup?: string
-    ): ThunkAction<Promise<AxiosResponse>, any, null> {
+    ): ThunkAction<Promise<AxiosResponse | void>, any, null> {
       return _updateItem(
         type,
         overrideUrl ? `${overrideUrl}${id}/` : `${baseUrl}${type}/${id}/`,

@@ -52,7 +52,7 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
       data: any,
       subgroup?: string,
       url?: string
-    ): ThunkAction<Promise<AxiosResponse>, any, null> {
+    ): ThunkAction<Promise<AxiosResponse | void>, any, null> {
       return request(
         ADD_TO_COLLECTION,
         url || overrideUrl || `${baseUrl}${type}/`,
@@ -62,7 +62,7 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
           tag: `${type}`,
           metaData: { subgroup: buildSubgroup(overrideUrl, subgroup) },
         }
-      ) as any;
+      );
     }
 
     function clearCollectionAction(
@@ -82,7 +82,7 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
       type: keyof T,
       id: string,
       subgroup?: string
-    ): ThunkAction<Promise<AxiosResponse>, any, null> {
+    ): ThunkAction<Promise<AxiosResponse | void>, any, null> {
       const url = overrideUrl
         ? `${overrideUrl}${id}/`
         : `${baseUrl}${type}/${id}/`;
@@ -92,14 +92,14 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
           subgroup: buildSubgroup(overrideUrl, subgroup),
           itemId: id,
         },
-      }) as any;
+      });
     }
 
     function getAllCollectionAction(
       type: keyof T,
       opts?: CollectionOptionsNoPageSize,
       subgroup?: string
-    ): ThunkAction<Promise<AxiosResponse>, any, null> {
+    ): ThunkAction<Promise<AxiosResponse | void>, any, null> {
       return getCollectionAction(
         type,
         {
@@ -114,7 +114,7 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
       type: keyof T,
       options: CollectionOptions = {},
       subgroup?: string
-    ): ThunkAction<Promise<AxiosResponse>, any, null> {
+    ): ThunkAction<Promise<AxiosResponse | void>, any, null> {
       const url = overrideUrl || `${baseUrl}${type}/`;
       const metaData = {
         subgroup: buildSubgroup(overrideUrl, subgroup),
@@ -129,7 +129,7 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
       return request(GET_COLLECTION, urlWithParams, 'GET', undefined, {
         tag: `${type}`,
         metaData,
-      }) as any;
+      });
     }
 
     return {
