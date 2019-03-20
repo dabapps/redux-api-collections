@@ -1,14 +1,13 @@
+import * as requests from '@dabapps/redux-requests';
 import { AnyAction } from 'redux';
 import {
   CLEAR_ITEM,
+  Collections,
   GET_ITEM,
   getItemByName,
   ItemStore,
   UPDATE_ITEM,
-} from '../src/items';
-import * as requests from '../src/requests';
-
-import { Collections } from '../src';
+} from '../src';
 
 type Llama = Readonly<{
   furLength: number;
@@ -39,26 +38,28 @@ describe('Items', () => {
   const collections = Collections<{}, Items>({}, itemToRecordMapping);
 
   describe('actions', () => {
-    const dispatchGenericRequestSpy = jest
-      .spyOn(requests, 'dispatchGenericRequest')
+    const requestSpy = jest
+      .spyOn(requests, 'request')
       .mockImplementation(() => null);
 
     beforeEach(() => {
-      dispatchGenericRequestSpy.mockReset();
+      requestSpy.mockReset();
     });
 
     it('should be possible to construct getItem', () => {
       collections.actions.getItem('llamas', 'drama');
 
-      expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+      expect(requestSpy).toHaveBeenCalledWith(
         GET_ITEM,
         '/api/llamas/drama/',
         'GET',
-        null,
-        'llamas',
+        undefined,
         {
-          itemId: 'drama',
-          subgroup: undefined,
+          tag: 'llamas',
+          metaData: {
+            itemId: 'drama',
+            subgroup: undefined,
+          },
         }
       );
     });
@@ -66,15 +67,17 @@ describe('Items', () => {
     it('should be possible to construct updateItem', () => {
       collections.actions.updateItem('llamas', 'drama', {});
 
-      expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+      expect(requestSpy).toHaveBeenCalledWith(
         UPDATE_ITEM,
         '/api/llamas/drama/',
         'PUT',
         {},
-        'llamas',
         {
-          itemId: 'drama',
-          subgroup: undefined,
+          tag: 'llamas',
+          metaData: {
+            itemId: 'drama',
+            subgroup: undefined,
+          },
         }
       );
     });
@@ -82,15 +85,17 @@ describe('Items', () => {
     it('should be possible to construct patchItem', () => {
       collections.actions.patchItem('llamas', 'drama', {});
 
-      expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+      expect(requestSpy).toHaveBeenCalledWith(
         UPDATE_ITEM,
         '/api/llamas/drama/',
         'PATCH',
         {},
-        'llamas',
         {
-          itemId: 'drama',
-          subgroup: undefined,
+          tag: 'llamas',
+          metaData: {
+            itemId: 'drama',
+            subgroup: undefined,
+          },
         }
       );
     });
@@ -98,15 +103,17 @@ describe('Items', () => {
     it('should be possible to construct actionItem', () => {
       collections.actions.actionItem('llamas', 'drama', 'pajama', {});
 
-      expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+      expect(requestSpy).toHaveBeenCalledWith(
         UPDATE_ITEM,
         '/api/llamas/drama/pajama/',
         'POST',
         {},
-        'llamas',
         {
-          itemId: 'drama',
-          subgroup: undefined,
+          tag: 'llamas',
+          metaData: {
+            itemId: 'drama',
+            subgroup: undefined,
+          },
         }
       );
     });
@@ -122,7 +129,9 @@ describe('Items', () => {
     function loadItem(item: any) {
       const action = {
         meta: { itemId: 'first', tag: 'llamas' },
-        payload: item,
+        payload: {
+          data: item,
+        },
         type: GET_ITEM.SUCCESS,
       };
 
@@ -166,7 +175,9 @@ describe('Items', () => {
       const oldState = loadItem(oldItem);
       const action = {
         meta: { itemId: 'first', tag: 'llamas' },
-        payload: newItem,
+        payload: {
+          data: newItem,
+        },
         type: UPDATE_ITEM.SUCCESS,
       };
 
@@ -210,26 +221,28 @@ describe('Items', () => {
     });
 
     describe('actions', () => {
-      const dispatchGenericRequestSpy = jest
-        .spyOn(requests, 'dispatchGenericRequest')
+      const requestSpy = jest
+        .spyOn(requests, 'request')
         .mockImplementation(() => null);
 
       beforeEach(() => {
-        dispatchGenericRequestSpy.mockReset();
+        requestSpy.mockReset();
       });
 
       it('should be possible to construct getItem', () => {
         subpath.actions.getItem('drama', 'llamadrama');
 
-        expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+        expect(requestSpy).toHaveBeenCalledWith(
           GET_ITEM,
           `/api/owners/${ownerId}/llamas/drama/`,
           'GET',
-          null,
-          'owners/:ownerId/llamas',
+          undefined,
           {
-            itemId: 'drama',
-            subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
+            tag: 'owners/:ownerId/llamas',
+            metaData: {
+              itemId: 'drama',
+              subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
+            },
           }
         );
       });
@@ -237,15 +250,17 @@ describe('Items', () => {
       it('should be possible to construct updateItem', () => {
         subpath.actions.updateItem('drama', {}, 'llamadrama');
 
-        expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+        expect(requestSpy).toHaveBeenCalledWith(
           UPDATE_ITEM,
           `/api/owners/${ownerId}/llamas/drama/`,
           'PUT',
           {},
-          'owners/:ownerId/llamas',
           {
-            itemId: 'drama',
-            subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
+            tag: 'owners/:ownerId/llamas',
+            metaData: {
+              itemId: 'drama',
+              subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
+            },
           }
         );
       });
@@ -253,15 +268,17 @@ describe('Items', () => {
       it('should be possible to construct patchItem', () => {
         subpath.actions.patchItem('drama', {}, 'llamadrama');
 
-        expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+        expect(requestSpy).toHaveBeenCalledWith(
           UPDATE_ITEM,
           `/api/owners/${ownerId}/llamas/drama/`,
           'PATCH',
           {},
-          'owners/:ownerId/llamas',
           {
-            itemId: 'drama',
-            subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
+            tag: 'owners/:ownerId/llamas',
+            metaData: {
+              itemId: 'drama',
+              subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
+            },
           }
         );
       });
@@ -269,15 +286,17 @@ describe('Items', () => {
       it('should be possible to construct actionItem', () => {
         subpath.actions.actionItem('drama', 'pajama', {}, 'llamadrama');
 
-        expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+        expect(requestSpy).toHaveBeenCalledWith(
           UPDATE_ITEM,
           `/api/owners/${ownerId}/llamas/drama/pajama/`,
           'POST',
           {},
-          'owners/:ownerId/llamas',
           {
-            itemId: 'drama',
-            subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
+            tag: 'owners/:ownerId/llamas',
+            metaData: {
+              itemId: 'drama',
+              subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
+            },
           }
         );
       });
@@ -297,7 +316,9 @@ describe('Items', () => {
             tag: 'owners/:ownerId/llamas',
             subgroup: `/api/owners/${ownerId}/llamas/:llamadrama`,
           },
-          payload: item,
+          payload: {
+            data: item,
+          },
           type: GET_ITEM.SUCCESS,
         };
 
@@ -323,26 +344,28 @@ describe('Items, alternate base URL', () => {
   });
 
   describe('actions', () => {
-    const dispatchGenericRequestSpy = jest
-      .spyOn(requests, 'dispatchGenericRequest')
+    const requestSpy = jest
+      .spyOn(requests, 'request')
       .mockImplementation(() => null);
 
     beforeEach(() => {
-      dispatchGenericRequestSpy.mockReset();
+      requestSpy.mockReset();
     });
 
     it('should be possible to construct getItem', () => {
       collections.actions.getItem('llamas', 'drama');
 
-      expect(dispatchGenericRequestSpy).toHaveBeenCalledWith(
+      expect(requestSpy).toHaveBeenCalledWith(
         GET_ITEM,
         '/alternate-url/llamas/drama/',
         'GET',
-        null,
-        'llamas',
+        undefined,
         {
-          itemId: 'drama',
-          subgroup: undefined,
+          tag: 'llamas',
+          metaData: {
+            itemId: 'drama',
+            subgroup: undefined,
+          },
         }
       );
     });
@@ -379,7 +402,9 @@ describe('Items, custom reducer', () => {
     function loadItem(item: any) {
       const action = {
         meta: { itemId: 'first', tag: 'llamas' },
-        payload: item,
+        payload: {
+          data: item,
+        },
         type: GET_ITEM.SUCCESS,
       };
 

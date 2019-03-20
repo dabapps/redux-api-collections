@@ -7,7 +7,11 @@ import {
   TypeToRecordMapping,
   TypeToRecordMappingLoose,
 } from '../utils';
-import { ItemStore, ItemStoreLoose } from './types';
+import { ItemResponseAction, ItemStore, ItemStoreLoose } from './types';
+
+function isItemAction(action: any): action is ItemResponseAction {
+  return isFSA(action) && !!action.meta;
+}
 
 export function clearItem<T extends IdKeyedMap<T>>(
   state: ItemStore<T>,
@@ -20,7 +24,7 @@ export function clearItem<T extends IdKeyedMap<T>>(
     const subgroup = payload.subgroup || '';
 
     if (itemType in typeToRecordMapping) {
-      const stateLoose: ItemStoreLoose = state as any; // We know this is indexable
+      const stateLoose: ItemStoreLoose = state;
       return _.extend({}, stateLoose, {
         [itemType]: _.extend({}, stateLoose[itemType], {
           [subgroup]: undefined,
@@ -36,16 +40,16 @@ export function setItemFromResponseAction<T extends IdKeyedMap<T>>(
   action: AnyAction,
   typeToRecordMapping: TypeToRecordMapping<T>
 ): ItemStore<T> {
-  if (isFSA(action) && action.meta) {
-    const itemType = (action.meta as Dict<string>).tag;
-    const subgroup = (action.meta as Dict<string>).subgroup || '';
+  if (isItemAction(action)) {
+    const itemType = action.meta.tag;
+    const subgroup = action.meta.subgroup || '';
     if (itemType in typeToRecordMapping) {
-      const stateLoose: ItemStoreLoose = state as any; // We know this is indexable
-      const mappingLoose: TypeToRecordMappingLoose = typeToRecordMapping as any; // We know this is indexable
+      const stateLoose: ItemStoreLoose = state;
+      const mappingLoose: TypeToRecordMappingLoose = typeToRecordMapping;
       const recordBuilder = mappingLoose[itemType];
       return _.extend({}, stateLoose, {
         [itemType]: _.extend({}, stateLoose[itemType], {
-          [subgroup]: recordBuilder(action.payload),
+          [subgroup]: recordBuilder(action.payload.data),
         }),
       });
     }

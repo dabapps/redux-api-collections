@@ -1,4 +1,4 @@
-import { makeAsyncActionSet } from '../requests';
+import { makeAsyncActionSet } from '@dabapps/redux-requests';
 
 export const GET_COLLECTION = makeAsyncActionSet('GET_COLLECTION');
 export const ADD_TO_COLLECTION = makeAsyncActionSet('ADD_TO_COLLECTION');

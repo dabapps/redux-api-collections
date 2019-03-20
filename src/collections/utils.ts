@@ -1,5 +1,4 @@
-import { List } from 'immutable';
-import { formatQueryParams } from '../requests';
+import { formatQueryParams } from '@dabapps/redux-requests';
 import { IdKeyedMap, TypeToRecordMapping } from '../utils';
 import {
   Collection,
@@ -37,7 +36,7 @@ export function buildCollectionsStore<T extends IdKeyedMap<T>>(
 ): CollectionStore<T> {
   const store = {} as CollectionStoreMutable<T>;
   for (const key of Object.keys(mapping)) {
-    (store as any)[key] = {} as any;
+    store[key as keyof T] = {};
   }
   return store;
 }
@@ -53,7 +52,6 @@ export function getCollectionByName<T extends IdKeyedMap<T>>(
       page: 1,
       count: 0,
       results: [],
-      immutableResults: List(),
     }
   );
 }
@@ -64,19 +62,4 @@ export function getCollectionResultsByName<T extends IdKeyedMap<T>>(
   subgroup: string = ''
 ): ReadonlyArray<T[keyof T]> {
   return getCollectionByName(collectionStore, key, subgroup).results;
-}
-
-export function getImmutableCollectionResultsByName<T extends IdKeyedMap<T>>(
-  collectionStore: CollectionStore<T>,
-  key: keyof T,
-  subgroup: string = ''
-): List<T[keyof T]> {
-  const items = getCollectionByName(collectionStore, key, subgroup)
-    .immutableResults;
-  if (!items) {
-    throw new Error(
-      'You are trying to get Immutable collections without initializing Collections as Immutable'
-    );
-  }
-  return items;
 }

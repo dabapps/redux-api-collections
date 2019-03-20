@@ -3,29 +3,28 @@ export * from './reducers';
 export * from './types';
 export * from './utils';
 
-import { AxiosResponse } from 'axios';
+import { request, UrlMethod } from '@dabapps/redux-requests';
+
 import * as pathToRegexp from 'path-to-regexp';
 import { AnyAction } from 'redux';
-import { ThunkAction } from 'redux-thunk';
-import { dispatchGenericRequest } from '../requests';
-import { UrlMethod } from '../requests/types';
 import {
   buildSubgroup,
   Dict,
   IdKeyedMap,
   SubpathParams,
+  ThunkResponse,
   TypeToRecordMapping,
 } from '../utils';
 import { CLEAR_ITEM, GET_ITEM, UPDATE_ITEM } from './actions';
 import { clearItem, setItemFromResponseAction } from './reducers';
-import { ItemReducerPlugin, ItemStore } from './types';
+import { ItemReducerPlugin, ItemsInterface, ItemStore } from './types';
 import { buildItemStore, getItemByName } from './utils';
 
 export function itemsFunctor<T extends IdKeyedMap<T>>(
   typeToRecordMapping: TypeToRecordMapping<T>,
   baseUrl: string = '/api/',
   reducerPlugin?: ItemReducerPlugin<T>
-) {
+): ItemsInterface<T> {
   function buildActionSet(overrideUrl?: string) {
     function _updateItem(
       itemType: keyof T,
@@ -34,10 +33,13 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
       itemId: string,
       data: any,
       subgroup?: string
-    ): ThunkAction<Promise<AxiosResponse>, any, null> {
-      return dispatchGenericRequest(UPDATE_ITEM, url, method, data, itemType, {
-        itemId,
-        subgroup: buildSubgroup(overrideUrl, subgroup),
+    ): ThunkResponse {
+      return request(UPDATE_ITEM, url, method, data, {
+        tag: `${itemType}`,
+        metaData: {
+          itemId,
+          subgroup: buildSubgroup(overrideUrl, subgroup),
+        },
       });
     }
 
@@ -47,7 +49,7 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
       action: string,
       data: any,
       subgroup?: string
-    ): ThunkAction<Promise<AxiosResponse>, any, null> {
+    ): ThunkResponse {
       const url = overrideUrl
         ? `${overrideUrl}${id}/`
         : `${baseUrl}${type}/${id}/`;
@@ -68,13 +70,16 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
       itemType: keyof T,
       itemId: string,
       subgroup?: string
-    ): ThunkAction<Promise<AxiosResponse>, any, null> {
+    ): ThunkResponse {
       const url = overrideUrl
         ? `${overrideUrl}${itemId}/`
         : `${baseUrl}${itemType}/${itemId}/`;
-      return dispatchGenericRequest(GET_ITEM, url, 'GET', null, itemType, {
-        itemId,
-        subgroup: buildSubgroup(overrideUrl, subgroup),
+      return request(GET_ITEM, url, 'GET', undefined, {
+        tag: `${itemType}`,
+        metaData: {
+          itemId,
+          subgroup: buildSubgroup(overrideUrl, subgroup),
+        },
       });
     }
 
@@ -83,7 +88,7 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
       id: string,
       data: any,
       subgroup?: string
-    ): ThunkAction<Promise<AxiosResponse>, any, null> {
+    ): ThunkResponse {
       return _updateItem(
         type,
         overrideUrl ? `${overrideUrl}${id}/` : `${baseUrl}${type}/${id}/`,
@@ -99,7 +104,7 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
       id: string,
       data: any,
       subgroup?: string
-    ): ThunkAction<Promise<AxiosResponse>, any, null> {
+    ): ThunkResponse {
       return _updateItem(
         type,
         overrideUrl ? `${overrideUrl}${id}/` : `${baseUrl}${type}/${id}/`,
@@ -140,8 +145,7 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
         const subgroup = (action.meta as Dict<string>).subgroup || '';
         if (itemType in typeToRecordMapping) {
           const item = getItemByName(state, itemType as keyof T, subgroup);
-          // FIXME: IdKeyedMap should make this cast unneccesary
-          if (!item || (item as any).id === action.payload.id) {
+          if (!item || item.id === action.payload.data.id) {
             newState = setItemFromResponseAction(
               state,
               action,
@@ -163,7 +167,7 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
   }
 
   function itemAtSubpath(type: keyof T, params: SubpathParams) {
-    const compiledPath = pathToRegexp.compile(type);
+    const compiledPath = pathToRegexp.compile(`${type}`);
     const replaced = compiledPath(params);
     const overrideUrl = `${baseUrl}${replaced}/`;
     const {

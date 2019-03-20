@@ -1,58 +1,53 @@
 {
   "name": "@dabapps/redux-api-collections",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Type-safe helpers for dealing with Rest-Framework backed collections in Typescript",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "dist": "./scripts/dist",
-    "lint-js": "tsc --noEmit --project tsconfig.json && npm run prettier-check && tslint --project tsconfig.json '{src,tests}/**/*.ts?(x)'",
+    "lint": "tsc --noEmit --project tsconfig.json && npm run prettier-check && tslint --project tsconfig.json '{src,tests,types,examples,docs}/**/*.@(ts|tsx)'",
+    "prettier-check": "prettier --check \"{src,tests,types,examples,docs}/**/*.{ts,tsx,js,jsx}\"",
+    "prettier": "prettier --write \"{src,tests,types,examples,docs}/**/*.{ts,tsx,js,jsx}\"",
     "tests": "jest",
-    "test": "npm run lint-js && npm run tests -- --coverage --runInBand",
-    "prettier": "prettier --write \"{src,tests}/**/*.{ts,tsx,js,jsx}\"",
-    "prettier-check": "./scripts/prettier-check",
+    "typecheck": "tsc --project tsconfig.json --noEmit",
+    "test": "npm run typecheck && npm run lint && npm run tests -- --runInBand --coverage",
     "prepublishOnly": "npm test && npm run dist"
   },
   "dependencies": {
+    "@dabapps/redux-requests": "^0.5.3",
     "@types/js-cookie": "^2.0.28",
     "@types/node": "^7.0.18",
     "@types/underscore": "^1.8.0",
-    "axios": ">= 0.16.2 < 0.17",
+    "axios": "^0.18.0",
     "flux-standard-action": "^1.2.0",
-    "immutable": ">= 3.8.2 < 5",
     "js-cookie": "^2.1.4",
     "path": "^0.12.7",
     "path-to-regexp": "^2.1.0",
     "redux": "^3.7.2",
     "redux-thunk": "^2.2.0",
-    "typescript": ">= 2.3.3 < 3",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
     "@types/jest": "^23.3.1",
-    "browserify": "^14.4.0",
-    "concurrently": "^3.5.0",
-    "http-server": "^0.10.0",
-    "jest": "^23.5.0",
-    "prettier": "^1.7.4",
+    "jest": "^23.6.0",
+    "prettier": "^1.16.4",
+    "request": "^2.88.0",
     "ts-jest": "^23.1.4",
-    "tsify": "^3.0.1",
-    "tslint": "^5.8.0",
-    "tslint-config-dabapps": "dabapps/tslint-config-dabapps#v0.5.1",
-    "uglify-js": "^3.0.25",
-    "watchify": "^3.9.0"
+    "tslint": "^5.14.0",
+    "tslint-config-dabapps": "github:dabapps/tslint-config-dabapps#v0.5.1",
+    "typescript": "^3.3.3333"
   },
   "peerDependencies": {
-    "axios": ">= 0.16.2 < 0.17",
-    "immutable": ">= 3.8.2 < 5",
-    "typescript": ">= 2.3.3 < 3"
+    "redux-thunk": ">= 2 < 3",
+    "redux": ">= 3 < 4"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dabapps/redux-api-collections.git"
   },
   "author": "DabApps",
-  "license": "UNLICENSED",
+  "license": "BSD-3-Clause",
   "bugs": {
     "url": "https://github.com/dabapps/redux-api-collections/issues"
   },
@@ -66,21 +61,26 @@
     "access": "restricted"
   },
   "jest": {
-    "collectCoverageFrom": [
-      "src/ts/**/*.{ts,tsx,js,jsx}"
-    ],
-    "coveragePathIgnorePatterns": [
-      "types\\.(tsx?|jsx?)$"
-    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 90,
+        "functions": 90,
+        "lines": 90,
+        "statements": 90
+      }
+    },
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
-    "testRegex": "(/tests/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+    "testRegex": "(/tests/.*|\\.(test|spec))\\.(ts|tsx|js|jsx)$",
     "moduleFileExtensions": [
       "ts",
       "tsx",
       "js",
       "jsx"
+    ],
+    "testPathIgnorePatterns": [
+      "<rootDir>/tests/helpers/*"
     ]
   }
 }

@@ -3,21 +3,14 @@ export * from './reducers';
 export * from './types';
 export * from './utils';
 
-import { AxiosResponse } from 'axios';
-// Required for re-exporting
-// tslint:disable-next-line:no-unused-variable
-import { List } from 'immutable';
+import { request } from '@dabapps/redux-requests';
 import * as pathToRegexp from 'path-to-regexp';
 import { AnyAction } from 'redux';
-// Required for re-exporting
-// tslint:disable-next-line:no-unused-variable
-import { Dispatch } from 'redux';
-import { ThunkAction } from 'redux-thunk';
-import { dispatchGenericRequest } from '../requests';
 import {
   buildSubgroup,
   IdKeyedMap,
   SubpathParams,
+  ThunkResponse,
   TypeToRecordMapping,
 } from '../utils';
 import {
@@ -36,6 +29,7 @@ import {
   CollectionOptions,
   CollectionOptionsNoPageSize,
   CollectionReducerPlugin,
+  CollectionsListInterface,
   CollectionStore,
 } from './types';
 import {
@@ -43,30 +37,30 @@ import {
   formatCollectionQueryParams,
   getCollectionByName,
   getCollectionResultsByName,
-  getImmutableCollectionResultsByName,
   WHOLE_COLLECTION_PAGE_SIZE,
 } from './utils';
 
 export function collectionsFunctor<T extends IdKeyedMap<T>>(
   typeToRecordMapping: TypeToRecordMapping<T>,
-  useImmutable: boolean,
   baseUrl: string = '/api/',
   reducerPlugin?: CollectionReducerPlugin<T>
-) {
+): CollectionsListInterface<T> {
   function buildActionSet(overrideUrl?: string) {
     function addItemAction(
       type: keyof T,
       data: any,
       subgroup?: string,
       url?: string
-    ) {
-      return dispatchGenericRequest(
+    ): ThunkResponse {
+      return request(
         ADD_TO_COLLECTION,
         url || overrideUrl || `${baseUrl}${type}/`,
         'POST',
         data,
-        type,
-        { subgroup: buildSubgroup(overrideUrl, subgroup) }
+        {
+          tag: `${type}`,
+          metaData: { subgroup: buildSubgroup(overrideUrl, subgroup) },
+        }
       );
     }
 
@@ -87,25 +81,24 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
       type: keyof T,
       id: string,
       subgroup?: string
-    ): ThunkAction<Promise<AxiosResponse>, any, null> {
+    ): ThunkResponse {
       const url = overrideUrl
         ? `${overrideUrl}${id}/`
         : `${baseUrl}${type}/${id}/`;
-      return dispatchGenericRequest(
-        DELETE_FROM_COLLECTION,
-        url,
-        'DELETE',
-        null,
-        type,
-        { subgroup: buildSubgroup(overrideUrl, subgroup), itemId: id }
-      );
+      return request(DELETE_FROM_COLLECTION, url, 'DELETE', undefined, {
+        tag: `${type}`,
+        metaData: {
+          subgroup: buildSubgroup(overrideUrl, subgroup),
+          itemId: id,
+        },
+      });
     }
 
     function getAllCollectionAction(
       type: keyof T,
       opts?: CollectionOptionsNoPageSize,
       subgroup?: string
-    ): ThunkAction<Promise<AxiosResponse>, any, null> {
+    ): ThunkResponse {
       return getCollectionAction(
         type,
         {
@@ -120,9 +113,9 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
       type: keyof T,
       options: CollectionOptions = {},
       subgroup?: string
-    ): ThunkAction<Promise<AxiosResponse>, any, null> {
+    ): ThunkResponse {
       const url = overrideUrl || `${baseUrl}${type}/`;
-      const meta = {
+      const metaData = {
         subgroup: buildSubgroup(overrideUrl, subgroup),
         filters: options.filters,
         ordering: options.ordering,
@@ -132,14 +125,10 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
       };
 
       const urlWithParams = `${url}${formatCollectionQueryParams(options)}`;
-      return dispatchGenericRequest(
-        GET_COLLECTION,
-        urlWithParams,
-        'GET',
-        null,
-        type,
-        meta
-      );
+      return request(GET_COLLECTION, urlWithParams, 'GET', undefined, {
+        tag: `${type}`,
+        metaData,
+      });
     }
 
     return {
@@ -161,33 +150,17 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
         newState = setCollectionFromResponseAction(
           state,
           action,
-          typeToRecordMapping,
-          useImmutable
+          typeToRecordMapping
         );
         break;
       case ADD_TO_COLLECTION.SUCCESS:
-        newState = addCollectionItem(
-          state,
-          action,
-          typeToRecordMapping,
-          useImmutable
-        );
+        newState = addCollectionItem(state, action, typeToRecordMapping);
         break;
       case DELETE_FROM_COLLECTION.SUCCESS:
-        newState = deleteCollectionItem(
-          state,
-          action,
-          typeToRecordMapping,
-          useImmutable
-        );
+        newState = deleteCollectionItem(state, action, typeToRecordMapping);
         break;
       case CLEAR_COLLECTION:
-        newState = clearCollection(
-          state,
-          action,
-          typeToRecordMapping,
-          useImmutable
-        );
+        newState = clearCollection(state, action, typeToRecordMapping);
         break;
       default:
         newState = state;
@@ -200,7 +173,7 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
   }
 
   function collectionAtSubpath(type: keyof T, params: SubpathParams) {
-    const compiledPath = pathToRegexp.compile(type);
+    const compiledPath = pathToRegexp.compile(`${type}`);
     const replaced = compiledPath(params);
     const overrideUrl = `${baseUrl}${replaced}/`;
     const {
@@ -228,15 +201,6 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
         subgroup: string = ''
       ) =>
         getCollectionResultsByName(
-          store,
-          type,
-          buildSubgroup(overrideUrl, subgroup)
-        ),
-      getImmutableSubpathCollectionResults: (
-        store: CollectionStore<T>,
-        subgroup: string = ''
-      ) =>
-        getImmutableCollectionResultsByName(
           store,
           type,
           buildSubgroup(overrideUrl, subgroup)

@@ -9,10 +9,8 @@ Redux API Collections aims to simplify and standardise the way in which we acces
 Install via NPM:
 
 ```
-npm install @dabapps/redux-api-collections --save --save-exact
+npm install @dabapps/redux-api-collections --save
 ```
-
-To install you will need the company npm token set in your env `NPM_TOKEN=` and also add an `./npmrc` file (the same as the one included here), to be able to authenticate with NPM Private Repos.
 
 ## Getting Started
 This project requires use of Redux-Thunk to correctly dispatch actions.  Collection endpoints must follow Django Rest Framework's pagination logic.  Item endpoints should return a single item.
@@ -59,8 +57,7 @@ const itemToRecordMapping = {
 Now we have mappings, plus interfaces, we can bring it all together.  You are likely to want to also mount the Responses reducer, as this gives visibility to which endpoints are currently in use.
 
 ```typescript
-import { Collections } from 'redux-api-collections';
-import { responsesReducer } from 'redux-api-collections/dist/requests';
+import { Collections, responsesReducer } from '@dabapps/redux-api-collections';
 
 const collections = Collections<Collections, Items>(collectionToRecordMapping, itemToRecordMapping);
 
@@ -88,6 +85,10 @@ getCollectionResultsByName(store.collections, 'users');
 ```
 
 Many functions can also be namespaced by a `subgroup` field - this will allow you to request the same endpoint from multiple places without overwriting their results.
+
+```typescript
+const action = collections.actions.getCollection('users', options, 'loginPage');
+```
 
 ## Subpaths
 
@@ -125,23 +126,13 @@ itemSubpath.getSubpathItem(store);
 
 ## I'm stuck!
 
-### Help, I want to use Immutable collections!
-
-We've got you covered.  When initializing Collections, set `useImmutableForCollections` to `true` in a configuration object to the third argument to automatically generate Immutable List based collections, which can then be retrieved via `getImmutableCollectionResultsByName`
-
-```typescript
-const collections = Collections<Collections, Items>(collectionToRecordMapping, itemToRecordMapping, { useImmutableForCollections: true });
-```
-
-However, we generate fresh `List`s with every change, as the internal APIs between `List`s and `ReadonlyArray`s are too dissimilar for the code to be generic across.  This feature exists mostly for backwards compatibility with projects that are currently using Immutable.
-
 ### Help, my API isn't mounted at /api/
 
 You can parameterize the Collections object with different base URLs, for those odd cases where your API is different from the others we use.
 
 
 ```typescript
-import { Collections } from 'redux-api-collections';
+import { Collections } from '@dabapps/redux-api-collections';
 const collections = Collections<Collections, Items>(collectionToRecordMapping, itemToRecordMapping, { baseUrl: '/another-base-url/' });
 ```
 
@@ -151,7 +142,7 @@ const collections = Collections<Collections, Items>(collectionToRecordMapping, i
 You can provide custom Reducers that will be called by the built-in ones for post-processing the state when actions come in.
 
 ```typescript
-import { Collections } from 'redux-api-collections';
+import { Collections } from '@dabapps/redux-api-collections';
 
 function myCustomCollectionReducer(state: CollectionStore<Collections>, action: AnyAction): CollectionStore<Collections> {
   // Usual Reducer stuff
@@ -162,7 +153,12 @@ function myCustomItemReducer(state: ItemStore<Items>, action: AnyAction): ItemSt
 }
 
 const collections = Collections<Collections, Items>(collectionToRecordMapping, itemToRecordMapping, {
-    collectionReducerPlugin: myCustomCollectionReducer,
-    itemReducerPlugin: myCustomItemReducer
+  collectionReducerPlugin: myCustomCollectionReducer,
+  itemReducerPlugin: myCustomItemReducer
 });
 ```
+
+
+## Code of conduct
+
+For guidelines regarding the code of conduct when contributing to this repository please review [https://www.dabapps.com/open-source/code-of-conduct/](https://www.dabapps.com/open-source/code-of-conduct/)
