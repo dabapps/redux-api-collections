@@ -16,6 +16,10 @@ import {
 } from './types';
 import { getCollectionByName } from './utils';
 
+function isCollectionAction(action: any): action is CollectionResponseAction {
+  return isFSA(action) && !!action.meta;
+}
+
 function updateCollectionItemsFromResponse<T extends IdKeyed>(
   collectionData: CollectionGroup<T>,
   action: CollectionResponseAction,
@@ -58,9 +62,8 @@ export function setCollectionFromResponseAction<T extends IdKeyedMap<T>>(
   action: AnyAction,
   typeToRecordMapping: TypeToRecordMapping<T>
 ): CollectionStore<T> {
-  if (isFSA(action) && action.meta) {
-    const castAction = action as CollectionResponseAction;
-    const collectionType = castAction.meta.tag;
+  if (isCollectionAction(action)) {
+    const collectionType = action.meta.tag;
     if (collectionType in typeToRecordMapping) {
       const looseMapping: TypeToRecordMappingLoose = typeToRecordMapping as any; // We know it's indexable, as it's constrained elsewhere
       const stateLoose: CollectionStoreLoose = state as any; // We also know this is indexable
@@ -82,7 +85,7 @@ export function addCollectionItem<T extends IdKeyedMap<T>>(
   action: AnyAction,
   typeToRecordMapping: TypeToRecordMapping<T>
 ): CollectionStore<T> {
-  if (isFSA(action) && action.meta) {
+  if (isCollectionAction(action)) {
     const meta = action.meta as Dict<string>;
     const collectionType = meta.tag;
     const subgroup = meta.subgroup || '';
@@ -119,7 +122,7 @@ export function deleteCollectionItem<T extends IdKeyedMap<T>>(
   action: AnyAction,
   typeToRecordMapping: TypeToRecordMapping<T>
 ): CollectionStore<T> {
-  if (isFSA(action) && action.meta) {
+  if (isCollectionAction(action)) {
     const meta = action.meta as Dict<string>;
     const collectionType = meta.tag;
     const subgroup = meta.subgroup;

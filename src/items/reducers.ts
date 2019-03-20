@@ -9,6 +9,10 @@ import {
 } from '../utils';
 import { ItemResponseAction, ItemStore, ItemStoreLoose } from './types';
 
+function isItemAction(action: any): action is ItemResponseAction {
+  return isFSA(action) && !!action.meta;
+}
+
 export function clearItem<T extends IdKeyedMap<T>>(
   state: ItemStore<T>,
   action: AnyAction,
@@ -36,17 +40,16 @@ export function setItemFromResponseAction<T extends IdKeyedMap<T>>(
   action: AnyAction,
   typeToRecordMapping: TypeToRecordMapping<T>
 ): ItemStore<T> {
-  if (isFSA(action) && action.meta) {
-    const castAction = action as ItemResponseAction;
-    const itemType = castAction.meta.tag;
-    const subgroup = castAction.meta.subgroup || '';
+  if (isItemAction(action)) {
+    const itemType = action.meta.tag;
+    const subgroup = action.meta.subgroup || '';
     if (itemType in typeToRecordMapping) {
       const stateLoose: ItemStoreLoose = state as any; // We know this is indexable
       const mappingLoose: TypeToRecordMappingLoose = typeToRecordMapping as any; // We know this is indexable
       const recordBuilder = mappingLoose[itemType];
       return _.extend({}, stateLoose, {
         [itemType]: _.extend({}, stateLoose[itemType], {
-          [subgroup]: recordBuilder(castAction.payload.data),
+          [subgroup]: recordBuilder(action.payload.data),
         }),
       });
     }

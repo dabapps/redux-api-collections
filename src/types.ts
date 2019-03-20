@@ -5,7 +5,7 @@ import {
 import { ItemReducerPlugin, ItemsInterface } from './items/types';
 import { IdKeyedMap } from './utils';
 
-export type CollectionOptions<T extends IdKeyedMap<T>, U> = Readonly<
+export type CollectionConfig<T extends IdKeyedMap<T>, U> = Readonly<
   Partial<{
     baseUrl: string;
     collectionReducerPlugin: CollectionReducerPlugin<T>;
