@@ -65,8 +65,8 @@ export function setCollectionFromResponseAction<T extends IdKeyedMap<T>>(
   if (isCollectionAction(action)) {
     const collectionType = action.meta.tag;
     if (collectionType in typeToRecordMapping) {
-      const looseMapping: TypeToRecordMappingLoose = typeToRecordMapping as any; // We know it's indexable, as it's constrained elsewhere
-      const stateLoose: CollectionStoreLoose = state as any; // We also know this is indexable
+      const looseMapping: TypeToRecordMappingLoose = typeToRecordMapping;
+      const stateLoose: CollectionStoreLoose = state;
       const recordBuilder = looseMapping[collectionType];
       return _.extend({}, stateLoose, {
         [collectionType]: updateCollectionItemsFromResponse(
@@ -91,8 +91,8 @@ export function addCollectionItem<T extends IdKeyedMap<T>>(
     const subgroup = meta.subgroup || '';
 
     if (collectionType in typeToRecordMapping) {
-      const looseMapping: TypeToRecordMappingLoose = typeToRecordMapping as any; // We know it's indexable, as it's constrained elsewhere
-      const stateLoose: CollectionStoreLoose = state as any; // We also know this is indexable
+      const looseMapping: TypeToRecordMappingLoose = typeToRecordMapping;
+      const stateLoose: CollectionStoreLoose = state;
       const recordBuilder = looseMapping[collectionType];
       const existingCollection = getCollectionByName(
         state,
@@ -142,7 +142,7 @@ export function deleteCollectionItem<T extends IdKeyedMap<T>>(
         count: results.length,
         results,
       };
-      const stateLoose: CollectionStoreLoose = state as any; // We know this is indexable
+      const stateLoose: CollectionStoreLoose = state;
       return _.extend({}, stateLoose, {
         [collectionType]: _.extend({}, stateLoose[collectionType], {
           [subgroup]: updatedCollection,
@@ -169,7 +169,7 @@ export function clearCollection<T extends IdKeyedMap<T>>(
         count: 0,
         results: [],
       };
-      const stateLoose: CollectionStoreLoose = state as any; // We know this is indexable
+      const stateLoose: CollectionStoreLoose = state;
       return _.extend({}, stateLoose, {
         [collectionType]: _.extend({}, stateLoose[collectionType], {
           [subgroup]: updatedCollection,

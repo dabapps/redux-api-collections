@@ -24,7 +24,7 @@ export function clearItem<T extends IdKeyedMap<T>>(
     const subgroup = payload.subgroup || '';
 
     if (itemType in typeToRecordMapping) {
-      const stateLoose: ItemStoreLoose = state as any; // We know this is indexable
+      const stateLoose: ItemStoreLoose = state;
       return _.extend({}, stateLoose, {
         [itemType]: _.extend({}, stateLoose[itemType], {
           [subgroup]: undefined,
@@ -44,8 +44,8 @@ export function setItemFromResponseAction<T extends IdKeyedMap<T>>(
     const itemType = action.meta.tag;
     const subgroup = action.meta.subgroup || '';
     if (itemType in typeToRecordMapping) {
-      const stateLoose: ItemStoreLoose = state as any; // We know this is indexable
-      const mappingLoose: TypeToRecordMappingLoose = typeToRecordMapping as any; // We know this is indexable
+      const stateLoose: ItemStoreLoose = state;
+      const mappingLoose: TypeToRecordMappingLoose = typeToRecordMapping;
       const recordBuilder = mappingLoose[itemType];
       return _.extend({}, stateLoose, {
         [itemType]: _.extend({}, stateLoose[itemType], {

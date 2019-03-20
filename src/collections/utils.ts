@@ -36,7 +36,7 @@ export function buildCollectionsStore<T extends IdKeyedMap<T>>(
 ): CollectionStore<T> {
   const store = {} as CollectionStoreMutable<T>;
   for (const key of Object.keys(mapping)) {
-    (store as any)[key] = {} as any;
+    store[key as keyof T] = {};
   }
   return store;
 }
@@ -46,7 +46,7 @@ export function getCollectionByName<T extends IdKeyedMap<T>>(
   key: keyof T,
   subgroup: string = ''
 ): Collection<T[keyof T]> {
-  const collection = (collectionStore[key] as any)[subgroup];
+  const collection = collectionStore[key][subgroup];
   return (
     collection || {
       page: 1,

@@ -6,7 +6,7 @@ export function buildItemStore<T extends IdKeyedMap<T>>(
 ): ItemStore<T> {
   const store = {} as ItemStoreMutable<T>;
   for (const key of Object.keys(mapping)) {
-    (store as any)[key] = {}; // We know this is indexable
+    store[key as keyof T] = {};
   }
   return store;
 }
@@ -16,5 +16,5 @@ export function getItemByName<T extends IdKeyedMap<T>>(
   key: keyof T,
   subgroup: string = ''
 ): T[keyof T] | undefined {
-  return (itemStore[key] as any)[subgroup];
+  return itemStore[key as keyof T][subgroup];
 }
