@@ -4,14 +4,13 @@ export * from './types';
 export * from './utils';
 
 import { request } from '@dabapps/redux-requests';
-import { AxiosResponse } from 'axios';
 import * as pathToRegexp from 'path-to-regexp';
 import { AnyAction } from 'redux';
-import { ThunkAction } from 'redux-thunk';
 import {
   buildSubgroup,
   IdKeyedMap,
   SubpathParams,
+  ThunkResponse,
   TypeToRecordMapping,
 } from '../utils';
 import {
@@ -52,7 +51,7 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
       data: any,
       subgroup?: string,
       url?: string
-    ): ThunkAction<Promise<AxiosResponse | void>, any, null> {
+    ): ThunkResponse {
       return request(
         ADD_TO_COLLECTION,
         url || overrideUrl || `${baseUrl}${type}/`,
@@ -82,7 +81,7 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
       type: keyof T,
       id: string,
       subgroup?: string
-    ): ThunkAction<Promise<AxiosResponse | void>, any, null> {
+    ): ThunkResponse {
       const url = overrideUrl
         ? `${overrideUrl}${id}/`
         : `${baseUrl}${type}/${id}/`;
@@ -99,7 +98,7 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
       type: keyof T,
       opts?: CollectionOptionsNoPageSize,
       subgroup?: string
-    ): ThunkAction<Promise<AxiosResponse | void>, any, null> {
+    ): ThunkResponse {
       return getCollectionAction(
         type,
         {
@@ -114,7 +113,7 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
       type: keyof T,
       options: CollectionOptions = {},
       subgroup?: string
-    ): ThunkAction<Promise<AxiosResponse | void>, any, null> {
+    ): ThunkResponse {
       const url = overrideUrl || `${baseUrl}${type}/`;
       const metaData = {
         subgroup: buildSubgroup(overrideUrl, subgroup),
