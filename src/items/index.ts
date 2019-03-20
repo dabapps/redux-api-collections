@@ -5,15 +5,14 @@ export * from './utils';
 
 import { request, UrlMethod } from '@dabapps/redux-requests';
 
-import { AxiosResponse } from 'axios';
 import * as pathToRegexp from 'path-to-regexp';
 import { AnyAction } from 'redux';
-import { ThunkAction } from 'redux-thunk';
 import {
   buildSubgroup,
   Dict,
   IdKeyedMap,
   SubpathParams,
+  ThunkResponse,
   TypeToRecordMapping,
 } from '../utils';
 import { CLEAR_ITEM, GET_ITEM, UPDATE_ITEM } from './actions';
@@ -34,7 +33,7 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
       itemId: string,
       data: any,
       subgroup?: string
-    ): ThunkAction<Promise<AxiosResponse | void>, any, null> {
+    ): ThunkResponse {
       return request(UPDATE_ITEM, url, method, data, {
         tag: `${itemType}`,
         metaData: {
@@ -50,7 +49,7 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
       action: string,
       data: any,
       subgroup?: string
-    ): ThunkAction<Promise<AxiosResponse | void>, any, null> {
+    ): ThunkResponse {
       const url = overrideUrl
         ? `${overrideUrl}${id}/`
         : `${baseUrl}${type}/${id}/`;
@@ -71,7 +70,7 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
       itemType: keyof T,
       itemId: string,
       subgroup?: string
-    ): ThunkAction<Promise<AxiosResponse | void>, any, null> {
+    ): ThunkResponse {
       const url = overrideUrl
         ? `${overrideUrl}${itemId}/`
         : `${baseUrl}${itemType}/${itemId}/`;
@@ -89,7 +88,7 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
       id: string,
       data: any,
       subgroup?: string
-    ): ThunkAction<Promise<AxiosResponse | void>, any, null> {
+    ): ThunkResponse {
       return _updateItem(
         type,
         overrideUrl ? `${overrideUrl}${id}/` : `${baseUrl}${type}/${id}/`,
@@ -105,7 +104,7 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
       id: string,
       data: any,
       subgroup?: string
-    ): ThunkAction<Promise<AxiosResponse | void>, any, null> {
+    ): ThunkResponse {
       return _updateItem(
         type,
         overrideUrl ? `${overrideUrl}${id}/` : `${baseUrl}${type}/${id}/`,
