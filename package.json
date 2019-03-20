@@ -57,9 +57,6 @@
     "redux",
     "state"
   ],
-  "publishConfig": {
-    "access": "restricted"
-  },
   "jest": {
     "coverageThreshold": {
       "global": {
