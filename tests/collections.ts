@@ -65,9 +65,7 @@ describe('Collections', () => {
   }
 
   describe('actions', () => {
-    const dispatchGenericRequestSpy = jest
-      .spyOn(requests, 'request')
-      .mockImplementation(() => null);
+    const dispatchGenericRequestSpy = jest.spyOn(requests, 'request');
 
     beforeEach(() => {
       dispatchGenericRequestSpy.mockReset();
@@ -510,9 +508,7 @@ describe('Collections', () => {
     });
 
     describe('actions', () => {
-      const dispatchGenericRequestSpy = jest
-        .spyOn(requests, 'request')
-        .mockImplementation(() => null);
+      const dispatchGenericRequestSpy = jest.spyOn(requests, 'request');
 
       beforeEach(() => {
         dispatchGenericRequestSpy.mockReset();
@@ -683,9 +679,7 @@ describe('Collections, alternate base URL', () => {
   );
 
   describe('actions', () => {
-    const dispatchGenericRequestSpy = jest
-      .spyOn(requests, 'request')
-      .mockImplementation(() => null);
+    const dispatchGenericRequestSpy = jest.spyOn(requests, 'request');
 
     beforeEach(() => {
       dispatchGenericRequestSpy.mockReset();
