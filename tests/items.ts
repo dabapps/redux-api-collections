@@ -38,9 +38,7 @@ describe('Items', () => {
   const collections = Collections<{}, Items>({}, itemToRecordMapping);
 
   describe('actions', () => {
-    const requestSpy = jest
-      .spyOn(requests, 'request')
-      .mockImplementation(() => null);
+    const requestSpy = jest.spyOn(requests, 'request');
 
     beforeEach(() => {
       requestSpy.mockReset();
@@ -221,9 +219,7 @@ describe('Items', () => {
     });
 
     describe('actions', () => {
-      const requestSpy = jest
-        .spyOn(requests, 'request')
-        .mockImplementation(() => null);
+      const requestSpy = jest.spyOn(requests, 'request');
 
       beforeEach(() => {
         requestSpy.mockReset();
@@ -344,9 +340,7 @@ describe('Items, alternate base URL', () => {
   });
 
   describe('actions', () => {
-    const requestSpy = jest
-      .spyOn(requests, 'request')
-      .mockImplementation(() => null);
+    const requestSpy = jest.spyOn(requests, 'request');
 
     beforeEach(() => {
       requestSpy.mockReset();
