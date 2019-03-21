@@ -35,7 +35,7 @@
     "request": "^2.88.0",
     "ts-jest": "^23.1.4",
     "tslint": "^5.14.0",
-    "tslint-config-dabapps": "github:dabapps/tslint-config-dabapps#v0.5.1",
+    "tslint-config-dabapps": "github:dabapps/tslint-config-dabapps#v0.5.3",
     "typescript": "^3.3.3333"
   },
   "peerDependencies": {
