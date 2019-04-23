@@ -1,1 +1,8 @@
-!dist/*
+/node_modules/*
+/coverage/*
+!/dist/*
+/examples/build/*
+/.vscode/*
+
+.DS_Store
+npm-debug.log*
