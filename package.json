@@ -77,7 +77,8 @@
       "jsx"
     ],
     "testPathIgnorePatterns": [
-      "<rootDir>/tests/helpers/*"
+      "<rootDir>/tests/helpers/*",
+      "<rootDir>/tests/__stubs__/*"
     ]
   }
 }
