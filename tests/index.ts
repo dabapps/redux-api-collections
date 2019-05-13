@@ -1,6 +1,6 @@
 import { applyMiddleware, combineReducers, createStore } from 'redux';
 import {
-  Collections,
+  Collections as createCollections,
   CollectionStore,
   getCollectionByName,
   getItemByName,
@@ -43,7 +43,7 @@ interface IStore {
   items: ItemStore<Items>;
 }
 
-const collections = Collections<Collections, Items>(
+const collections = createCollections<Collections, Items>(
   collectionToRecordMapping,
   itemToRecordMapping
 );
