@@ -1,47 +1,16 @@
 import { applyMiddleware, combineReducers, createStore } from 'redux';
 import {
   Collections as createCollections,
-  CollectionStore,
   getCollectionByName,
   getItemByName,
-  ItemStore,
 } from '../src';
-
-type Llama = Readonly<{
-  furLength: number;
-  id: string;
-  name: string;
-}>;
-
-const LlamaRecord = (input: Partial<Llama>): Llama => {
-  return {
-    furLength: 0,
-    id: '',
-    name: '',
-    ...input,
-  };
-};
-
-interface Collections {
-  llamas: Llama;
-}
-
-const collectionToRecordMapping = {
-  llamas: LlamaRecord,
-};
-
-interface Items {
-  llamas: Llama;
-}
-
-const itemToRecordMapping = {
-  llamas: LlamaRecord,
-};
-
-interface Store {
-  collections: CollectionStore<Collections>;
-  items: ItemStore<Items>;
-}
+import {
+  Collections,
+  collectionToRecordMapping,
+  Items,
+  itemToRecordMapping,
+  Store,
+} from './__stubs__/data';
 
 const collections = createCollections<Collections, Items>(
   collectionToRecordMapping,
