@@ -14,10 +14,10 @@ function isItemAction(action: any): action is ItemResponseAction {
 }
 
 export function clearItem<T extends IdKeyedMap<K>, K extends keyof T = keyof T>(
-  state: ItemStore<T>,
+  state: ItemStore<T, K>,
   action: AnyAction,
   typeToRecordMapping: TypeToRecordMapping<T>
-): ItemStore<T> {
+): ItemStore<T, K> {
   if (isFSA(action) && action.payload) {
     const payload = action.payload as Dict<string>;
     const itemType = payload.type;
@@ -39,10 +39,10 @@ export function setItemFromResponseAction<
   T extends IdKeyedMap<K>,
   K extends keyof T = keyof T
 >(
-  state: ItemStore<T>,
+  state: ItemStore<T, K>,
   action: AnyAction,
   typeToRecordMapping: TypeToRecordMapping<T>
-): ItemStore<T> {
+): ItemStore<T, K> {
   if (isItemAction(action)) {
     const itemType = action.meta.tag;
     const subgroup = action.meta.subgroup || '';

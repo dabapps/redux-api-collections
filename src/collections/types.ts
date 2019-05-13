@@ -43,7 +43,7 @@ export type CollectionStoreMutable<
 export type CollectionStore<
   T extends IdKeyedMap<K>,
   K extends keyof T = keyof T
-> = Readonly<CollectionStoreMutable<T>>;
+> = Readonly<CollectionStoreMutable<T, K>>;
 export type CollectionStoreLoose = Readonly<{
   [K: string]: CollectionGroup<any>;
 }>;
@@ -63,7 +63,7 @@ export type CollectionResponseAction = FluxStandardAction<
 export type CollectionReducerPlugin<
   T extends IdKeyedMap<K>,
   K extends keyof T = keyof T
-> = (state: CollectionStore<T>, action: AnyAction) => CollectionStore<T>;
+> = (state: CollectionStore<T, K>, action: AnyAction) => CollectionStore<T, K>;
 
 export interface CollectionActions<
   T extends IdKeyedMap<K>,
@@ -110,9 +110,9 @@ export interface CollectionsInterface<
   actions: CollectionActions<T, K>;
   reducers: {
     collectionsReducer: (
-      state: CollectionStore<T> | undefined,
+      state: CollectionStore<T, K> | undefined,
       action: AnyAction
-    ) => CollectionStore<T>;
+    ) => CollectionStore<T, K>;
   };
   collectionAtSubpath: (
     type: K,
@@ -120,11 +120,11 @@ export interface CollectionsInterface<
   ) => {
     actions: CollectionAtSubpathActions;
     getSubpathCollection: (
-      store: CollectionStore<T>,
+      store: CollectionStore<T, K>,
       subgroup: string
     ) => Collection<T[K]>;
     getSubpathCollectionResults: (
-      store: CollectionStore<T>,
+      store: CollectionStore<T, K>,
       subgroup: string
     ) => ReadonlyArray<T[K]>;
   };

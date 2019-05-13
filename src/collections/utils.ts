@@ -34,20 +34,21 @@ export function formatCollectionQueryParams(
 export function buildCollectionsStore<
   T extends IdKeyedMap<K>,
   K extends keyof T = keyof T
->(mapping: TypeToRecordMapping<T>): CollectionStore<T> {
-  const store = {} as CollectionStoreMutable<T>;
+>(mapping: TypeToRecordMapping<T>): CollectionStore<T, K> {
+  const store = {} as CollectionStoreMutable<T, K>;
 
   for (const key of Object.keys(mapping)) {
     store[key as K] = {};
   }
-  return store;
+
+  return store as CollectionStore<T, K>;
 }
 
 export function getCollectionByName<
   T extends IdKeyedMap<K>,
   K extends keyof T = keyof T
 >(
-  collectionStore: CollectionStore<T>,
+  collectionStore: CollectionStore<T, K>,
   key: K,
   subgroup: string = ''
 ): Collection<T[K]> {
@@ -66,7 +67,7 @@ export function getCollectionResultsByName<
   T extends IdKeyedMap<K>,
   K extends keyof T = keyof T
 >(
-  collectionStore: CollectionStore<T>,
+  collectionStore: CollectionStore<T, K>,
   key: K,
   subgroup: string = ''
 ): ReadonlyArray<T[K]> {

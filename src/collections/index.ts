@@ -46,7 +46,7 @@ export function collectionsFunctor<
 >(
   typeToRecordMapping: TypeToRecordMapping<T>,
   baseUrl: string = '/api/',
-  reducerPlugin?: CollectionReducerPlugin<T>
+  reducerPlugin?: CollectionReducerPlugin<T, K>
 ): CollectionsInterface<T, K> {
   function buildActionSet(overrideUrl?: string) {
     function addItemAction(
@@ -141,26 +141,32 @@ export function collectionsFunctor<
   }
 
   function collectionsReducer(
-    state: CollectionStore<T> = buildCollectionsStore(typeToRecordMapping),
+    state: CollectionStore<T, K> = buildCollectionsStore<T, K>(
+      typeToRecordMapping
+    ),
     action: AnyAction
-  ): CollectionStore<T> {
+  ): CollectionStore<T, K> {
     let newState = state;
     switch (action.type) {
       case GET_COLLECTION.SUCCESS:
-        newState = setCollectionFromResponseAction(
+        newState = setCollectionFromResponseAction<T, K>(
           state,
           action,
           typeToRecordMapping
         );
         break;
       case ADD_TO_COLLECTION.SUCCESS:
-        newState = addCollectionItem(state, action, typeToRecordMapping);
+        newState = addCollectionItem<T, K>(state, action, typeToRecordMapping);
         break;
       case DELETE_FROM_COLLECTION.SUCCESS:
-        newState = deleteCollectionItem(state, action, typeToRecordMapping);
+        newState = deleteCollectionItem<T, K>(
+          state,
+          action,
+          typeToRecordMapping
+        );
         break;
       case CLEAR_COLLECTION:
-        newState = clearCollection(state, action, typeToRecordMapping);
+        newState = clearCollection<T, K>(state, action, typeToRecordMapping);
         break;
       default:
         newState = state;
@@ -192,15 +198,19 @@ export function collectionsFunctor<
         getCollection: getCollection.bind(null, type),
       },
       getSubpathCollection: (
-        store: CollectionStore<T>,
+        store: CollectionStore<T, K>,
         subgroup: string = ''
       ) =>
-        getCollectionByName(store, type, buildSubgroup(overrideUrl, subgroup)),
+        getCollectionByName<T, K>(
+          store,
+          type,
+          buildSubgroup(overrideUrl, subgroup)
+        ),
       getSubpathCollectionResults: (
-        store: CollectionStore<T>,
+        store: CollectionStore<T, K>,
         subgroup: string = ''
       ) =>
-        getCollectionResultsByName(
+        getCollectionResultsByName<T, K>(
           store,
           type,
           buildSubgroup(overrideUrl, subgroup)

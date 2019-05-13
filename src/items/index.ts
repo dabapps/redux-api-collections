@@ -25,7 +25,7 @@ export function itemsFunctor<
 >(
   typeToRecordMapping: TypeToRecordMapping<T>,
   baseUrl: string = '/api/',
-  reducerPlugin?: ItemReducerPlugin<T>
+  reducerPlugin?: ItemReducerPlugin<T, K>
 ): ItemsInterface<T, K> {
   function buildActionSet(overrideUrl?: string) {
     function _updateItem(
@@ -127,16 +127,16 @@ export function itemsFunctor<
   }
 
   function itemsReducer(
-    state: ItemStore<T> = buildItemStore(typeToRecordMapping),
+    state: ItemStore<T, K> = buildItemStore<T, K>(typeToRecordMapping),
     action: AnyAction
-  ): ItemStore<T> {
+  ): ItemStore<T, K> {
     let newState = state;
     switch (action.type) {
       case CLEAR_ITEM:
-        newState = clearItem(state, action, typeToRecordMapping);
+        newState = clearItem<T, K>(state, action, typeToRecordMapping);
         break;
       case GET_ITEM.SUCCESS:
-        newState = setItemFromResponseAction(
+        newState = setItemFromResponseAction<T, K>(
           state,
           action,
           typeToRecordMapping
@@ -147,9 +147,9 @@ export function itemsFunctor<
         const subgroup = action.meta.subgroup || '';
 
         if (itemType in typeToRecordMapping) {
-          const item = getItemByName(state, itemType, subgroup);
+          const item = getItemByName<T, K>(state, itemType, subgroup);
           if (!item || item.id === action.payload.data.id) {
-            newState = setItemFromResponseAction(
+            newState = setItemFromResponseAction<T, K>(
               state,
               action,
               typeToRecordMapping
@@ -188,7 +188,7 @@ export function itemsFunctor<
         clearItem: clearItemAction.bind(null, type),
         actionItem: actionItem.bind(null, type),
       },
-      getSubpathItem: (store: ItemStore<T>, subgroup: string = '') =>
+      getSubpathItem: (store: ItemStore<T, K>, subgroup: string = '') =>
         getItemByName(store, type, buildSubgroup(overrideUrl, subgroup)),
     };
   }

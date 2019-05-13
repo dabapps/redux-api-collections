@@ -61,10 +61,10 @@ export function setCollectionFromResponseAction<
   T extends IdKeyedMap<K>,
   K extends keyof T = keyof T
 >(
-  state: CollectionStore<T>,
+  state: CollectionStore<T, K>,
   action: AnyAction,
   typeToRecordMapping: TypeToRecordMapping<T>
-): CollectionStore<T> {
+): CollectionStore<T, K> {
   if (isCollectionAction(action)) {
     const collectionType = action.meta.tag;
     if (collectionType in typeToRecordMapping) {
@@ -87,10 +87,10 @@ export function addCollectionItem<
   T extends IdKeyedMap<K>,
   K extends keyof T = keyof T
 >(
-  state: CollectionStore<T>,
+  state: CollectionStore<T, K>,
   action: AnyAction,
   typeToRecordMapping: TypeToRecordMapping<T>
-): CollectionStore<T> {
+): CollectionStore<T, K> {
   if (isCollectionAction(action)) {
     const meta = action.meta as Dict<string>;
     const collectionType = meta.tag;
@@ -127,10 +127,10 @@ export function deleteCollectionItem<
   T extends IdKeyedMap<K>,
   K extends keyof T = keyof T
 >(
-  state: CollectionStore<T>,
+  state: CollectionStore<T, K>,
   action: AnyAction,
   typeToRecordMapping: TypeToRecordMapping<T>
-): CollectionStore<T> {
+): CollectionStore<T, K> {
   if (isCollectionAction(action)) {
     const meta = action.meta;
     const collectionType = meta.tag;
@@ -166,10 +166,10 @@ export function clearCollection<
   T extends IdKeyedMap<K>,
   K extends keyof T = keyof T
 >(
-  state: CollectionStore<T>,
+  state: CollectionStore<T, K>,
   action: AnyAction,
   typeToRecordMapping: TypeToRecordMapping<T>
-): CollectionStore<T> {
+): CollectionStore<T, K> {
   if (isFSA(action) && action.payload) {
     const payload = action.payload as Dict<string>;
     const collectionType = payload.type;

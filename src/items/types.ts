@@ -10,13 +10,13 @@ export type ItemStoreMutable<
 export type ItemStore<
   T extends IdKeyedMap<K>,
   K extends keyof T = keyof T
-> = Readonly<ItemStoreMutable<T>>;
+> = Readonly<ItemStoreMutable<T, K>>;
 export type ItemStoreLoose = Readonly<{ [K: string]: ItemGroup<any> }>;
 
 export type ItemReducerPlugin<
   T extends IdKeyedMap<K>,
   K extends keyof T = keyof T
-> = (state: ItemStore<T>, action: AnyAction) => ItemStore<T>;
+> = (state: ItemStore<T, K>, action: AnyAction) => ItemStore<T, K>;
 
 export type ItemResponseAction = FluxStandardAction<
   {
@@ -31,9 +31,9 @@ export interface ItemsInterface<
 > {
   reducers: {
     itemsReducer: (
-      state: ItemStore<T> | undefined,
+      state: ItemStore<T, K> | undefined,
       action: AnyAction
-    ) => ItemStore<T>;
+    ) => ItemStore<T, K>;
   };
   actions: {
     getItem: (itemType: K, itemId: string, subgroup?: string) => ThunkResponse;
@@ -75,7 +75,7 @@ export interface ItemsInterface<
       ) => ThunkResponse;
     };
     getSubpathItem: (
-      store: ItemStore<T>,
+      store: ItemStore<T, K>,
       subgroup?: string
     ) => T[K] | undefined;
   };
