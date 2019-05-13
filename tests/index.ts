@@ -38,7 +38,7 @@ const itemToRecordMapping = {
   llamas: LlamaRecord,
 };
 
-interface IStore {
+interface Store {
   collections: CollectionStore<Collections>;
   items: ItemStore<Items>;
 }
@@ -58,7 +58,7 @@ describe('Collections', () => {
       const createStoreWithMiddleware = applyMiddleware()(createStore);
       const store = createStoreWithMiddleware(rootReducer, {});
 
-      const state: IStore = store.getState() as any;
+      const state: Store = store.getState() as any;
       const collection = getCollectionByName(state.collections, 'llamas');
       expect(collection.count).toBe(0);
       const item = getItemByName(state.items, 'llamas');
