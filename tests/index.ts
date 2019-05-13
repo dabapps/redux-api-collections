@@ -1,6 +1,6 @@
 import { applyMiddleware, combineReducers, createStore } from 'redux';
 import {
-  Collections as createCollections,
+  createCollectionsAndItems,
   getCollectionByName,
   getItemByName,
 } from '../src';
@@ -12,7 +12,7 @@ import {
   Store,
 } from './__stubs__/data';
 
-const collections = createCollections<Collections, Items>(
+const collections = createCollectionsAndItems<Collections, Items>(
   collectionToRecordMapping,
   itemToRecordMapping
 );

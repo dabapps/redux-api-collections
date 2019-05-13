@@ -29,7 +29,7 @@ import {
   CollectionOptions,
   CollectionOptionsNoPageSize,
   CollectionReducerPlugin,
-  CollectionsListInterface,
+  CollectionsInterface,
   CollectionStore,
 } from './types';
 import {
@@ -44,7 +44,7 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
   typeToRecordMapping: TypeToRecordMapping<T>,
   baseUrl: string = '/api/',
   reducerPlugin?: CollectionReducerPlugin<T>
-): CollectionsListInterface<T> {
+): CollectionsInterface<T> {
   function buildActionSet(overrideUrl?: string) {
     function addItemAction(
       type: keyof T,

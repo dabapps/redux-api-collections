@@ -3,8 +3,8 @@ import { AnyAction } from 'redux';
 import {
   ADD_TO_COLLECTION,
   CLEAR_COLLECTION,
-  Collections,
   CollectionStore,
+  createCollectionsAndItems,
   DELETE_FROM_COLLECTION,
   formatCollectionQueryParams,
   GET_COLLECTION,
@@ -38,7 +38,7 @@ const collectionToRecordMapping = {
 };
 
 describe('Collections', () => {
-  const collections = Collections(collectionToRecordMapping, {});
+  const collections = createCollectionsAndItems(collectionToRecordMapping, {});
 
   // Helpers for creating event callbacks
   function getCollectionSuccess(
@@ -672,7 +672,7 @@ describe('Collections', () => {
 });
 
 describe('Collections, alternate base URL', () => {
-  const collections = Collections(
+  const collections = createCollectionsAndItems(
     collectionToRecordMapping,
     {},
     { baseUrl: '/alternate-url/' }
@@ -736,7 +736,7 @@ describe('Collections, custom reducer', () => {
     }
   }
 
-  const collections = Collections(
+  const collections = createCollectionsAndItems(
     collectionToRecordMapping,
     {},
     { collectionReducerPlugin }

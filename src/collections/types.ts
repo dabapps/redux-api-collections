@@ -98,7 +98,7 @@ export interface CollectionAtSubpathActions {
   ) => ThunkResponse;
 }
 
-export interface CollectionsListInterface<T extends IdKeyedMap<T>> {
+export interface CollectionsInterface<T extends IdKeyedMap<T>> {
   actions: CollectionActions<T>;
   reducers: {
     collectionsReducer: (

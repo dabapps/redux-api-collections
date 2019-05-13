@@ -2,7 +2,7 @@ import * as requests from '@dabapps/redux-requests';
 import { AnyAction } from 'redux';
 import {
   CLEAR_ITEM,
-  Collections,
+  createCollectionsAndItems,
   GET_ITEM,
   getItemByName,
   ItemStore,
@@ -35,7 +35,10 @@ const itemToRecordMapping = {
 };
 
 describe('Items', () => {
-  const collections = Collections<{}, Items>({}, itemToRecordMapping);
+  const collections = createCollectionsAndItems<{}, Items>(
+    {},
+    itemToRecordMapping
+  );
 
   describe('actions', () => {
     const requestSpy = jest.spyOn(requests, 'request');
@@ -335,9 +338,13 @@ describe('Items', () => {
 });
 
 describe('Items, alternate base URL', () => {
-  const collections = Collections<{}, Items>({}, itemToRecordMapping, {
-    baseUrl: '/alternate-url/',
-  });
+  const collections = createCollectionsAndItems<{}, Items>(
+    {},
+    itemToRecordMapping,
+    {
+      baseUrl: '/alternate-url/',
+    }
+  );
 
   describe('actions', () => {
     const requestSpy = jest.spyOn(requests, 'request');
@@ -388,9 +395,13 @@ describe('Items, custom reducer', () => {
     }
   }
 
-  const collections = Collections<{}, Items>({}, itemToRecordMapping, {
-    itemReducerPlugin,
-  });
+  const collections = createCollectionsAndItems<{}, Items>(
+    {},
+    itemToRecordMapping,
+    {
+      itemReducerPlugin,
+    }
+  );
 
   describe('reducers', () => {
     function loadItem(item: any) {
