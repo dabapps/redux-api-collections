@@ -134,7 +134,7 @@ export function deleteCollectionItem<
   if (isCollectionAction(action)) {
     const meta = action.meta;
     const collectionType = meta.tag;
-    const subgroup = meta.subgroup;
+    const subgroup = meta.subgroup || '';
     const itemId = meta.itemId;
 
     if (collectionType in typeToRecordMapping) {
@@ -144,7 +144,7 @@ export function deleteCollectionItem<
         subgroup
       );
       const results = existingCollection.results.filter(
-        item => item.id !== itemId
+        (item: IdKeyedMap<string>) => item.id !== itemId
       );
       const updatedCollection = {
         ...existingCollection,

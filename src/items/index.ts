@@ -26,7 +26,7 @@ export function itemsFunctor<
   typeToRecordMapping: TypeToRecordMapping<T>,
   baseUrl: string = '/api/',
   reducerPlugin?: ItemReducerPlugin<T>
-): ItemsInterface<T> {
+): ItemsInterface<T, K> {
   function buildActionSet(overrideUrl?: string) {
     function _updateItem(
       itemType: K,

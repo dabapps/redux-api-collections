@@ -47,7 +47,7 @@ export function collectionsFunctor<
   typeToRecordMapping: TypeToRecordMapping<T>,
   baseUrl: string = '/api/',
   reducerPlugin?: CollectionReducerPlugin<T>
-): CollectionsInterface<T> {
+): CollectionsInterface<T, K> {
   function buildActionSet(overrideUrl?: string) {
     function addItemAction(
       type: K,

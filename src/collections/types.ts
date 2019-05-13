@@ -107,7 +107,7 @@ export interface CollectionsInterface<
   T extends IdKeyedMap<K>,
   K extends keyof T = keyof T
 > {
-  actions: CollectionActions<T>;
+  actions: CollectionActions<T, K>;
   reducers: {
     collectionsReducer: (
       state: CollectionStore<T> | undefined,
