@@ -36,12 +36,14 @@ export type Collection<T extends IdKeyed> = Readonly<{
 }>;
 
 export type CollectionGroup<T extends IdKeyed> = Dict<Collection<T>>;
-export type CollectionStoreMutable<T extends IdKeyedMap<T>> = {
-  [K in keyof T]: CollectionGroup<T[K]>
-};
-export type CollectionStore<T extends IdKeyedMap<T>> = Readonly<
-  CollectionStoreMutable<T>
->;
+export type CollectionStoreMutable<
+  T extends IdKeyedMap<K>,
+  K extends keyof T = keyof T
+> = { [P in K]: CollectionGroup<T[K]> };
+export type CollectionStore<
+  T extends IdKeyedMap<K>,
+  K extends keyof T = keyof T
+> = Readonly<CollectionStoreMutable<T>>;
 export type CollectionStoreLoose = Readonly<{
   [K: string]: CollectionGroup<any>;
 }>;
@@ -58,27 +60,30 @@ export type CollectionResponseAction = FluxStandardAction<
   CollectionParams & { subgroup?: string; tag: string }
 >;
 
-export type CollectionReducerPlugin<T extends IdKeyedMap<T>> = (
-  state: CollectionStore<T>,
-  action: AnyAction
-) => CollectionStore<T>;
+export type CollectionReducerPlugin<
+  T extends IdKeyedMap<K>,
+  K extends keyof T = keyof T
+> = (state: CollectionStore<T>, action: AnyAction) => CollectionStore<T>;
 
-export interface CollectionActions<T extends IdKeyedMap<T>> {
+export interface CollectionActions<
+  T extends IdKeyedMap<K>,
+  K extends keyof T = keyof T
+> {
   addItem: (
-    type: keyof T,
+    type: K,
     data: any,
     subgroup?: string,
     url?: string
   ) => ThunkResponse;
-  clearCollection: (type: keyof T, subgroup?: string) => AnyAction;
-  deleteItem: (type: keyof T, id: string, subgroup?: string) => ThunkResponse;
+  clearCollection: (type: K, subgroup?: string) => AnyAction;
+  deleteItem: (type: K, id: string, subgroup?: string) => ThunkResponse;
   getCollection: (
-    type: keyof T,
+    type: K,
     options?: Partial<CollectionParams>,
     subgroup?: string
   ) => ThunkResponse;
   getAllCollection: (
-    type: keyof T,
+    type: K,
     options?: Partial<CollectionOptionsNoPageSize>,
     subgroup?: string
   ) => ThunkResponse;
@@ -98,7 +103,10 @@ export interface CollectionAtSubpathActions {
   ) => ThunkResponse;
 }
 
-export interface CollectionsInterface<T extends IdKeyedMap<T>> {
+export interface CollectionsInterface<
+  T extends IdKeyedMap<K>,
+  K extends keyof T = keyof T
+> {
   actions: CollectionActions<T>;
   reducers: {
     collectionsReducer: (
@@ -107,17 +115,17 @@ export interface CollectionsInterface<T extends IdKeyedMap<T>> {
     ) => CollectionStore<T>;
   };
   collectionAtSubpath: (
-    type: keyof T,
+    type: K,
     params: SubpathParams
   ) => {
     actions: CollectionAtSubpathActions;
     getSubpathCollection: (
       store: CollectionStore<T>,
       subgroup: string
-    ) => Collection<T[keyof T]>;
+    ) => Collection<T[K]>;
     getSubpathCollectionResults: (
       store: CollectionStore<T>,
       subgroup: string
-    ) => ReadonlyArray<T[keyof T]>;
+    ) => ReadonlyArray<T[K]>;
   };
 }

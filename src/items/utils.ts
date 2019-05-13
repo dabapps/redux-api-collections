@@ -1,20 +1,20 @@
 import { IdKeyedMap, TypeToRecordMapping } from '../utils';
 import { ItemStore, ItemStoreMutable } from './types';
 
-export function buildItemStore<T extends IdKeyedMap<T>>(
-  mapping: TypeToRecordMapping<T>
-): ItemStore<T> {
+export function buildItemStore<
+  T extends IdKeyedMap<K>,
+  K extends keyof T = keyof T
+>(mapping: TypeToRecordMapping<T>): ItemStore<T> {
   const store = {} as ItemStoreMutable<T>;
   for (const key of Object.keys(mapping)) {
-    store[key as keyof T] = {};
+    store[key as K] = {};
   }
   return store;
 }
 
-export function getItemByName<T extends IdKeyedMap<T>>(
-  itemStore: ItemStore<T>,
-  key: keyof T,
-  subgroup: string = ''
-): T[keyof T] | undefined {
-  return itemStore[key as keyof T][subgroup];
+export function getItemByName<
+  T extends IdKeyedMap<K>,
+  K extends keyof T = keyof T
+>(itemStore: ItemStore<T>, key: K, subgroup: string = ''): T[K] | undefined {
+  return itemStore[key][subgroup];
 }

@@ -13,7 +13,7 @@ function isItemAction(action: any): action is ItemResponseAction {
   return isFSA(action) && !!action.meta;
 }
 
-export function clearItem<T extends IdKeyedMap<T>>(
+export function clearItem<T extends IdKeyedMap<K>, K extends keyof T = keyof T>(
   state: ItemStore<T>,
   action: AnyAction,
   typeToRecordMapping: TypeToRecordMapping<T>
@@ -35,7 +35,10 @@ export function clearItem<T extends IdKeyedMap<T>>(
   return state;
 }
 
-export function setItemFromResponseAction<T extends IdKeyedMap<T>>(
+export function setItemFromResponseAction<
+  T extends IdKeyedMap<K>,
+  K extends keyof T = keyof T
+>(
   state: ItemStore<T>,
   action: AnyAction,
   typeToRecordMapping: TypeToRecordMapping<T>

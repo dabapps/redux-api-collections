@@ -19,7 +19,9 @@ export interface TypeToRecordMappingLoose {
 export interface IdKeyed {
   id: any;
 }
-export type IdKeyedMap<T> = { [K in keyof T]: IdKeyed };
+export type IdKeyedMap<K extends string | number | symbol> = {
+  [P in K]: IdKeyed
+};
 
 export function buildSubgroup(
   prefix: string | undefined,

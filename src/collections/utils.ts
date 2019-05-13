@@ -31,22 +31,28 @@ export function formatCollectionQueryParams(
   });
 }
 
-export function buildCollectionsStore<T extends IdKeyedMap<T>>(
-  mapping: TypeToRecordMapping<T>
-): CollectionStore<T> {
+export function buildCollectionsStore<
+  T extends IdKeyedMap<K>,
+  K extends keyof T = keyof T
+>(mapping: TypeToRecordMapping<T>): CollectionStore<T> {
   const store = {} as CollectionStoreMutable<T>;
+
   for (const key of Object.keys(mapping)) {
-    store[key as keyof T] = {};
+    store[key as K] = {};
   }
   return store;
 }
 
-export function getCollectionByName<T extends IdKeyedMap<T>>(
+export function getCollectionByName<
+  T extends IdKeyedMap<K>,
+  K extends keyof T = keyof T
+>(
   collectionStore: CollectionStore<T>,
-  key: keyof T,
+  key: K,
   subgroup: string = ''
-): Collection<T[keyof T]> {
+): Collection<T[K]> {
   const collection = collectionStore[key][subgroup];
+
   return (
     collection || {
       page: 1,
@@ -56,10 +62,13 @@ export function getCollectionByName<T extends IdKeyedMap<T>>(
   );
 }
 
-export function getCollectionResultsByName<T extends IdKeyedMap<T>>(
+export function getCollectionResultsByName<
+  T extends IdKeyedMap<K>,
+  K extends keyof T = keyof T
+>(
   collectionStore: CollectionStore<T>,
-  key: keyof T,
+  key: K,
   subgroup: string = ''
-): ReadonlyArray<T[keyof T]> {
+): ReadonlyArray<T[K]> {
   return getCollectionByName(collectionStore, key, subgroup).results;
 }

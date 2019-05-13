@@ -9,7 +9,6 @@ import * as pathToRegexp from 'path-to-regexp';
 import { AnyAction } from 'redux';
 import {
   buildSubgroup,
-  Dict,
   IdKeyedMap,
   SubpathParams,
   ThunkResponse,
@@ -20,14 +19,17 @@ import { clearItem, setItemFromResponseAction } from './reducers';
 import { ItemReducerPlugin, ItemsInterface, ItemStore } from './types';
 import { buildItemStore, getItemByName } from './utils';
 
-export function itemsFunctor<T extends IdKeyedMap<T>>(
+export function itemsFunctor<
+  T extends IdKeyedMap<K>,
+  K extends keyof T = keyof T
+>(
   typeToRecordMapping: TypeToRecordMapping<T>,
   baseUrl: string = '/api/',
   reducerPlugin?: ItemReducerPlugin<T>
 ): ItemsInterface<T> {
   function buildActionSet(overrideUrl?: string) {
     function _updateItem(
-      itemType: keyof T,
+      itemType: K,
       url: string,
       method: UrlMethod,
       itemId: string,
@@ -44,7 +46,7 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
     }
 
     function actionItemAction(
-      type: keyof T,
+      type: K,
       id: string,
       action: string,
       data: any,
@@ -56,7 +58,7 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
       return _updateItem(type, `${url}${action}/`, 'POST', id, data, subgroup);
     }
 
-    function clearItemAction(itemType: keyof T, subgroup?: string): AnyAction {
+    function clearItemAction(itemType: K, subgroup?: string): AnyAction {
       return {
         payload: {
           subgroup: buildSubgroup(overrideUrl, subgroup),
@@ -67,7 +69,7 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
     }
 
     function getItemAction(
-      itemType: keyof T,
+      itemType: K,
       itemId: string,
       subgroup?: string
     ): ThunkResponse {
@@ -84,7 +86,7 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
     }
 
     function patchItemAction(
-      type: keyof T,
+      type: K,
       id: string,
       data: any,
       subgroup?: string
@@ -100,7 +102,7 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
     }
 
     function updateItemAction(
-      type: keyof T,
+      type: K,
       id: string,
       data: any,
       subgroup?: string
@@ -141,10 +143,11 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
         );
         break;
       case UPDATE_ITEM.SUCCESS:
-        const itemType = (action.meta as Dict<string>).tag;
-        const subgroup = (action.meta as Dict<string>).subgroup || '';
+        const itemType = action.meta.tag;
+        const subgroup = action.meta.subgroup || '';
+
         if (itemType in typeToRecordMapping) {
-          const item = getItemByName(state, itemType as keyof T, subgroup);
+          const item = getItemByName(state, itemType, subgroup);
           if (!item || item.id === action.payload.data.id) {
             newState = setItemFromResponseAction(
               state,
@@ -166,7 +169,7 @@ export function itemsFunctor<T extends IdKeyedMap<T>>(
     return newState;
   }
 
-  function itemAtSubpath(type: keyof T, params: SubpathParams) {
+  function itemAtSubpath(type: K, params: SubpathParams) {
     const compiledPath = pathToRegexp.compile(`${type}`);
     const replaced = compiledPath(params);
     const overrideUrl = `${baseUrl}${replaced}/`;

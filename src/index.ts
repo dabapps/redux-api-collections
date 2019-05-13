@@ -8,8 +8,10 @@ export * from './items';
 export * from './types';
 
 export function createCollectionsAndItems<
-  T extends IdKeyedMap<T>,
-  U extends IdKeyedMap<U>
+  T extends IdKeyedMap<TK>,
+  U extends IdKeyedMap<UK>,
+  TK extends keyof T = keyof T,
+  UK extends keyof U = keyof U
 >(
   collectionToRecordMapping: TypeToRecordMapping<T>,
   itemToRecordMapping: TypeToRecordMapping<U>,

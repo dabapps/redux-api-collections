@@ -1,16 +1,22 @@
 import { FluxStandardAction } from 'flux-standard-action';
 import { AnyAction } from 'redux';
-import { Dict, SubpathParams, ThunkResponse } from '../utils';
+import { Dict, IdKeyedMap, SubpathParams, ThunkResponse } from '../utils';
 
 export type ItemGroup<T> = Dict<T>;
-export type ItemStoreMutable<T> = { [K in keyof T]: ItemGroup<T[K]> };
-export type ItemStore<T> = Readonly<ItemStoreMutable<T>>;
+export type ItemStoreMutable<
+  T extends IdKeyedMap<K>,
+  K extends keyof T = keyof T
+> = { [P in K]: ItemGroup<T[K]> };
+export type ItemStore<
+  T extends IdKeyedMap<K>,
+  K extends keyof T = keyof T
+> = Readonly<ItemStoreMutable<T>>;
 export type ItemStoreLoose = Readonly<{ [K: string]: ItemGroup<any> }>;
 
-export type ItemReducerPlugin<T> = (
-  state: ItemStore<T>,
-  action: AnyAction
-) => ItemStore<T>;
+export type ItemReducerPlugin<
+  T extends IdKeyedMap<K>,
+  K extends keyof T = keyof T
+> = (state: ItemStore<T>, action: AnyAction) => ItemStore<T>;
 
 export type ItemResponseAction = FluxStandardAction<
   {
@@ -19,7 +25,10 @@ export type ItemResponseAction = FluxStandardAction<
   { tag: string; subgroup?: string }
 >;
 
-export interface ItemsInterface<T> {
+export interface ItemsInterface<
+  T extends IdKeyedMap<K>,
+  K extends keyof T = keyof T
+> {
   reducers: {
     itemsReducer: (
       state: ItemStore<T> | undefined,
@@ -27,26 +36,22 @@ export interface ItemsInterface<T> {
     ) => ItemStore<T>;
   };
   actions: {
-    getItem: (
-      itemType: keyof T,
-      itemId: string,
-      subgroup?: string
-    ) => ThunkResponse;
+    getItem: (itemType: K, itemId: string, subgroup?: string) => ThunkResponse;
     updateItem: (
-      type: keyof T,
+      type: K,
       id: string,
       data: any,
       subgroup?: string
     ) => ThunkResponse;
     patchItem: (
-      type: keyof T,
+      type: K,
       id: string,
       data: any,
       subgroup?: string
     ) => ThunkResponse;
-    clearItem: (itemType: keyof T, subgroup?: string) => AnyAction;
+    clearItem: (itemType: K, subgroup?: string) => AnyAction;
     actionItem: (
-      type: keyof T,
+      type: K,
       id: string,
       action: string,
       data: any,
@@ -54,7 +59,7 @@ export interface ItemsInterface<T> {
     ) => ThunkResponse;
   };
   itemAtSubpath: (
-    type: keyof T,
+    type: K,
     params: SubpathParams
   ) => {
     actions: {
@@ -72,6 +77,6 @@ export interface ItemsInterface<T> {
     getSubpathItem: (
       store: ItemStore<T>,
       subgroup?: string
-    ) => T[keyof T] | undefined;
+    ) => T[K] | undefined;
   };
 }

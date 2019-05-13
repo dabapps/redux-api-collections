@@ -40,14 +40,17 @@ import {
   WHOLE_COLLECTION_PAGE_SIZE,
 } from './utils';
 
-export function collectionsFunctor<T extends IdKeyedMap<T>>(
+export function collectionsFunctor<
+  T extends IdKeyedMap<K>,
+  K extends keyof T = keyof T
+>(
   typeToRecordMapping: TypeToRecordMapping<T>,
   baseUrl: string = '/api/',
   reducerPlugin?: CollectionReducerPlugin<T>
 ): CollectionsInterface<T> {
   function buildActionSet(overrideUrl?: string) {
     function addItemAction(
-      type: keyof T,
+      type: K,
       data: any,
       subgroup?: string,
       url?: string
@@ -64,10 +67,7 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
       );
     }
 
-    function clearCollectionAction(
-      type: keyof T,
-      subgroup?: string
-    ): AnyAction {
+    function clearCollectionAction(type: K, subgroup?: string): AnyAction {
       return {
         payload: {
           subgroup: buildSubgroup(overrideUrl, subgroup),
@@ -78,7 +78,7 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
     }
 
     function deleteItemAction(
-      type: keyof T,
+      type: K,
       id: string,
       subgroup?: string
     ): ThunkResponse {
@@ -95,7 +95,7 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
     }
 
     function getAllCollectionAction(
-      type: keyof T,
+      type: K,
       opts?: CollectionOptionsNoPageSize,
       subgroup?: string
     ): ThunkResponse {
@@ -110,7 +110,7 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
     }
 
     function getCollectionAction(
-      type: keyof T,
+      type: K,
       options: CollectionOptions = {},
       subgroup?: string
     ): ThunkResponse {
@@ -172,7 +172,7 @@ export function collectionsFunctor<T extends IdKeyedMap<T>>(
     return newState;
   }
 
-  function collectionAtSubpath(type: keyof T, params: SubpathParams) {
+  function collectionAtSubpath(type: K, params: SubpathParams) {
     const compiledPath = pathToRegexp.compile(`${type}`);
     const replaced = compiledPath(params);
     const overrideUrl = `${baseUrl}${replaced}/`;

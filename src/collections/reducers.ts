@@ -57,7 +57,10 @@ function updateCollectionItemsFromResponse<T extends IdKeyed>(
   };
 }
 
-export function setCollectionFromResponseAction<T extends IdKeyedMap<T>>(
+export function setCollectionFromResponseAction<
+  T extends IdKeyedMap<K>,
+  K extends keyof T = keyof T
+>(
   state: CollectionStore<T>,
   action: AnyAction,
   typeToRecordMapping: TypeToRecordMapping<T>
@@ -80,7 +83,10 @@ export function setCollectionFromResponseAction<T extends IdKeyedMap<T>>(
   return state;
 }
 
-export function addCollectionItem<T extends IdKeyedMap<T>>(
+export function addCollectionItem<
+  T extends IdKeyedMap<K>,
+  K extends keyof T = keyof T
+>(
   state: CollectionStore<T>,
   action: AnyAction,
   typeToRecordMapping: TypeToRecordMapping<T>
@@ -96,7 +102,7 @@ export function addCollectionItem<T extends IdKeyedMap<T>>(
       const recordBuilder = looseMapping[collectionType];
       const existingCollection = getCollectionByName(
         state,
-        collectionType as keyof T,
+        collectionType,
         subgroup
       );
       const results = existingCollection.results.concat([
@@ -117,13 +123,16 @@ export function addCollectionItem<T extends IdKeyedMap<T>>(
   return state;
 }
 
-export function deleteCollectionItem<T extends IdKeyedMap<T>>(
+export function deleteCollectionItem<
+  T extends IdKeyedMap<K>,
+  K extends keyof T = keyof T
+>(
   state: CollectionStore<T>,
   action: AnyAction,
   typeToRecordMapping: TypeToRecordMapping<T>
 ): CollectionStore<T> {
   if (isCollectionAction(action)) {
-    const meta = action.meta as Dict<string>;
+    const meta = action.meta;
     const collectionType = meta.tag;
     const subgroup = meta.subgroup;
     const itemId = meta.itemId;
@@ -131,7 +140,7 @@ export function deleteCollectionItem<T extends IdKeyedMap<T>>(
     if (collectionType in typeToRecordMapping) {
       const existingCollection = getCollectionByName(
         state,
-        collectionType as keyof T,
+        collectionType,
         subgroup
       );
       const results = existingCollection.results.filter(
@@ -153,7 +162,10 @@ export function deleteCollectionItem<T extends IdKeyedMap<T>>(
   return state;
 }
 
-export function clearCollection<T extends IdKeyedMap<T>>(
+export function clearCollection<
+  T extends IdKeyedMap<K>,
+  K extends keyof T = keyof T
+>(
   state: CollectionStore<T>,
   action: AnyAction,
   typeToRecordMapping: TypeToRecordMapping<T>

@@ -5,7 +5,12 @@ import {
 import { ItemReducerPlugin, ItemsInterface } from './items/types';
 import { IdKeyedMap } from './utils';
 
-export type CollectionConfig<T extends IdKeyedMap<T>, U> = Readonly<
+export type CollectionConfig<
+  T extends IdKeyedMap<TK>,
+  U extends IdKeyedMap<UK>,
+  TK extends keyof T = keyof T,
+  UK extends keyof U = keyof U
+> = Readonly<
   Partial<{
     baseUrl: string;
     collectionReducerPlugin: CollectionReducerPlugin<T>;
@@ -14,8 +19,10 @@ export type CollectionConfig<T extends IdKeyedMap<T>, U> = Readonly<
 >;
 
 export interface CollectionsAndItems<
-  T extends IdKeyedMap<T>,
-  U extends IdKeyedMap<U>
+  T extends IdKeyedMap<TK>,
+  U extends IdKeyedMap<UK>,
+  TK extends keyof T = keyof T,
+  UK extends keyof U = keyof U
 > {
   actions: CollectionsInterface<T>['actions'] & ItemsInterface<U>['actions'];
   reducers: CollectionsInterface<T>['reducers'] & ItemsInterface<U>['reducers'];
