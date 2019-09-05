@@ -369,9 +369,11 @@ describe('Collections', () => {
       const data2 = collections.reducers.collectionsReducer(
         data,
         addItemSuccess('llamas', '', {
-          furLength: 10,
-          id: '2',
-          name: 'Pajama',
+          data: {
+            furLength: 10,
+            id: '2',
+            name: 'Pajama',
+          },
         })
       );
       const subCollection = getCollectionByName(data2, 'llamas');
