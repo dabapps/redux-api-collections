@@ -100,7 +100,7 @@ export function addCollectionItem<T extends IdKeyedMap<T>>(
         subgroup
       );
       const results = existingCollection.results.concat([
-        recordBuilder(action.payload),
+        recordBuilder(action.payload.data),
       ]);
       const updatedCollection = {
         ...existingCollection,
