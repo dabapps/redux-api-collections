@@ -4,9 +4,9 @@ export * from './types';
 export * from './utils';
 
 import { request, UrlMethod } from '@dabapps/redux-requests';
-
 import * as pathToRegexp from 'path-to-regexp';
 import { AnyAction } from 'redux';
+
 import {
   buildSubgroup,
   Dict,

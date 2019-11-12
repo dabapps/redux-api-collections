@@ -1,5 +1,6 @@
 import { FluxStandardAction } from 'flux-standard-action';
 import { AnyAction } from 'redux';
+
 import { Dict, SubpathParams, ThunkResponse } from '../utils';
 
 export type ItemGroup<T> = Dict<T>;

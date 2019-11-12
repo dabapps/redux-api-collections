@@ -6,6 +6,7 @@ export * from './utils';
 import { request } from '@dabapps/redux-requests';
 import * as pathToRegexp from 'path-to-regexp';
 import { AnyAction } from 'redux';
+
 import {
   buildSubgroup,
   IdKeyedMap,
