@@ -1,4 +1,5 @@
 import { applyMiddleware, combineReducers, createStore } from 'redux';
+
 import {
   Collections,
   CollectionStore,

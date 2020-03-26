@@ -1,5 +1,6 @@
 import { FluxStandardAction } from 'flux-standard-action';
 import { AnyAction } from 'redux';
+
 import {
   Dict,
   IdKeyed,
@@ -37,7 +38,7 @@ export type Collection<T extends IdKeyed> = Readonly<{
 
 export type CollectionGroup<T extends IdKeyed> = Dict<Collection<T>>;
 export type CollectionStoreMutable<T extends IdKeyedMap<T>> = {
-  [K in keyof T]: CollectionGroup<T[K]>
+  [K in keyof T]: CollectionGroup<T[K]>;
 };
 export type CollectionStore<T extends IdKeyedMap<T>> = Readonly<
   CollectionStoreMutable<T>

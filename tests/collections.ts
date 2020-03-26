@@ -1,5 +1,6 @@
 import * as requests from '@dabapps/redux-requests';
 import { AnyAction } from 'redux';
+
 import {
   ADD_TO_COLLECTION,
   CLEAR_COLLECTION,
